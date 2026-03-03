@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Clinic Cash Management (Thin)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Segoe UI", Roboto, sans-serif; background: #f4f6f9; padding: 24px; color: #2c3e50; }
+    .container { max-width: 1000px; margin: auto; }
+    .app-title { font-size: 1.6rem; font-weight: 700; color: #1e3a5f; margin-bottom: 18px; }
+    .card { background:#fff; border-radius:14px; padding:22px; margin-bottom:18px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border:1px solid #e6e9ef; }
+    h3 { font-size: 1.1rem; margin-bottom: 14px; font-weight: 700; color: #1e3a5f; }
+    h4 { font-size: 1rem; margin: 15px 0 10px; color: #2c3e50; }
+    label { display:block; font-size:.85rem; color:#555; margin:8px 0 4px; }
+    input, select { width:100%; padding:12px; margin-bottom:12px; border:1px solid #dcdfe6; border-radius:10px; font-size:15px; background:#fafbfc; }
+    input:focus, select:focus { outline:none; border-color:#1e3a5f; background:#fff; }
+    button { padding:12px 16px; border-radius:10px; border:none; font-weight:700; font-size:15px; cursor:pointer; transition:all .2s; }
+    button:active { transform: translateY(1px); }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+    .primary-btn { width:100%; background:#1e3a5f; color:#fff; }
+    .secondary-btn { background:#e9edf3; color:#1e3a5f; }
+    .row { display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+    .tabs { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+    .tab { flex:1; min-width:120px; padding:12px; border-radius:10px; border:1px solid #dcdfe6; background:#f5f7fa; cursor:pointer; font-weight:800; text-align:center; }
+    .tab.active { background:#1e3a5f; color:white; border-color:#1e3a5f; }
+    .hidden { display:none; }
+    .alert { padding:12px 14px; border-radius:10px; margin:0 0 12px; display:none; font-weight:700; }
+    .alert.show { display:block; }
+    .alert.success { background:#e6f4ea; color:#1e7e34; }
+    .alert.error { background:#fdecea; color:#b02a37; }
+    .alert.info { background:#e7f1ff; color:#1e3a5f; }
+    .stat-box { background:#f8fafc; padding:16px; border-radius:12px; text-align:center; border:1px solid #e6e9ef; }
+    .stat-label { font-size:.85rem; color:#6c757d; margin-bottom:6px; }
+    .stat-value { font-size:1.4rem; font-weight:800; color:#1e3a5f; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+    .user-pill { background:#f5f7fa; border:1px solid #dcdfe6; padding:8px 12px; border-radius:999px; font-weight:800; color:#1e3a5f; }
+    .divider { height:1px; background:#eef1f5; margin:20px 0; }
+    .overlay { position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; z-index:9999; padding:16px; }
+    .overlay.show { display:flex; }
+    .overlay-card { background:#fff; border-radius:14px; padding:18px; width:min(420px, 92vw); border:1px solid #e6e9ef; box-shadow:0 10px 25px rgba(0,0,0,.18); text-align:center; }
+    .spinner { width:42px; height:42px; border-radius:50%; border:4px solid #e5e7eb; border-top-color:#1e3a5f; margin:0 auto 12px; animation:spin .9s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .overlay-title { font-weight:800; color:#1e3a5f; margin-bottom:4px; }
+    .overlay-msg { color:#6c757d; font-weight:700; }
+    @media (max-width: 640px) { body{padding:14px;} .row{grid-template-columns:1fr;} .tabs{flex-direction:column;} }
+  </style>
+</head>
+
+<body>
+  <div id="loadingOverlay" class="overlay">
+    <div class="overlay-card">
+      <div class="spinner"></div>
+      <div class="overlay-title" id="loadingTitle">Please wait…</div>
+      <div class="overlay-msg" id="loadingMsg">Processing</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- LOGIN -->
+    <div id="loginScreen" class="card">
+      <div class="app-title">Clinic Cash Management</div>
+      <div id="loginAlert" class="alert"></div>
+
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Username">
+
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Password">
+
+      <button class="primary-btn" id="loginBtn">Login</button>
+    </div>
+
+    <!-- MAIN -->
+    <div id="mainScreen" class="hidden">
+      <div class="topbar">
+        <div class="app-title">Cash Management</div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <div class="user-pill"><span id="userDisplay">—</span></div>
+          <button class="secondary-btn" id="logoutBtn">Logout</button>
+        </div>
+      </div>
+
+      <div id="mainAlert" class="alert"></div>
+
+      <div class="row">
+        <div>
+          <label>Working Date</label>
+          <input type="date" id="workDate">
+        </div>
+        <div style="display:flex; gap:10px; align-items:end;">
+          <button class="secondary-btn" id="refreshBtn" style="width:100%;">Refresh Dashboard</button>
+        </div>
+      </div>
+
+      <!-- Dashboard Display -->
+      <div class="card">
+        <h3>📌 Dashboard (from Google Sheet calculations)</h3>
+        <div class="row">
+          <div class="stat-box">
+            <div class="stat-label">Pocket Closing</div>
+            <div class="stat-value" id="dashPocket">TZS 0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Office Expected</div>
+            <div class="stat-value" id="dashOffice">TZS 0</div>
+          </div>
+        </div>
+        <div class="row" style="margin-top:14px;">
+          <div class="stat-box">
+            <div class="stat-label">Cash Counted</div>
+            <div class="stat-value" id="dashCounted">TZS 0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Difference</div>
+            <div class="stat-value" id="dashDiff">TZS 0</div>
+          </div>
+        </div>
+        <div class="stat-box" style="margin-top:14px;">
+          <div class="stat-label">Pending Deposit (suggested)</div>
+          <div class="stat-value" id="dashPending">TZS 0</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button id="tabExpense" class="tab active">1. Expenses</button>
+        <button id="tabPocket" class="tab">2. Pocket Top-up</button>
+        <button id="tabCashCount" class="tab">3. Cash Count</button>
+        <button id="tabDeposit" class="tab">4. Bank Deposit</button>
+      </div>
+
+      <!-- Expenses -->
+      <div id="expenseTab" class="card">
+        <h3>💰 Record Expense (raw entry)</h3>
+
+        <label>Expense Category</label>
+        <select id="expenseCategory">
+          <option value="">-- Select Category --</option>
+        </select>
+
+        <div class="row">
+          <div>
+            <label>Amount (TZS)</label>
+            <input type="text" id="expenseAmount" placeholder="Enter amount">
+          </div>
+          <div>
+            <label>Payment Source</label>
+            <select id="expenseSource">
+              <option value="POCKET">From Pocket</option>
+              <option value="SALES">From Sales</option>
+            </select>
+          </div>
+        </div>
+
+        <label>Note</label>
+        <input type="text" id="expenseNote" placeholder="e.g., Ambulance, Eye, Physiotherapy">
+
+        <button class="primary-btn" id="saveExpenseBtn">Save Expense</button>
+      </div>
+
+      <!-- Pocket -->
+      <div id="pocketTab" class="card hidden">
+        <h3>👝 Pocket Top-up (raw entry)</h3>
+
+        <div class="row">
+          <div>
+            <label>Source</label>
+            <select id="pocketSource">
+              <option value="SALES">💰 From Sales</option>
+              <option value="DIRECTOR">👤 Director Cash</option>
+            </select>
+          </div>
+          <div>
+            <label>Amount (TZS)</label>
+            <input type="text" id="pocketAmount" placeholder="Enter amount">
+          </div>
+        </div>
+
+        <label>Note</label>
+        <input type="text" id="pocketNote" placeholder="e.g., Top-up for small expenses">
+
+        <button class="primary-btn" id="savePocketBtn">Save Pocket Top-up</button>
+      </div>
+
+      <!-- Cash Count -->
+      <div id="cashCountTab" class="card hidden">
+        <h3>📊 Cash Count (raw entry)</h3>
+
+        <label>Actual cash counted today (TZS)</label>
+        <input type="text" id="cashCountAmount" placeholder="Enter cash counted">
+
+        <label>Note</label>
+        <input type="text" id="cashCountNote" placeholder="Optional note">
+
+        <button class="primary-btn" id="saveCashCountBtn">Save Cash Count</button>
+      </div>
+
+      <!-- Deposit -->
+      <div id="depositTab" class="card hidden">
+        <h3>🏦 Bank Deposit (raw entry)</h3>
+
+        <div class="row">
+          <div>
+            <label>Deposit from Office Cash (TZS)</label>
+            <input type="text" id="depositOffice" placeholder="0">
+          </div>
+          <div>
+            <label>Deposit from Director Cash (TZS)</label>
+            <input type="text" id="depositDirector" placeholder="0">
+          </div>
+        </div>
+
+        <label>Note</label>
+        <input type="text" id="depositNote" placeholder="e.g., CRDB deposit slip #...">
+
+        <button class="primary-btn" id="saveDepositBtn">Save Deposit</button>
+
+        <div class="divider"></div>
+        <div class="stat-box">
+          <div class="stat-label">Tip</div>
+          <div style="font-weight:800; color:#1e3a5f;">
+            Director cash should be recorded as a separate DEPOSIT row (Source=DIRECTOR) so it doesn’t reduce office expected.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ================== CONFIG ==================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEP0ubkKZRzGwjJEODb1NLAeZHHGF5R0Bq-DISwq3rNJLEM695R25DYlTBjMMF3pUE/exec";
+
+    // TEMP ONLY (client-side). Later we move login to Apps Script.
+    const USERS = {
+      cashier: { password: 'clinic123', role: 'Cashier' },
+      admin: { password: 'admin123', role: 'Admin' }
+    };
+
+    // ================== STATE ==================
+    let currentUser = null;
+    let categories = [];
+
+    // ================== UI HELPERS ==================
+    function setOverlay(show, title='Please wait…', msg='Processing…') {
+      document.getElementById('loadingTitle').textContent = title;
+      document.getElementById('loadingMsg').textContent = msg;
+      document.getElementById('loadingOverlay').classList.toggle('show', !!show);
+    }
+
+    function showAlert(msg, type, target='main') {
+      const el = (target === 'login') ? document.getElementById('loginAlert') : document.getElementById('mainAlert');
+      el.textContent = msg;
+      el.className = `alert show ${type}`;
+      setTimeout(() => el.classList.remove('show'), 3000);
+    }
+
+    function digitsOnly(v) { return String(v || '').replace(/[^\d]/g, ''); }
+    function parseMoney(v) { const d = digitsOnly(v); return d ? Number(d) : 0; }
+    function formatNumber(n) { return Number(n || 0).toLocaleString('en-US'); }
+    function fmtInput(el) { const d = digitsOnly(el.value); el.value = d ? Number(d).toLocaleString('en-US') : ''; }
+
+    function attachMoney(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', () => fmtInput(el));
+      el.addEventListener('blur', () => fmtInput(el));
+    }
+
+    function setTodayDefaults() {
+      const t = new Date();
+      const yyyy = t.getFullYear();
+      const mm = String(t.getMonth()+1).padStart(2,'0');
+      const dd = String(t.getDate()).padStart(2,'0');
+      document.getElementById('workDate').value = `${yyyy}-${mm}-${dd}`;
+    }
+
+    // ================== API ==================
+    async function apiCall(action, payload={}, overlay=false, title='', msg='') {
+      if (overlay) setOverlay(true, title || 'Please wait…', msg || 'Processing…');
+      try {
+        const body = new URLSearchParams({ action, ...payload });
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+          body
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Request failed');
+        return data;
+      } finally {
+        if (overlay) setOverlay(false);
+      }
+    }
+
+    function fillCategories() {
+      const sel = document.getElementById('expenseCategory');
+      sel.innerHTML = '<option value="">-- Select Category --</option>';
+      categories.forEach(c => {
+        const o = document.createElement('option');
+        o.value = c; o.textContent = c;
+        sel.appendChild(o);
+      });
+    }
+
+    function renderDashboard(d) {
+      document.getElementById('dashPocket').textContent = 'TZS ' + formatNumber(d.pocketClosing);
+      document.getElementById('dashOffice').textContent = 'TZS ' + formatNumber(d.officeExpected);
+      document.getElementById('dashCounted').textContent = 'TZS ' + formatNumber(d.cashCounted);
+      document.getElementById('dashDiff').textContent = 'TZS ' + formatNumber(d.difference);
+      document.getElementById('dashPending').textContent = 'TZS ' + formatNumber(d.pendingDeposit);
+    }
+
+    async function loadInit(date) {
+      const data = await apiCall('getInit', { date }, true, 'Loading…', 'Fetching categories and dashboard');
+      categories = data.categories || [];
+      fillCategories();
+      renderDashboard(data.dashboard || {});
+    }
+
+    async function refreshDashboardOnly() {
+      const date = document.getElementById('workDate').value;
+      const data = await apiCall('getDashboard', { date }, true, 'Refreshing…', 'Updating dashboard');
+      renderDashboard(data.dashboard || {});
+    }
+
+    // Unique ref prevents duplicates
+    function makeRef() {
+      const rand = Math.random().toString(16).slice(2);
+      return `${currentUser?.username || 'u'}-${Date.now()}-${rand}`;
+    }
+
+    async function addTx({date,type,category,amount,source,note}) {
+      const payload = {
+        date, type, category: category || '',
+        amount: String(amount),
+        source: source || '',
+        note: note || '',
+        cashier: currentUser?.username || 'Unknown',
+        ref: makeRef()
+      };
+      await apiCall('addTx', payload, true, 'Saving…', 'Writing to Transactions');
+    }
+
+    // ================== TABS ==================
+    function setActiveTab(tab) {
+      const tabs = ['Expense','Pocket','CashCount','Deposit'];
+      tabs.forEach(t => {
+        document.getElementById(`tab${t}`).classList.toggle('active', t===tab);
+      });
+      document.getElementById('expenseTab').classList.toggle('hidden', tab!=='Expense');
+      document.getElementById('pocketTab').classList.toggle('hidden', tab!=='Pocket');
+      document.getElementById('cashCountTab').classList.toggle('hidden', tab!=='CashCount');
+      document.getElementById('depositTab').classList.toggle('hidden', tab!=='Deposit');
+    }
+
+    // ================== LOGIN ==================
+    async function login() {
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+
+      const rec = USERS[u];
+      if (!rec || rec.password !== p) {
+        showAlert('Invalid username or password', 'error', 'login');
+        return;
+      }
+
+      currentUser = { username: u, role: rec.role };
+      document.getElementById('userDisplay').textContent = `${u} (${rec.role})`;
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('mainScreen').classList.remove('hidden');
+
+      const date = document.getElementById('workDate').value;
+      await loadInit(date);
+      showAlert('Login successful!', 'success');
+    }
+
+    function logout() { location.reload(); }
+
+    // ================== EVENTS ==================
+    document.addEventListener('DOMContentLoaded', () => {
+      setTodayDefaults();
+
+      // Money formatting
+      ['expenseAmount','pocketAmount','cashCountAmount','depositOffice','depositDirector']
+        .forEach(attachMoney);
+
+      // buttons
+      document.getElementById('loginBtn').addEventListener('click', login);
+      document.getElementById('logoutBtn').addEventListener('click', logout);
+      document.getElementById('refreshBtn').addEventListener('click', refreshDashboardOnly);
+
+      document.getElementById('workDate').addEventListener('change', refreshDashboardOnly);
+
+      // tab buttons
+      document.getElementById('tabExpense').addEventListener('click', () => setActiveTab('Expense'));
+      document.getElementById('tabPocket').addEventListener('click', () => setActiveTab('Pocket'));
+      document.getElementById('tabCashCount').addEventListener('click', () => setActiveTab('CashCount'));
+      document.getElementById('tabDeposit').addEventListener('click', () => setActiveTab('Deposit'));
+
+      // save actions
+      document.getElementById('saveExpenseBtn').addEventListener('click', async () => {
+        try {
+          const date = document.getElementById('workDate').value;
+          const category = document.getElementById('expenseCategory').value;
+          const amount = parseMoney(document.getElementById('expenseAmount').value);
+          const source = document.getElementById('expenseSource').value;
+          const note = document.getElementById('expenseNote').value.trim();
+
+          if (!category || !amount) return showAlert('Select category and enter amount', 'error');
+          await addTx({date, type:'EXPENSE', category, amount, source, note});
+          document.getElementById('expenseAmount').value = '';
+          document.getElementById('expenseNote').value = '';
+          showAlert('Expense saved', 'success');
+          await refreshDashboardOnly();
+        } catch(e) { showAlert(e.message, 'error'); }
+      });
+
+      document.getElementById('savePocketBtn').addEventListener('click', async () => {
+        try {
+          const date = document.getElementById('workDate').value;
+          const source = document.getElementById('pocketSource').value;
+          const amount = parseMoney(document.getElementById('pocketAmount').value);
+          const note = document.getElementById('pocketNote').value.trim();
+
+          if (!amount) return showAlert('Enter valid amount', 'error');
+          await addTx({date, type:'POCKET_TOPUP', category: (source==='DIRECTOR'?'Director':'Sales'), amount, source, note});
+          document.getElementById('pocketAmount').value = '';
+          document.getElementById('pocketNote').value = '';
+          showAlert('Pocket top-up saved', 'success');
+          await refreshDashboardOnly();
+        } catch(e) { showAlert(e.message, 'error'); }
+      });
+
+      document.getElementById('saveCashCountBtn').addEventListener('click', async () => {
+        try {
+          const date = document.getElementById('workDate').value;
+          const amount = parseMoney(document.getElementById('cashCountAmount').value);
+          const note = document.getElementById('cashCountNote').value.trim();
+          if (!amount) return showAlert('Enter valid cash counted', 'error');
+
+          await addTx({date, type:'CASH_COUNT', category:'Cash Count', amount, source:'OFFICE', note});
+          document.getElementById('cashCountAmount').value = '';
+          document.getElementById('cashCountNote').value = '';
+          showAlert('Cash count saved', 'success');
+          await refreshDashboardOnly();
+        } catch(e) { showAlert(e.message, 'error'); }
+      });
+
+      document.getElementById('saveDepositBtn').addEventListener('click', async () => {
+        try {
+          const date = document.getElementById('workDate').value;
+          const officeAmt = parseMoney(document.getElementById('depositOffice').value);
+          const dirAmt = parseMoney(document.getElementById('depositDirector').value);
+          const note = document.getElementById('depositNote').value.trim();
+
+          if (!officeAmt && !dirAmt) return showAlert('Enter office and/or director deposit amount', 'error');
+
+          // Record office deposit (reduces expected office)
+          if (officeAmt) await addTx({date, type:'DEPOSIT', category:'Bank Deposit', amount: officeAmt, source:'OFFICE', note});
+
+          // Record director deposit (audit only; does NOT reduce office expected)
+          if (dirAmt) await addTx({date, type:'DEPOSIT', category:'Bank Deposit', amount: dirAmt, source:'DIRECTOR', note});
+
+          document.getElementById('depositOffice').value = '';
+          document.getElementById('depositDirector').value = '';
+          document.getElementById('depositNote').value = '';
+          showAlert('Deposit saved', 'success');
+          await refreshDashboardOnly();
+        } catch(e) { showAlert(e.message, 'error'); }
+      });
+
+      setActiveTab('Expense');
+    });
+  </script>
+</body>
+</html>
