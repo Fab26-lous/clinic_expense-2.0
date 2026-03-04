@@ -397,7 +397,10 @@
         cashier: currentUser?.username || 'Unknown',
         ref: makeRef()
       };
-      await apiCall('addTx', payload, true, 'Saving…', 'Writing to Transactions');
+      const res = await apiCall('addTx', payload, true, 'Saving…', 'Writing to Transactions');
+      // Helps you debug quickly if something is blocked in Apps Script:
+      console.log('addTx result:', res);
+      return res;
     }
 
     // ================== TABS ==================
@@ -456,8 +459,15 @@
       setText('cashVsSalesDiff', 'TZS ' + formatNumber(diff));
 
       const reasonsBox = document.getElementById('reasonsBox');
-      if (sys > 0 && cash > 0 && diff < 0) reasonsBox.classList.remove('hidden');
-      else reasonsBox.classList.add('hidden');
+
+      // ✅ Show reasons only when shortage
+      if (sys > 0 && cash > 0 && diff < 0) {
+        reasonsBox.classList.remove('hidden');
+        // ✅ Auto-add one row so cashier isn't confused
+        if (document.querySelectorAll('#reasonsList .reason-row').length === 0) addReasonRow();
+      } else {
+        reasonsBox.classList.add('hidden');
+      }
 
       const explained = reasonsTotal();
       const remaining = (diff < 0) ? Math.max(0, Math.abs(diff) - explained) : 0;
@@ -472,7 +482,8 @@
         remEl.textContent = '';
       }
 
-      document.getElementById('saveReasonsBtn').disabled = !(diff < 0 && remaining === 0 && document.querySelectorAll('#reasonsList .reason-row').length > 0);
+      const hasRows = document.querySelectorAll('#reasonsList .reason-row').length > 0;
+      document.getElementById('saveReasonsBtn').disabled = !(diff < 0 && remaining === 0 && hasRows);
     }
 
     function addReasonRow(){
@@ -556,6 +567,8 @@
 
       // save actions
       document.getElementById('saveExpenseBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('saveExpenseBtn');
+        btn.disabled = true;
         try {
           const date = document.getElementById('workDate').value;
           const category = document.getElementById('expenseCategory').value;
@@ -570,9 +583,12 @@
           showAlert('Matumizi yamehifadhiwa', 'success');
           await refreshDashboardOnly();
         } catch(e) { showAlert(e.message, 'error'); }
+        finally { btn.disabled = false; }
       });
 
       document.getElementById('savePocketBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('savePocketBtn');
+        btn.disabled = true;
         try {
           const date = document.getElementById('workDate').value;
           const source = document.getElementById('pocketSource').value; // SALES / DIRECTOR
@@ -586,9 +602,13 @@
           showAlert('Pocket top-up imehifadhiwa', 'success');
           await refreshDashboardOnly();
         } catch(e) { showAlert(e.message, 'error'); }
+        finally { btn.disabled = false; }
       });
 
+      // ✅ Fixed: disable button while saving + keep UI consistent
       document.getElementById('saveCashAndSalesBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('saveCashAndSalesBtn');
+        btn.disabled = true;
         try {
           const date = document.getElementById('workDate').value;
           const sys = parseMoney(document.getElementById('systemSalesAmount').value);
@@ -605,9 +625,12 @@
           await refreshDashboardOnly();
           calcDiffUI();
         } catch(e) { showAlert(e.message, 'error'); }
+        finally { btn.disabled = false; }
       });
 
       document.getElementById('saveReasonsBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('saveReasonsBtn');
+        btn.disabled = true;
         try {
           const date = document.getElementById('workDate').value;
           const sys = parseMoney(document.getElementById('systemSalesAmount').value);
@@ -639,9 +662,12 @@
           calcDiffUI();
           await refreshDashboardOnly();
         } catch(e) { showAlert(e.message, 'error'); }
+        finally { btn.disabled = false; }
       });
 
       document.getElementById('saveDepositBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('saveDepositBtn');
+        btn.disabled = true;
         try {
           const date = document.getElementById('workDate').value;
           const officeAmt = parseMoney(document.getElementById('depositOffice').value);
@@ -659,6 +685,7 @@
           showAlert('Deposit imehifadhiwa', 'success');
           await refreshDashboardOnly();
         } catch(e) { showAlert(e.message, 'error'); }
+        finally { btn.disabled = false; }
       });
 
       setActiveTab('Expense');
