@@ -279,427 +279,559 @@
     </div>
   </div>
 
-  <script>
-    // ================== CONFIG ==================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEP0ubkKZRzGwjJEODb1NLAeZHHGF5R0Bq-DISwq3rNJLEM695R25DYlTBjMMF3pUE/exec";
+<script>
+  // ================== CONFIG ==================
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEP0ubkKZRzGwjJEODb1NLAeZHHGF5R0Bq-DISwq3rNJLEM695R25DYlTBjMMF3pUE/exec";
 
-    // TEMP ONLY (client-side). Later we move login to Apps Script.
-    const USERS = {
-      cashier: { password: 'clinic123', role: 'Cashier' },
-      admin: { password: 'admin123', role: 'Admin' }
-    };
+  // TEMP ONLY (client-side). Later we move login to Apps Script.
+  const USERS = {
+    cashier: { password: 'clinic123', role: 'Cashier' },
+    admin: { password: 'admin123', role: 'Admin' }
+  };
 
-    // ================== STATE ==================
-    let currentUser = null;
-    let categories = [];
+  // ================== STATE ==================
+  let currentUser = null;
+  let categories = [];
 
-    // ================== UI HELPERS ==================
-    function setOverlay(show, title='Please wait…', msg='Processing…') {
-      document.getElementById('loadingTitle').textContent = title;
-      document.getElementById('loadingMsg').textContent = msg;
-      document.getElementById('loadingOverlay').classList.toggle('show', !!show);
-    }
+  // ================== UI HELPERS ==================
+  function setOverlay(show, title='Please wait…', msg='Processing…') {
+    document.getElementById('loadingTitle').textContent = title;
+    document.getElementById('loadingMsg').textContent = msg;
+    document.getElementById('loadingOverlay').classList.toggle('show', !!show);
+  }
 
-    function showAlert(msg, type, target='main') {
-      const el = (target === 'login') ? document.getElementById('loginAlert') : document.getElementById('mainAlert');
-      el.textContent = msg;
-      el.className = `alert show ${type}`;
-      setTimeout(() => el.classList.remove('show'), 3500);
-    }
+  function showAlert(msg, type, target='main') {
+    const el = (target === 'login') ? document.getElementById('loginAlert') : document.getElementById('mainAlert');
+    el.textContent = msg;
+    el.className = `alert show ${type}`;
+    setTimeout(() => el.classList.remove('show'), 3500);
+  }
 
-    function digitsOnly(v) { return String(v || '').replace(/[^\d]/g, ''); }
-    function parseMoney(v) { const d = digitsOnly(v); return d ? Number(d) : 0; }
-    function formatNumber(n) { return Number(n || 0).toLocaleString('en-US'); }
-    function fmtInput(el) { const d = digitsOnly(el.value); el.value = d ? Number(d).toLocaleString('en-US') : ''; }
+  function digitsOnly(v) { return String(v || '').replace(/[^\d]/g, ''); }
+  function parseMoney(v) { const d = digitsOnly(v); return d ? Number(d) : 0; }
+  function formatNumber(n) { return Number(n || 0).toLocaleString('en-US'); }
+  function fmtInput(el) { 
+    if (!el) return;
+    const d = digitsOnly(el.value); 
+    el.value = d ? Number(d).toLocaleString('en-US') : ''; 
+  }
 
-    function attachMoney(id) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener('input', () => fmtInput(el));
-      el.addEventListener('blur', () => fmtInput(el));
-    }
+  function attachMoney(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => fmtInput(el));
+    el.addEventListener('blur', () => fmtInput(el));
+  }
 
-    function setTodayDefaults() {
-      const t = new Date();
-      const yyyy = t.getFullYear();
-      const mm = String(t.getMonth()+1).padStart(2,'0');
-      const dd = String(t.getDate()).padStart(2,'0');
-      document.getElementById('workDate').value = `${yyyy}-${mm}-${dd}`;
-    }
+  function setTodayDefaults() {
+    const t = new Date();
+    const yyyy = t.getFullYear();
+    const mm = String(t.getMonth()+1).padStart(2,'0');
+    const dd = String(t.getDate()).padStart(2,'0');
+    document.getElementById('workDate').value = `${yyyy}-${mm}-${dd}`;
+  }
 
-    // ================== API ==================
-    async function apiCall(action, payload={}, overlay=false, title='', msg='') {
-      if (overlay) setOverlay(true, title || 'Please wait…', msg || 'Processing…');
-      try {
-        const body = new URLSearchParams({ action, ...payload });
-        const res = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-          body,
-          cache: 'no-store'
-        });
-
-        const txt = await res.text();
-        let data;
-        try { data = JSON.parse(txt); }
-        catch { throw new Error("Non-JSON response: " + txt.slice(0,120)); }
-
-        if (!data.success) throw new Error(data.error || 'Request failed');
-        return data;
-      } finally {
-        if (overlay) setOverlay(false);
-      }
-    }
-
-    function fillCategories() {
-      const sel = document.getElementById('expenseCategory');
-      sel.innerHTML = '<option value="">Chagua Matumizi</option>';
-      categories.forEach(c => {
-        const o = document.createElement('option');
-        o.value = c; o.textContent = c;
-        sel.appendChild(o);
+  // ================== API ==================
+  async function apiCall(action, payload={}, overlay=false, title='', msg='') {
+    if (overlay) setOverlay(true, title || 'Please wait…', msg || 'Processing…');
+    try {
+      const body = new URLSearchParams({ action, ...payload });
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        body,
+        cache: 'no-store'
       });
-    }
 
-    function renderDashboard(d) {
-      document.getElementById('dashPocket').textContent = 'TZS ' + formatNumber(d.pocketClosing);
-      document.getElementById('dashOffice').textContent = 'TZS ' + formatNumber(d.officeExpected);
-      document.getElementById('dashCounted').textContent = 'TZS ' + formatNumber(d.cashCounted);
-      document.getElementById('dashDiff').textContent = 'TZS ' + formatNumber(d.difference);
-      document.getElementById('dashPending').textContent = 'TZS ' + formatNumber(d.pendingDeposit);
-    }
+      const txt = await res.text();
+      console.log('API Response:', txt);
+      
+      let data;
+      try { 
+        data = JSON.parse(txt); 
+      } catch(e) {
+        throw new Error("Invalid JSON response: " + txt.slice(0,120));
+      }
 
-    async function loadInit(date) {
+      if (!data.success) throw new Error(data.error || 'Request failed');
+      return data;
+    } finally {
+      if (overlay) setOverlay(false);
+    }
+  }
+
+  function fillCategories() {
+    const sel = document.getElementById('expenseCategory');
+    sel.innerHTML = '<option value="">Chagua Matumizi</option>';
+    categories.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c; o.textContent = c;
+      sel.appendChild(o);
+    });
+  }
+
+  function renderDashboard(d) {
+    document.getElementById('dashPocket').textContent = 'TZS ' + formatNumber(d.pocketClosing || 0);
+    document.getElementById('dashOffice').textContent = 'TZS ' + formatNumber(d.officeExpected || 0);
+    document.getElementById('dashCounted').textContent = 'TZS ' + formatNumber(d.cashCounted || 0);
+    document.getElementById('dashDiff').textContent = 'TZS ' + formatNumber(d.difference || 0);
+    document.getElementById('dashPending').textContent = 'TZS ' + formatNumber(d.pendingDeposit || 0);
+  }
+
+  async function loadInit(date) {
+    try {
       const data = await apiCall('getInit', { date }, true, 'Loading…', 'Fetching categories and dashboard');
       categories = data.categories || [];
       fillCategories();
       renderDashboard(data.dashboard || {});
+    } catch(e) {
+      showAlert('Error loading: ' + e.message, 'error');
     }
+  }
 
-    async function refreshDashboardOnly() {
+  async function refreshDashboardOnly() {
+    try {
       const date = document.getElementById('workDate').value;
       const data = await apiCall('getDashboard', { date }, true, 'Refreshing…', 'Updating dashboard');
       renderDashboard(data.dashboard || {});
+      showAlert('Dashboard updated', 'success');
+    } catch(e) {
+      showAlert('Error refreshing: ' + e.message, 'error');
     }
+  }
 
-    // Unique ref prevents duplicates
-    function makeRef() {
-      const rand = Math.random().toString(16).slice(2);
-      return `${currentUser?.username || 'u'}-${Date.now()}-${rand}`;
-    }
+  // Unique ref prevents duplicates
+  function makeRef() {
+    const rand = Math.random().toString(36).substring(2, 15);
+    return `${currentUser?.username || 'user'}-${Date.now()}-${rand}`;
+  }
 
-    async function addTx({date,type,category,amount,source,note}) {
-      const payload = {
-        date, type, category: category || '',
-        amount: String(amount),
-        source: source || '',
-        note: note || '',
-        cashier: currentUser?.username || 'Unknown',
-        ref: makeRef()
-      };
-      const res = await apiCall('addTx', payload, true, 'Saving…', 'Writing to Transactions');
-      // Helps you debug quickly if something is blocked in Apps Script:
-      console.log('addTx result:', res);
-      return res;
-    }
-
-    // ================== TABS ==================
-    function setActiveTab(tab) {
-      const tabs = ['Expense','Pocket','CashCount','Deposit'];
-      tabs.forEach(t => {
-        document.getElementById(`tab${t}`).classList.toggle('active', t===tab);
-      });
-      document.getElementById('expenseTab').classList.toggle('hidden', tab!=='Expense');
-      document.getElementById('pocketTab').classList.toggle('hidden', tab!=='Pocket');
-      document.getElementById('cashCountTab').classList.toggle('hidden', tab!=='CashCount');
-      document.getElementById('depositTab').classList.toggle('hidden', tab!=='Deposit');
-    }
-
-    // ================== LOGIN ==================
-    async function login() {
-      const u = document.getElementById('username').value.trim();
-      const p = document.getElementById('password').value;
-
-      const rec = USERS[u];
-      if (!rec || rec.password !== p) {
-        showAlert('Invalid username or password', 'error', 'login');
-        return;
-      }
-
-      currentUser = { username: u, role: rec.role };
-      document.getElementById('userDisplay').textContent = `${u} (${rec.role})`;
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('mainScreen').classList.remove('hidden');
-
-      const date = document.getElementById('workDate').value;
-      await loadInit(date);
-      showAlert('Login successful!', 'success');
-    }
-
-    function logout() { location.reload(); }
-
-    // ================== Cash Reasons Logic ==================
-    function setText(elId, value){ document.getElementById(elId).textContent = value; }
-
-    function reasonsTotal(){
-      const items = [...document.querySelectorAll('#reasonsList .reason-row[data-reason-row="1"]')];
-      let sum = 0;
-      for (const it of items){
-        const amt = parseMoney(it.querySelector('.reasonAmount').value);
-        sum += (amt || 0);
-      }
-      return sum;
-    }
-
-    function calcDiffUI(){
-      const sys = parseMoney(document.getElementById('systemSalesAmount').value);
-      const cash = parseMoney(document.getElementById('cashCountAmount').value);
-      const diff = cash - sys;
-
-      setText('cashVsSalesDiff', 'TZS ' + formatNumber(diff));
-
-      const reasonsBox = document.getElementById('reasonsBox');
-
-      // ✅ Show reasons only when shortage
-      if (sys > 0 && cash > 0 && diff < 0) {
-        reasonsBox.classList.remove('hidden');
-        // ✅ Auto-add one row so cashier isn't confused
-        if (document.querySelectorAll('#reasonsList .reason-row').length === 0) addReasonRow();
-      } else {
-        reasonsBox.classList.add('hidden');
-      }
-
-      const explained = reasonsTotal();
-      const remaining = (diff < 0) ? Math.max(0, Math.abs(diff) - explained) : 0;
-
-      const remEl = document.getElementById('shortageRemainingText');
-      if (diff < 0) {
-        remEl.textContent = remaining === 0
-          ? `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`
-          : `⚠️ Upungufu BADO: TZS ${formatNumber(remaining)} (ongeza sababu)`;
-        remEl.style.color = remaining === 0 ? '#10b981' : '#b45309';
-      } else {
-        remEl.textContent = '';
-      }
-
-      const hasRows = document.querySelectorAll('#reasonsList .reason-row').length > 0;
-      document.getElementById('saveReasonsBtn').disabled = !(diff < 0 && remaining === 0 && hasRows);
-    }
-
-    function addReasonRow(){
-      const tpl = document.getElementById('reasonTemplate');
-      const clone = document.importNode(tpl.content, true);
-      const row = clone.querySelector('.reason-row');
-
-      const sel = row.querySelector('.reasonType');
-      const other = row.querySelector('.reasonOther');
-      const amt = row.querySelector('.reasonAmount');
-      const rm = row.querySelector('.removeReasonBtn');
-
-      // money formatting
-      amt.addEventListener('input', () => fmtInput(amt));
-      amt.addEventListener('blur', () => fmtInput(amt));
-
-      sel.addEventListener('change', () => {
-        other.style.display = (sel.value === 'Other') ? 'block' : 'none';
-        calcDiffUI();
-      });
-      other.addEventListener('input', calcDiffUI);
-      amt.addEventListener('input', calcDiffUI);
-
-      rm.addEventListener('click', () => { row.remove(); calcDiffUI(); });
-
-      document.getElementById('reasonsList').appendChild(row);
-      calcDiffUI();
-    }
-
-    function collectReasons(){
-      const items = [...document.querySelectorAll('#reasonsList .reason-row[data-reason-row="1"]')];
-      const out = [];
-
-      for (const it of items){
-        const type = (it.querySelector('.reasonType').value || '').trim();
-        const other = (it.querySelector('.reasonOther').value || '').trim();
-        const amount = parseMoney(it.querySelector('.reasonAmount').value);
-
-        if (!type) continue;
-        if (!amount || amount <= 0) continue;
-
-        if (type === 'Other' && !other) {
-          throw new Error('Umechagua Other — lazima uandike sababu halisi.');
-        }
-
-        out.push({
-          reason: (type === 'Other') ? other : type,
-          amount
-        });
-      }
-
-      return out;
-    }
-// Add this to your existing JavaScript
-async function saveCashCountBatch(date, systemSales, cashCount, reasons, note) {
-  const transactions = [];
-  
-  // Add system sales
-  transactions.push({
-    date, type: 'SYSTEM_SALES', category: 'System Sales',
-    amount: systemSales, source: 'SYSTEM', note,
-    cashier: currentUser?.username || 'Unknown',
-    ref: makeRef()
-  });
-  
-  // Add cash count
-  transactions.push({
-    date, type: 'CASH_COUNT', category: 'Cash Count',
-    amount: cashCount, source: 'OFFICE', note,
-    cashier: currentUser?.username || 'Unknown',
-    ref: makeRef()
-  });
-  
-  // Add reasons
-  for (const r of reasons) {
-    transactions.push({
-      date, type: 'CASH_REASON', category: r.reason,
-      amount: r.amount, source: 'REASON', note: 'Reason for shortage',
+  async function addTx({date, type, category, amount, source, note}) {
+    const payload = {
+      date, 
+      type, 
+      category: category || '',
+      amount: String(amount),
+      source: source || '',
+      note: note || '',
       cashier: currentUser?.username || 'Unknown',
       ref: makeRef()
-    });
+    };
+    console.log('Saving transaction:', payload);
+    const res = await apiCall('addTx', payload, true, 'Saving…', 'Writing to Transactions');
+    return res;
   }
-  
-  return await apiCall('addBulkTx', { transactions: JSON.stringify(transactions) }, true, 'Saving…', 'Processing all entries');
-}
-    // ================== EVENTS ==================
-    document.addEventListener('DOMContentLoaded', () => {
-      setTodayDefaults();
 
-      // Money formatting
-      ['expenseAmount','pocketAmount','cashCountAmount','systemSalesAmount','depositOffice','depositDirector']
-        .forEach(attachMoney);
+  async function addBulkTx(transactions) {
+    const payload = {
+      transactions: JSON.stringify(transactions)
+    };
+    console.log('Saving bulk transactions:', transactions);
+    const res = await apiCall('addBulkTx', payload, true, 'Saving…', 'Processing all entries');
+    return res;
+  }
 
-      // buttons
-      document.getElementById('loginBtn').addEventListener('click', login);
-      document.getElementById('logoutBtn').addEventListener('click', logout);
-      document.getElementById('refreshBtn').addEventListener('click', refreshDashboardOnly);
-      document.getElementById('workDate').addEventListener('change', refreshDashboardOnly);
+  // ================== TABS ==================
+  function setActiveTab(tab) {
+    const tabs = ['Expense','Pocket','CashCount','Deposit'];
+    tabs.forEach(t => {
+      document.getElementById(`tab${t}`).classList.toggle('active', t===tab);
+    });
+    document.getElementById('expenseTab').classList.toggle('hidden', tab!=='Expense');
+    document.getElementById('pocketTab').classList.toggle('hidden', tab!=='Pocket');
+    document.getElementById('cashCountTab').classList.toggle('hidden', tab!=='CashCount');
+    document.getElementById('depositTab').classList.toggle('hidden', tab!=='Deposit');
+  }
 
-      // tab buttons
-      document.getElementById('tabExpense').addEventListener('click', () => setActiveTab('Expense'));
-      document.getElementById('tabPocket').addEventListener('click', () => setActiveTab('Pocket'));
-      document.getElementById('tabCashCount').addEventListener('click', () => setActiveTab('CashCount'));
-      document.getElementById('tabDeposit').addEventListener('click', () => setActiveTab('Deposit'));
+  // ================== LOGIN ==================
+  async function login() {
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value;
 
-      // live diff update
-      document.getElementById('systemSalesAmount').addEventListener('input', calcDiffUI);
-      document.getElementById('cashCountAmount').addEventListener('input', calcDiffUI);
-
-      // reasons buttons
-      document.getElementById('addReasonBtn').addEventListener('click', () => addReasonRow());
-
-      // save actions
-      document.getElementById('saveExpenseBtn').addEventListener('click', async () => {
-        const btn = document.getElementById('saveExpenseBtn');
-        btn.disabled = true;
-        try {
-          const date = document.getElementById('workDate').value;
-          const category = document.getElementById('expenseCategory').value;
-          const amount = parseMoney(document.getElementById('expenseAmount').value);
-          const source = document.getElementById('expenseSource').value;
-          const note = document.getElementById('expenseNote').value.trim();
-
-          if (!category || !amount) return showAlert('Chagua matumizi na weka kiasi', 'error');
-          await addTx({date, type:'EXPENSE', category, amount, source, note});
-          document.getElementById('expenseAmount').value = '';
-          document.getElementById('expenseNote').value = '';
-          showAlert('Matumizi yamehifadhiwa', 'success');
-          await refreshDashboardOnly();
-        } catch(e) { showAlert(e.message, 'error'); }
-        finally { btn.disabled = false; }
-      });
-
-      document.getElementById('savePocketBtn').addEventListener('click', async () => {
-        const btn = document.getElementById('savePocketBtn');
-        btn.disabled = true;
-        try {
-          const date = document.getElementById('workDate').value;
-          const source = document.getElementById('pocketSource').value; // SALES / DIRECTOR
-          const amount = parseMoney(document.getElementById('pocketAmount').value);
-          const note = document.getElementById('pocketNote').value.trim();
-
-          if (!amount) return showAlert('Weka kiasi sahihi', 'error');
-          await addTx({date, type:'POCKET_TOPUP', category: (source==='DIRECTOR'?'Director':'Sales'), amount, source, note});
-          document.getElementById('pocketAmount').value = '';
-          document.getElementById('pocketNote').value = '';
-          showAlert('Pocket top-up imehifadhiwa', 'success');
-          await refreshDashboardOnly();
-        } catch(e) { showAlert(e.message, 'error'); }
-        finally { btn.disabled = false; }
-      });
-// Replace the separate save handlers with this combined one
-document.getElementById('saveCashCountBtn').addEventListener('click', async () => {
-  const btn = document.getElementById('saveCashCountBtn');
-  btn.disabled = true;
-  try {
-    const date = document.getElementById('workDate').value;
-    const sys = parseMoney(document.getElementById('systemSalesAmount').value);
-    const cash = parseMoney(document.getElementById('cashCountAmount').value);
-    const note = document.getElementById('cashCountNote').value.trim();
-
-    if (!sys || sys <= 0) return showAlert('Weka mauzo ya mfumo (system sales).', 'error');
-    if (!cash || cash <= 0) return showAlert('Weka cash iliyohesabiwa.', 'error');
-
-    const diff = cash - sys;
-    const reasons = (diff < 0) ? collectReasons() : [];
-    
-    if (diff < 0 && reasons.length === 0) {
-      return showAlert('Ongeza sababu za upungufu.', 'error');
+    const rec = USERS[u];
+    if (!rec || rec.password !== p) {
+      showAlert('Invalid username or password', 'error', 'login');
+      return;
     }
 
-    // Save everything in one batch
-    await saveCashCountBatch(date, sys, cash, reasons, note);
-    
-    // Clear form
-    document.getElementById('systemSalesAmount').value = '';
-    document.getElementById('cashCountAmount').value = '';
-    document.getElementById('cashCountNote').value = '';
-    document.getElementById('reasonsList').innerHTML = '';
-    
-    showAlert('Mauzo + Cash + Sababu zimehifadhiwa', 'success');
-    await refreshDashboardOnly();
-    calcDiffUI();
-  } catch(e) { 
-    showAlert(e.message, 'error'); 
-  } finally { 
-    btn.disabled = false; 
+    currentUser = { username: u, role: rec.role };
+    document.getElementById('userDisplay').textContent = `${u} (${rec.role})`;
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('mainScreen').classList.remove('hidden');
+
+    const date = document.getElementById('workDate').value;
+    await loadInit(date);
+    showAlert('Login successful!', 'success');
   }
-});
-    
 
-      document.getElementById('saveDepositBtn').addEventListener('click', async () => {
-        const btn = document.getElementById('saveDepositBtn');
-        btn.disabled = true;
-        try {
-          const date = document.getElementById('workDate').value;
-          const officeAmt = parseMoney(document.getElementById('depositOffice').value);
-          const dirAmt = parseMoney(document.getElementById('depositDirector').value);
-          const note = document.getElementById('depositNote').value.trim();
+  function logout() { location.reload(); }
 
-          if (!officeAmt && !dirAmt) return showAlert('Weka kiasi cha deposit', 'error');
+  // ================== Cash Reasons Logic ==================
+  function setText(elId, value){ 
+    const el = document.getElementById(elId);
+    if (el) el.textContent = value; 
+  }
 
-          if (officeAmt) await addTx({date, type:'DEPOSIT', category:'Bank Deposit', amount: officeAmt, source:'OFFICE', note});
-          if (dirAmt) await addTx({date, type:'DEPOSIT', category:'Bank Deposit', amount: dirAmt, source:'DIRECTOR', note});
+  function reasonsTotal(){
+    const items = [...document.querySelectorAll('#reasonsList .reason-row')];
+    let sum = 0;
+    for (const it of items){
+      const amtInput = it.querySelector('.reasonAmount');
+      if (amtInput) {
+        const amt = parseMoney(amtInput.value);
+        sum += (amt || 0);
+      }
+    }
+    return sum;
+  }
 
-          document.getElementById('depositOffice').value = '';
-          document.getElementById('depositDirector').value = '';
-          document.getElementById('depositNote').value = '';
-          showAlert('Deposit imehifadhiwa', 'success');
-          await refreshDashboardOnly();
-        } catch(e) { showAlert(e.message, 'error'); }
-        finally { btn.disabled = false; }
+  function calcDiffUI(){
+    const sys = parseMoney(document.getElementById('systemSalesAmount').value);
+    const cash = parseMoney(document.getElementById('cashCountAmount').value);
+    const diff = cash - sys;
+
+    setText('cashVsSalesDiff', 'TZS ' + formatNumber(diff));
+
+    const reasonsBox = document.getElementById('reasonsBox');
+    const saveReasonsBtn = document.getElementById('saveReasonsBtn');
+
+    // Show reasons only when shortage
+    if (sys > 0 && cash > 0 && diff < 0) {
+      reasonsBox.classList.remove('hidden');
+      // Auto-add one row if none exist
+      if (document.querySelectorAll('#reasonsList .reason-row').length === 0) {
+        addReasonRow();
+      }
+      saveReasonsBtn.disabled = false;
+    } else {
+      reasonsBox.classList.add('hidden');
+    }
+
+    const explained = reasonsTotal();
+    const remaining = (diff < 0) ? Math.max(0, Math.abs(diff) - explained) : 0;
+
+    const remEl = document.getElementById('shortageRemainingText');
+    if (diff < 0) {
+      remEl.textContent = remaining === 0
+        ? `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`
+        : `⚠️ Upungufu BADO: TZS ${formatNumber(remaining)} (ongeza sababu)`;
+      remEl.style.color = remaining === 0 ? '#10b981' : '#b45309';
+    } else {
+      remEl.textContent = '';
+    }
+  }
+
+  function addReasonRow(){
+    const tpl = document.getElementById('reasonTemplate');
+    const clone = document.importNode(tpl.content, true);
+    const row = clone.querySelector('.reason-row');
+
+    const sel = row.querySelector('.reasonType');
+    const other = row.querySelector('.reasonOther');
+    const amt = row.querySelector('.reasonAmount');
+    const rm = row.querySelector('.removeReasonBtn');
+
+    // money formatting
+    if (amt) {
+      amt.addEventListener('input', () => fmtInput(amt));
+      amt.addEventListener('blur', () => fmtInput(amt));
+      amt.addEventListener('input', calcDiffUI);
+    }
+
+    if (sel) {
+      sel.addEventListener('change', () => {
+        if (other) {
+          other.style.display = (sel.value === 'Other') ? 'block' : 'none';
+        }
+        calcDiffUI();
       });
+    }
+    
+    if (other) {
+      other.addEventListener('input', calcDiffUI);
+    }
 
-      setActiveTab('Expense');
+    if (rm) {
+      rm.addEventListener('click', () => { 
+        row.remove(); 
+        calcDiffUI(); 
+      });
+    }
+
+    document.getElementById('reasonsList').appendChild(row);
+    calcDiffUI();
+  }
+
+  function collectReasons(){
+    const items = [...document.querySelectorAll('#reasonsList .reason-row')];
+    const out = [];
+
+    for (const it of items){
+      const typeSel = it.querySelector('.reasonType');
+      const otherInput = it.querySelector('.reasonOther');
+      const amtInput = it.querySelector('.reasonAmount');
+      
+      if (!typeSel || !amtInput) continue;
+      
+      const type = (typeSel.value || '').trim();
+      const other = otherInput ? (otherInput.value || '').trim() : '';
+      const amount = parseMoney(amtInput.value);
+
+      if (!type) continue;
+      if (!amount || amount <= 0) continue;
+
+      if (type === 'Other' && !other) {
+        throw new Error('Umechagua Other — lazima uandike sababu halisi.');
+      }
+
+      out.push({
+        reason: (type === 'Other') ? other : type,
+        amount: amount
+      });
+    }
+
+    return out;
+  }
+
+  // ================== EVENT HANDLERS ==================
+  document.addEventListener('DOMContentLoaded', () => {
+    setTodayDefaults();
+
+    // Money formatting
+    ['expenseAmount','pocketAmount','cashCountAmount','systemSalesAmount','depositOffice','depositDirector']
+      .forEach(attachMoney);
+
+    // Buttons
+    document.getElementById('loginBtn').addEventListener('click', login);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('refreshBtn').addEventListener('click', refreshDashboardOnly);
+    document.getElementById('workDate').addEventListener('change', refreshDashboardOnly);
+
+    // Tab buttons
+    document.getElementById('tabExpense').addEventListener('click', () => setActiveTab('Expense'));
+    document.getElementById('tabPocket').addEventListener('click', () => setActiveTab('Pocket'));
+    document.getElementById('tabCashCount').addEventListener('click', () => setActiveTab('CashCount'));
+    document.getElementById('tabDeposit').addEventListener('click', () => setActiveTab('Deposit'));
+
+    // Live diff update
+    document.getElementById('systemSalesAmount').addEventListener('input', calcDiffUI);
+    document.getElementById('cashCountAmount').addEventListener('input', calcDiffUI);
+
+    // Reasons button
+    document.getElementById('addReasonBtn').addEventListener('click', () => addReasonRow());
+
+    // ========== SAVE EXPENSE ==========
+    document.getElementById('saveExpenseBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('saveExpenseBtn');
+      btn.disabled = true;
+      try {
+        const date = document.getElementById('workDate').value;
+        const category = document.getElementById('expenseCategory').value;
+        const amount = parseMoney(document.getElementById('expenseAmount').value);
+        const source = document.getElementById('expenseSource').value;
+        const note = document.getElementById('expenseNote').value.trim();
+
+        if (!category) return showAlert('Chagua matumizi', 'error');
+        if (!amount || amount <= 0) return showAlert('Weka kiasi sahihi', 'error');
+        
+        await addTx({date, type:'EXPENSE', category, amount, source, note});
+        
+        document.getElementById('expenseAmount').value = '';
+        document.getElementById('expenseNote').value = '';
+        showAlert('Matumizi yamehifadhiwa', 'success');
+        await refreshDashboardOnly();
+      } catch(e) { 
+        showAlert(e.message, 'error'); 
+      } finally { 
+        btn.disabled = false; 
+      }
     });
-  </script>
+
+    // ========== SAVE POCKET TOPUP ==========
+    document.getElementById('savePocketBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('savePocketBtn');
+      btn.disabled = true;
+      try {
+        const date = document.getElementById('workDate').value;
+        const source = document.getElementById('pocketSource').value;
+        const amount = parseMoney(document.getElementById('pocketAmount').value);
+        const note = document.getElementById('pocketNote').value.trim();
+
+        if (!amount || amount <= 0) return showAlert('Weka kiasi sahihi', 'error');
+        
+        await addTx({
+          date, 
+          type:'POCKET_TOPUP', 
+          category: (source === 'DIRECTOR' ? 'Director' : 'Sales'), 
+          amount, 
+          source, 
+          note
+        });
+        
+        document.getElementById('pocketAmount').value = '';
+        document.getElementById('pocketNote').value = '';
+        showAlert('Pocket top-up imehifadhiwa', 'success');
+        await refreshDashboardOnly();
+      } catch(e) { 
+        showAlert(e.message, 'error'); 
+      } finally { 
+        btn.disabled = false; 
+      }
+    });
+
+    // ========== SAVE CASH COUNT + REASONS (BULK) ==========
+    document.getElementById('saveCashAndSalesBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('saveCashAndSalesBtn');
+      btn.disabled = true;
+      try {
+        const date = document.getElementById('workDate').value;
+        const sys = parseMoney(document.getElementById('systemSalesAmount').value);
+        const cash = parseMoney(document.getElementById('cashCountAmount').value);
+        const note = document.getElementById('cashCountNote').value.trim();
+
+        if (!sys || sys <= 0) return showAlert('Weka mauzo ya mfumo (system sales).', 'error');
+        if (!cash || cash <= 0) return showAlert('Weka cash iliyohesabiwa.', 'error');
+
+        const diff = cash - sys;
+        
+        // Prepare transactions array
+        const transactions = [];
+        
+        // Add system sales
+        transactions.push({
+          date, 
+          type: 'SYSTEM_SALES', 
+          category: 'System Sales',
+          amount: sys, 
+          source: 'SYSTEM', 
+          note,
+          cashier: currentUser?.username || 'Unknown',
+          ref: makeRef()
+        });
+        
+        // Add cash count
+        transactions.push({
+          date, 
+          type: 'CASH_COUNT', 
+          category: 'Cash Count',
+          amount: cash, 
+          source: 'OFFICE', 
+          note,
+          cashier: currentUser?.username || 'Unknown',
+          ref: makeRef()
+        });
+        
+        // Add reasons if there's a shortage
+        if (diff < 0) {
+          const reasons = collectReasons();
+          const explained = reasons.reduce((sum, r) => sum + (r.amount || 0), 0);
+          const remaining = Math.abs(diff) - explained;
+          
+          if (remaining !== 0) {
+            return showAlert('Bado upungufu haujaelezwa wote.', 'warning');
+          }
+          
+          for (const r of reasons) {
+            transactions.push({
+              date, 
+              type: 'CASH_REASON', 
+              category: r.reason,
+              amount: r.amount, 
+              source: 'REASON', 
+              note: 'Reason for shortage',
+              cashier: currentUser?.username || 'Unknown',
+              ref: makeRef()
+            });
+          }
+        }
+        
+        // Save all in one batch
+        await addBulkTx(transactions);
+        
+        // Clear form
+        document.getElementById('systemSalesAmount').value = '';
+        document.getElementById('cashCountAmount').value = '';
+        document.getElementById('cashCountNote').value = '';
+        document.getElementById('reasonsList').innerHTML = '';
+        
+        showAlert('Mauzo + Cash + Sababu zimehifadhiwa', 'success');
+        await refreshDashboardOnly();
+        calcDiffUI();
+      } catch(e) { 
+        showAlert(e.message, 'error'); 
+      } finally { 
+        btn.disabled = false; 
+      }
+    });
+
+    // ========== SAVE DEPOSIT ==========
+    document.getElementById('saveDepositBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('saveDepositBtn');
+      btn.disabled = true;
+      try {
+        const date = document.getElementById('workDate').value;
+        const officeAmt = parseMoney(document.getElementById('depositOffice').value);
+        const dirAmt = parseMoney(document.getElementById('depositDirector').value);
+        const note = document.getElementById('depositNote').value.trim();
+
+        if (!officeAmt && !dirAmt) {
+          return showAlert('Weka kiasi cha deposit', 'error');
+        }
+
+        const transactions = [];
+
+        if (officeAmt > 0) {
+          transactions.push({
+            date, 
+            type:'DEPOSIT', 
+            category:'Bank Deposit', 
+            amount: officeAmt, 
+            source:'OFFICE', 
+            note,
+            cashier: currentUser?.username || 'Unknown',
+            ref: makeRef()
+          });
+        }
+        
+        if (dirAmt > 0) {
+          transactions.push({
+            date, 
+            type:'DEPOSIT', 
+            category:'Bank Deposit', 
+            amount: dirAmt, 
+            source:'DIRECTOR', 
+            note,
+            cashier: currentUser?.username || 'Unknown',
+            ref: makeRef()
+          });
+        }
+
+        if (transactions.length === 1) {
+          // Single transaction
+          await addTx(transactions[0]);
+        } else {
+          // Multiple transactions
+          await addBulkTx(transactions);
+        }
+
+        document.getElementById('depositOffice').value = '';
+        document.getElementById('depositDirector').value = '';
+        document.getElementById('depositNote').value = '';
+        
+        showAlert('Deposit imehifadhiwa', 'success');
+        await refreshDashboardOnly();
+      } catch(e) { 
+        showAlert(e.message, 'error'); 
+      } finally { 
+        btn.disabled = false; 
+      }
+    });
+
+    // Remove old saveReasonsBtn handler if it exists
+    // We're now using the combined handler above
+
+    setActiveTab('Expense');
+  });
+</script>
 </body>
 </html>
