@@ -33,6 +33,7 @@
     .alert.success { background:#e6f4ea; color:#1e7e34; }
     .alert.error { background:#fdecea; color:#b02a37; }
     .alert.info { background:#e7f1ff; color:#1e3a5f; }
+    .alert.warning { background:#fef3c7; color:#b45309; }
     .stat-box { background:#f8fafc; padding:16px; border-radius:12px; text-align:center; border:1px solid #e6e9ef; }
     .stat-label { font-size:.85rem; color:#6c757d; margin-bottom:6px; }
     .stat-value { font-size:1.4rem; font-weight:800; color:#1e3a5f; }
@@ -46,7 +47,12 @@
     @keyframes spin { to { transform:rotate(360deg); } }
     .overlay-title { font-weight:800; color:#1e3a5f; margin-bottom:4px; }
     .overlay-msg { color:#6c757d; font-weight:700; }
-    @media (max-width: 640px) { body{padding:14px;} .row{grid-template-columns:1fr;} .tabs{flex-direction:column;} }
+    .reason-row { display:flex; gap:10px; align-items:center; background:#fff; border:1px solid #e6e9ef; padding:10px; border-radius:10px; margin-bottom:8px; }
+    .reason-row .reasonType { flex: 2; }
+    .reason-row .reasonOther { flex: 3; display:none; }
+    .reason-row .reasonAmount { width: 140px; }
+    .reason-row .removeReasonBtn { padding:10px; }
+    @media (max-width: 640px) { body{padding:14px;} .row{grid-template-columns:1fr;} .tabs{flex-direction:column;} .reason-row{flex-wrap:wrap;} .reason-row .reasonAmount{width:100%;} }
   </style>
 </head>
 
@@ -129,7 +135,7 @@
       <div class="tabs">
         <button id="tabExpense" class="tab active">1. Matumizi</button>
         <button id="tabPocket" class="tab">2. Pocket Money</button>
-        <button id="tabCashCount" class="tab">3. Cash Count</button>
+        <button id="tabCashCount" class="tab">3. Mauzo vs Cash</button>
         <button id="tabDeposit" class="tab">4. Bank Deposit</button>
       </div>
 
@@ -150,13 +156,14 @@
           <div>
             <label>Malipo Kutoka</label>
             <select id="expenseSource">
-              <option value="POCKET MONEY">From Pocket</option>
-              <option value="MAUZO">From Sales</option>
+              <!-- IMPORTANT: must be POCKET / SALES for your formulas -->
+              <option value="POCKET">Pocket Money</option>
+              <option value="SALES">Mauzo</option>
             </select>
           </div>
         </div>
 
-        <label>Note</label>
+        <label>Maelezo</label>
         <input type="text" id="expenseNote" placeholder="e.g., Ambulance, Eye, Physiotherapy">
 
         <button class="primary-btn" id="saveExpenseBtn">Save Matumizi</button>
@@ -175,65 +182,70 @@
             </select>
           </div>
           <div>
-            <label>Amount (TZS)</label>
+            <label>Kiasi (TZS)</label>
             <input type="text" id="pocketAmount" placeholder="Weka Kiwango">
           </div>
         </div>
 
-        <label>Comment</label>
+        <label>Maelezo</label>
         <input type="text" id="pocketNote" placeholder="e.g., Top-up for small expenses">
 
         <button class="primary-btn" id="savePocketBtn">Save Pocket Top-up</button>
       </div>
 
-      <!-- Cash Count -->
-<div id="cashCountTab" class="card hidden">
-  <h3>📊 Cash Mauzo Iliyopo</h3>
+      <!-- Mauzo vs Cash -->
+      <div id="cashCountTab" class="card hidden">
+        <h3>📊 Mauzo ya Mfumo vs Cash Iliyohesabiwa</h3>
 
-  <div class="row">
-    <div>
-      <label>Mauzo ya Mfumo (Clinic system sales) (TZS)</label>
-      <input type="text" id="systemSalesAmount" placeholder="Weka mauzo ya mfumo">
-    </div>
-    <div>
-      <label>Mauzo yaliyohesabiwa (Cash Counted) (TZS)</label>
-      <input type="text" id="cashCountAmount" placeholder="Weka cash iliyohesabiwa">
-    </div>
-  </div>
+        <div class="row">
+          <div>
+            <label>Mauzo ya Mfumo (TZS)</label>
+            <input type="text" id="systemSalesAmount" placeholder="Weka mauzo ya mfumo">
+          </div>
+          <div>
+            <label>Cash Iliyohesabiwa (TZS)</label>
+            <input type="text" id="cashCountAmount" placeholder="Weka cash iliyohesabiwa">
+          </div>
+        </div>
 
-  <div class="stat-box" style="margin-top:10px;">
-    <div class="stat-label">Tofauti (Cash - Mfumo)</div>
-    <div class="stat-value" id="cashVsSalesDiff">TZS 0</div>
-    <div style="margin-top:8px; font-weight:800;" id="shortageRemainingText"></div>
-  </div>
+        <div class="stat-box" style="margin-top:10px;">
+          <div class="stat-label">Tofauti (Cash - Mauzo ya Mfumo)</div>
+          <div class="stat-value" id="cashVsSalesDiff">TZS 0</div>
+          <div style="margin-top:8px; font-weight:800;" id="shortageRemainingText"></div>
+        </div>
 
-  <div id="reasonsBox" class="card hidden" style="margin-top:14px; padding:15px;">
-    <h4>Eleza Sababu za Upungufu</h4>
+        <div id="reasonsBox" class="card hidden" style="margin-top:14px; padding:15px;">
+          <h4>Eleza Sababu za Upungufu</h4>
+          <div id="reasonsList"></div>
+          <button class="secondary-btn" id="addReasonBtn" style="width:100%; margin-top:10px;">+ Ongeza Sababu</button>
+          <button class="primary-btn" id="saveReasonsBtn" style="margin-top:10px;" disabled>Save Sababu</button>
+          <div class="divider"></div>
+          <div class="stat-box">
+            <div class="stat-label">Kumbuka</div>
+            <div style="font-weight:800; color:#1e3a5f;">
+              Ukichagua <b>Other</b> lazima uandike sababu halisi.
+            </div>
+          </div>
+        </div>
 
-    <div id="reasonsList"></div>
+        <label>Maelezo (hiari)</label>
+        <input type="text" id="cashCountNote" placeholder="Optional note">
 
-    <button class="secondary-btn" id="addReasonBtn" style="width:100%; margin-top:10px;">+ Ongeza Sababu</button>
-    <button class="primary-btn" id="saveReasonsBtn" style="margin-top:10px;" disabled>Save Sababu</button>
-  </div>
+        <button class="primary-btn" id="saveCashAndSalesBtn">Save Mauzo + Cash</button>
 
-  <label>Maelezo (hiari)</label>
-  <input type="text" id="cashCountNote" placeholder="Optional note">
-
-  <button class="primary-btn" id="saveCashAndSalesBtn">Save Mauzo + Cash Count</button>
-
-  <template id="reasonTemplate">
-    <div style="display:flex; gap:10px; align-items:center; background:#fff; border:1px solid #e6e9ef; padding:10px; border-radius:10px; margin-bottom:8px;">
-      <select class="reasonType" style="flex:2;">
-        <option value="">Chagua Sababu</option>
-        <option value="Lipa Mpesa">Lipa Mpesa</option>
-        <option value="Other">Other</option>
-      </select>
-      <input type="text" class="reasonOther" placeholder="Andika sababu (ikiwa Other)" style="flex:3; display:none;">
-      <input type="text" class="reasonAmount" placeholder="Kiasi" style="width:140px;">
-      <button type="button" class="secondary-btn removeReasonBtn" style="padding:10px;">✕</button>
-    </div>
-  </template>
-</div>
+        <template id="reasonTemplate">
+          <div class="reason-row" data-reason-row="1">
+            <select class="reasonType">
+              <option value="">Chagua Sababu</option>
+              <option value="Lipa Mpesa">Lipa Mpesa</option>
+              <option value="Other">Other</option>
+            </select>
+            <input type="text" class="reasonOther" placeholder="Andika sababu (ikiwa Other)">
+            <input type="text" class="reasonAmount" placeholder="Kiasi">
+            <button type="button" class="secondary-btn removeReasonBtn">✕</button>
+          </div>
+        </template>
+      </div>
 
       <!-- Deposit -->
       <div id="depositTab" class="card hidden">
@@ -250,7 +262,7 @@
           </div>
         </div>
 
-        <label>Note</label>
+        <label>Maelezo</label>
         <input type="text" id="depositNote" placeholder="e.g., CRDB deposit slip #...">
 
         <button class="primary-btn" id="saveDepositBtn">Save Deposit</button>
@@ -259,7 +271,7 @@
         <div class="stat-box">
           <div class="stat-label">Tip</div>
           <div style="font-weight:800; color:#1e3a5f;">
-           Jaza Deposists zote na kama hela amepewa Director mkononi weka kwenye maelezo
+            Jaza Deposits zote na kama hela amepewa Director mkononi weka kwenye maelezo
           </div>
         </div>
       </div>
@@ -292,7 +304,7 @@
       const el = (target === 'login') ? document.getElementById('loginAlert') : document.getElementById('mainAlert');
       el.textContent = msg;
       el.className = `alert show ${type}`;
-      setTimeout(() => el.classList.remove('show'), 3000);
+      setTimeout(() => el.classList.remove('show'), 3500);
     }
 
     function digitsOnly(v) { return String(v || '').replace(/[^\d]/g, ''); }
@@ -323,9 +335,15 @@
         const res = await fetch(SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-          body
+          body,
+          cache: 'no-store'
         });
-        const data = await res.json();
+
+        const txt = await res.text();
+        let data;
+        try { data = JSON.parse(txt); }
+        catch { throw new Error("Non-JSON response: " + txt.slice(0,120)); }
+
         if (!data.success) throw new Error(data.error || 'Request failed');
         return data;
       } finally {
@@ -335,7 +353,7 @@
 
     function fillCategories() {
       const sel = document.getElementById('expenseCategory');
-      sel.innerHTML = '<option value="">-- Select Category --</option>';
+      sel.innerHTML = '<option value="">Chagua Matumizi</option>';
       categories.forEach(c => {
         const o = document.createElement('option');
         o.value = c; o.textContent = c;
@@ -417,19 +435,110 @@
 
     function logout() { location.reload(); }
 
+    // ================== Cash Reasons Logic ==================
+    function setText(elId, value){ document.getElementById(elId).textContent = value; }
+
+    function reasonsTotal(){
+      const items = [...document.querySelectorAll('#reasonsList .reason-row[data-reason-row="1"]')];
+      let sum = 0;
+      for (const it of items){
+        const amt = parseMoney(it.querySelector('.reasonAmount').value);
+        sum += (amt || 0);
+      }
+      return sum;
+    }
+
+    function calcDiffUI(){
+      const sys = parseMoney(document.getElementById('systemSalesAmount').value);
+      const cash = parseMoney(document.getElementById('cashCountAmount').value);
+      const diff = cash - sys;
+
+      setText('cashVsSalesDiff', 'TZS ' + formatNumber(diff));
+
+      const reasonsBox = document.getElementById('reasonsBox');
+      if (sys > 0 && cash > 0 && diff < 0) reasonsBox.classList.remove('hidden');
+      else reasonsBox.classList.add('hidden');
+
+      const explained = reasonsTotal();
+      const remaining = (diff < 0) ? Math.max(0, Math.abs(diff) - explained) : 0;
+
+      const remEl = document.getElementById('shortageRemainingText');
+      if (diff < 0) {
+        remEl.textContent = remaining === 0
+          ? `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`
+          : `⚠️ Upungufu BADO: TZS ${formatNumber(remaining)} (ongeza sababu)`;
+        remEl.style.color = remaining === 0 ? '#10b981' : '#b45309';
+      } else {
+        remEl.textContent = '';
+      }
+
+      document.getElementById('saveReasonsBtn').disabled = !(diff < 0 && remaining === 0 && document.querySelectorAll('#reasonsList .reason-row').length > 0);
+    }
+
+    function addReasonRow(){
+      const tpl = document.getElementById('reasonTemplate');
+      const clone = document.importNode(tpl.content, true);
+      const row = clone.querySelector('.reason-row');
+
+      const sel = row.querySelector('.reasonType');
+      const other = row.querySelector('.reasonOther');
+      const amt = row.querySelector('.reasonAmount');
+      const rm = row.querySelector('.removeReasonBtn');
+
+      // money formatting
+      amt.addEventListener('input', () => fmtInput(amt));
+      amt.addEventListener('blur', () => fmtInput(amt));
+
+      sel.addEventListener('change', () => {
+        other.style.display = (sel.value === 'Other') ? 'block' : 'none';
+        calcDiffUI();
+      });
+      other.addEventListener('input', calcDiffUI);
+      amt.addEventListener('input', calcDiffUI);
+
+      rm.addEventListener('click', () => { row.remove(); calcDiffUI(); });
+
+      document.getElementById('reasonsList').appendChild(row);
+      calcDiffUI();
+    }
+
+    function collectReasons(){
+      const items = [...document.querySelectorAll('#reasonsList .reason-row[data-reason-row="1"]')];
+      const out = [];
+
+      for (const it of items){
+        const type = (it.querySelector('.reasonType').value || '').trim();
+        const other = (it.querySelector('.reasonOther').value || '').trim();
+        const amount = parseMoney(it.querySelector('.reasonAmount').value);
+
+        if (!type) continue;
+        if (!amount || amount <= 0) continue;
+
+        if (type === 'Other' && !other) {
+          throw new Error('Umechagua Other — lazima uandike sababu halisi.');
+        }
+
+        out.push({
+          reason: (type === 'Other') ? other : type,
+          amount
+        });
+      }
+
+      return out;
+    }
+
     // ================== EVENTS ==================
     document.addEventListener('DOMContentLoaded', () => {
       setTodayDefaults();
 
       // Money formatting
-      ['expenseAmount','pocketAmount','cashCountAmount','depositOffice','depositDirector']
+      ['expenseAmount','pocketAmount','cashCountAmount','systemSalesAmount','depositOffice','depositDirector']
         .forEach(attachMoney);
 
       // buttons
       document.getElementById('loginBtn').addEventListener('click', login);
       document.getElementById('logoutBtn').addEventListener('click', logout);
       document.getElementById('refreshBtn').addEventListener('click', refreshDashboardOnly);
-
       document.getElementById('workDate').addEventListener('change', refreshDashboardOnly);
 
       // tab buttons
@@ -437,6 +546,13 @@
       document.getElementById('tabPocket').addEventListener('click', () => setActiveTab('Pocket'));
       document.getElementById('tabCashCount').addEventListener('click', () => setActiveTab('CashCount'));
       document.getElementById('tabDeposit').addEventListener('click', () => setActiveTab('Deposit'));
+
+      // live diff update
+      document.getElementById('systemSalesAmount').addEventListener('input', calcDiffUI);
+      document.getElementById('cashCountAmount').addEventListener('input', calcDiffUI);
+
+      // reasons buttons
+      document.getElementById('addReasonBtn').addEventListener('click', () => addReasonRow());
 
       // save actions
       document.getElementById('saveExpenseBtn').addEventListener('click', async () => {
@@ -447,11 +563,11 @@
           const source = document.getElementById('expenseSource').value;
           const note = document.getElementById('expenseNote').value.trim();
 
-          if (!category || !amount) return showAlert('Select category and enter amount', 'error');
+          if (!category || !amount) return showAlert('Chagua matumizi na weka kiasi', 'error');
           await addTx({date, type:'EXPENSE', category, amount, source, note});
           document.getElementById('expenseAmount').value = '';
           document.getElementById('expenseNote').value = '';
-          showAlert('Expense saved', 'success');
+          showAlert('Matumizi yamehifadhiwa', 'success');
           await refreshDashboardOnly();
         } catch(e) { showAlert(e.message, 'error'); }
       });
@@ -459,30 +575,68 @@
       document.getElementById('savePocketBtn').addEventListener('click', async () => {
         try {
           const date = document.getElementById('workDate').value;
-          const source = document.getElementById('pocketSource').value;
+          const source = document.getElementById('pocketSource').value; // SALES / DIRECTOR
           const amount = parseMoney(document.getElementById('pocketAmount').value);
           const note = document.getElementById('pocketNote').value.trim();
 
-          if (!amount) return showAlert('Enter valid amount', 'error');
+          if (!amount) return showAlert('Weka kiasi sahihi', 'error');
           await addTx({date, type:'POCKET_TOPUP', category: (source==='DIRECTOR'?'Director':'Sales'), amount, source, note});
           document.getElementById('pocketAmount').value = '';
           document.getElementById('pocketNote').value = '';
-          showAlert('Pocket top-up saved', 'success');
+          showAlert('Pocket top-up imehifadhiwa', 'success');
           await refreshDashboardOnly();
         } catch(e) { showAlert(e.message, 'error'); }
       });
 
-      document.getElementById('saveCashCountBtn').addEventListener('click', async () => {
+      document.getElementById('saveCashAndSalesBtn').addEventListener('click', async () => {
         try {
           const date = document.getElementById('workDate').value;
-          const amount = parseMoney(document.getElementById('cashCountAmount').value);
+          const sys = parseMoney(document.getElementById('systemSalesAmount').value);
+          const cash = parseMoney(document.getElementById('cashCountAmount').value);
           const note = document.getElementById('cashCountNote').value.trim();
-          if (!amount) return showAlert('Enter valid cash counted', 'error');
 
-          await addTx({date, type:'CASH_COUNT', category:'Cash Count', amount, source:'OFFICE', note});
-          document.getElementById('cashCountAmount').value = '';
-          document.getElementById('cashCountNote').value = '';
-          showAlert('Cash count saved', 'success');
+          if (!sys || sys <= 0) return showAlert('Weka mauzo ya mfumo (system sales).', 'error');
+          if (!cash || cash <= 0) return showAlert('Weka cash iliyohesabiwa.', 'error');
+
+          await addTx({ date, type:'SYSTEM_SALES', category:'System Sales', amount: sys, source:'SYSTEM', note });
+          await addTx({ date, type:'CASH_COUNT', category:'Cash Count', amount: cash, source:'OFFICE', note });
+
+          showAlert('Mauzo + Cash vimehifadhiwa', 'success');
+          await refreshDashboardOnly();
+          calcDiffUI();
+        } catch(e) { showAlert(e.message, 'error'); }
+      });
+
+      document.getElementById('saveReasonsBtn').addEventListener('click', async () => {
+        try {
+          const date = document.getElementById('workDate').value;
+          const sys = parseMoney(document.getElementById('systemSalesAmount').value);
+          const cash = parseMoney(document.getElementById('cashCountAmount').value);
+          const diff = cash - sys;
+
+          if (!(diff < 0)) return showAlert('Hakuna upungufu wa kueleza.', 'info');
+
+          const reasons = collectReasons();
+          if (reasons.length === 0) return showAlert('Ongeza sababu angalau moja.', 'error');
+
+          const explained = reasons.reduce((s,r)=>s+(r.amount||0),0);
+          const remaining = Math.max(0, Math.abs(diff) - explained);
+          if (remaining !== 0) return showAlert('Bado upungufu haujaelezwa wote.', 'warning');
+
+          for (const r of reasons){
+            await addTx({
+              date,
+              type:'CASH_REASON',
+              category: r.reason,
+              amount: r.amount,
+              source:'REASON',
+              note:'Reason for shortage'
+            });
+          }
+
+          showAlert('Sababu zimehifadhiwa', 'success');
+          document.getElementById('reasonsList').innerHTML = '';
+          calcDiffUI();
           await refreshDashboardOnly();
         } catch(e) { showAlert(e.message, 'error'); }
       });
@@ -494,18 +648,15 @@
           const dirAmt = parseMoney(document.getElementById('depositDirector').value);
           const note = document.getElementById('depositNote').value.trim();
 
-          if (!officeAmt && !dirAmt) return showAlert('Enter office and/or director deposit amount', 'error');
+          if (!officeAmt && !dirAmt) return showAlert('Weka kiasi cha deposit', 'error');
 
-          // Record office deposit (reduces expected office)
           if (officeAmt) await addTx({date, type:'DEPOSIT', category:'Bank Deposit', amount: officeAmt, source:'OFFICE', note});
-
-          // Record director deposit (audit only; does NOT reduce office expected)
           if (dirAmt) await addTx({date, type:'DEPOSIT', category:'Bank Deposit', amount: dirAmt, source:'DIRECTOR', note});
 
           document.getElementById('depositOffice').value = '';
           document.getElementById('depositDirector').value = '';
           document.getElementById('depositNote').value = '';
-          showAlert('Deposit saved', 'success');
+          showAlert('Deposit imehifadhiwa', 'success');
           await refreshDashboardOnly();
         } catch(e) { showAlert(e.message, 'error'); }
       });
