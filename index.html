@@ -187,17 +187,53 @@
       </div>
 
       <!-- Cash Count -->
-      <div id="cashCountTab" class="card hidden">
-        <h3>📊 Cash Mauzo Iliyopo</h3>
+<div id="cashCountTab" class="card hidden">
+  <h3>📊 Cash Mauzo Iliyopo</h3>
 
-        <label>Mauzo yaliyohesabiwa leo (TZS)</label>
-        <input type="text" id="cashCountAmount" placeholder="Weka mauzo">
+  <div class="row">
+    <div>
+      <label>Mauzo ya Mfumo (Clinic system sales) (TZS)</label>
+      <input type="text" id="systemSalesAmount" placeholder="Weka mauzo ya mfumo">
+    </div>
+    <div>
+      <label>Mauzo yaliyohesabiwa (Cash Counted) (TZS)</label>
+      <input type="text" id="cashCountAmount" placeholder="Weka cash iliyohesabiwa">
+    </div>
+  </div>
 
-        <label>Comment</label>
-        <input type="text" id="cashCountNote" placeholder="Optional note">
+  <div class="stat-box" style="margin-top:10px;">
+    <div class="stat-label">Tofauti (Cash - Mfumo)</div>
+    <div class="stat-value" id="cashVsSalesDiff">TZS 0</div>
+    <div style="margin-top:8px; font-weight:800;" id="shortageRemainingText"></div>
+  </div>
 
-        <button class="primary-btn" id="saveCashCountBtn">Save Cash Count</button>
-      </div>
+  <div id="reasonsBox" class="card hidden" style="margin-top:14px; padding:15px;">
+    <h4>Eleza Sababu za Upungufu</h4>
+
+    <div id="reasonsList"></div>
+
+    <button class="secondary-btn" id="addReasonBtn" style="width:100%; margin-top:10px;">+ Ongeza Sababu</button>
+    <button class="primary-btn" id="saveReasonsBtn" style="margin-top:10px;" disabled>Save Sababu</button>
+  </div>
+
+  <label>Maelezo (hiari)</label>
+  <input type="text" id="cashCountNote" placeholder="Optional note">
+
+  <button class="primary-btn" id="saveCashAndSalesBtn">Save Mauzo + Cash Count</button>
+
+  <template id="reasonTemplate">
+    <div style="display:flex; gap:10px; align-items:center; background:#fff; border:1px solid #e6e9ef; padding:10px; border-radius:10px; margin-bottom:8px;">
+      <select class="reasonType" style="flex:2;">
+        <option value="">Chagua Sababu</option>
+        <option value="Lipa Mpesa">Lipa Mpesa</option>
+        <option value="Other">Other</option>
+      </select>
+      <input type="text" class="reasonOther" placeholder="Andika sababu (ikiwa Other)" style="flex:3; display:none;">
+      <input type="text" class="reasonAmount" placeholder="Kiasi" style="width:140px;">
+      <button type="button" class="secondary-btn removeReasonBtn" style="padding:10px;">✕</button>
+    </div>
+  </template>
+</div>
 
       <!-- Deposit -->
       <div id="depositTab" class="card hidden">
