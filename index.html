@@ -15,6 +15,14 @@
     .card { background:#fff; border-radius:14px; padding:22px; margin-bottom:18px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border:1px solid #e6e9ef; }
     h3 { font-size: 1.1rem; margin-bottom: 14px; font-weight: 700; color: #1e3a5f; }
     h4 { font-size: 1rem; margin: 15px 0 10px; color: #2c3e50; }
+    .section-title { 
+      font-size: 1rem; 
+      font-weight: 700; 
+      color: #1e3a5f; 
+      margin: 20px 0 10px; 
+      padding-bottom: 5px; 
+      border-bottom: 2px solid #e6e9ef;
+    }
     label { display:block; font-size:.85rem; color:#555; margin:8px 0 4px; }
     input, select, textarea { width:100%; padding:12px; margin-bottom:12px; border:1px solid #dcdfe6; border-radius:10px; font-size:15px; background:#fafbfc; }
     input:focus, select:focus, textarea:focus { outline:none; border-color:#1e3a5f; background:#fff; }
@@ -43,7 +51,31 @@
     .stat-label { font-size:.85rem; color:#6c757d; margin-bottom:6px; }
     .stat-value { font-size:1.4rem; font-weight:800; color:#1e3a5f; }
     .stat-value-small { font-size:1.1rem; font-weight:700; color:#1e3a5f; }
-    .stat-badge { position:absolute; top:-8px; right:10px; background:#1e3a5f; color:white; padding:4px 8px; border-radius:20px; font-size:0.7rem; font-weight:700; }
+    .stat-value-green { font-size:1.4rem; font-weight:800; color:#10b981; }
+    .stat-value-red { font-size:1.4rem; font-weight:800; color:#b02a37; }
+    .stat-value-orange { font-size:1.4rem; font-weight:800; color:#f59e0b; }
+    .section-card { 
+      background:#fff; 
+      border-radius:14px; 
+      padding:20px; 
+      margin-bottom:20px; 
+      border-left: 4px solid #1e3a5f;
+      box-shadow:0 2px 8px rgba(0,0,0,0.03);
+    }
+    .section-card.pocket { border-left-color: #1e3a5f; }
+    .section-card.cash { border-left-color: #10b981; }
+    .section-card.director { border-left-color: #b02a37; }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-left: 10px;
+    }
+    .badge.pocket { background: #e6f4ea; color: #1e7e34; }
+    .badge.cash { background: #fef3c7; color: #b45309; }
+    .badge.director { background: #fdecea; color: #b02a37; }
     .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
     .user-pill { background:#f5f7fa; border:1px solid #dcdfe6; padding:8px 12px; border-radius:999px; font-weight:800; color:#1e3a5f; }
     .divider { height:1px; background:#eef1f5; margin:20px 0; }
@@ -183,50 +215,76 @@
         </div>
       </div>
 
-      <!-- Dashboard Display -->
-      <div class="card">
-        <h3>Dashboard - Tarehe: <span id="dashboardDate"></span></h3>
-        <div class="row-4">
-          <div class="stat-box" style="border-left:4px solid #1e3a5f;">
-            <div class="stat-label">💰 Pocket Money</div>
+      <!-- DASHBOARD - REORGANIZED INTO CLEAR SECTIONS -->
+      
+      <!-- SECTION 1: POCKET MONEY -->
+      <div class="section-card pocket">
+        <h3 style="display:flex; align-items:center; margin-bottom:15px;">
+          💰 POCKET MONEY
+          <span class="badge pocket">Matumizi ya Kawaida</span>
+        </h3>
+        <div class="row-3">
+          <div class="stat-box">
+            <div class="stat-label">Pocket Money (Sasa)</div>
             <div class="stat-value" id="dashPocket">TZS 0</div>
           </div>
           <div class="stat-box">
-            <div class="stat-label">📊 Mauzo Yaliyopo</div>
-            <div class="stat-value" id="dashCounted">TZS 0</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">🏦 Hela ya Kwenda Bank</div>
-            <div class="stat-value" id="dashPending">TZS 0</div>
-          </div>
-          <div class="stat-box" style="border-right:4px solid #b02a37;">
-            <div class="stat-label">👤 Deni la Director</div>
-            <div class="stat-value" id="dashDirectorDebt">TZS 0</div>
-            <button class="success-btn no-print" id="payDirectorBtn" style="margin-top:10px; padding:5px 10px; font-size:0.8rem;">Lipa Director</button>
-          </div>
-        </div>
-        <div class="row-3" style="margin-top:14px;">
-          <div class="stat-box">
-            <div class="stat-label">📝 Jumla ya Matumizi (Leo)</div>
+            <div class="stat-label">Jumla ya Matumizi (Leo)</div>
             <div class="stat-value" id="dashTotalExpenses">TZS 0</div>
           </div>
           <div class="stat-box">
-            <div class="stat-label">💼 Hela Iliyobaki Ofisini</div>
+            <div class="stat-label">Hela Iliyobaki Ofisini</div>
             <div class="stat-value" id="dashOffice">TZS 0</div>
           </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: CASH & SALES -->
+      <div class="section-card cash">
+        <h3 style="display:flex; align-items:center; margin-bottom:15px;">
+          📊 CASH & SALES
+          <span class="badge cash">Mauzo na Tofauti</span>
+        </h3>
+        <div class="row-4">
           <div class="stat-box">
-            <div class="stat-label">📈 Mauzo ya Mfumo</div>
-            <div class="stat-value-small" id="dashSystemSales">TZS 0</div>
+            <div class="stat-label">Mauzo Yaliyopo (Cash Counted)</div>
+            <div class="stat-value-green" id="dashCounted">TZS 0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Mauzo ya Mfumo (System)</div>
+            <div class="stat-value" id="dashSystemSales">TZS 0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Tofauti</div>
+            <div class="stat-value-orange" id="dashDiff">TZS 0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Jumla ya Sababu</div>
+            <div class="stat-value" id="dashReasons">TZS 0</div>
           </div>
         </div>
-        <div class="row" style="margin-top:14px;">
+        <div class="row" style="margin-top:10px;">
           <div class="stat-box">
-            <div class="stat-label">⚠️ Tofauti</div>
-            <div class="stat-value-small" id="dashDiff">TZS 0</div>
+            <div class="stat-label">Hela ya Kwenda Bank</div>
+            <div class="stat-value" id="dashPending">TZS 0</div>
           </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: DIRECTOR -->
+      <div class="section-card director">
+        <h3 style="display:flex; align-items:center; margin-bottom:15px;">
+          👤 DIRECTOR
+          <span class="badge director">Anadaiwa / Malipo</span>
+        </h3>
+        <div class="row">
           <div class="stat-box">
-            <div class="stat-label">📋 Sababu Jumla</div>
-            <div class="stat-value-small" id="dashReasons">TZS 0</div>
+            <div class="stat-label">Deni la Director</div>
+            <div class="stat-value-red" id="dashDirectorDebt">TZS 0</div>
+          </div>
+          <div class="stat-box" style="display:flex; flex-direction:column; justify-content:center;">
+            <div class="stat-label">Hatua</div>
+            <button class="success-btn no-print" id="payDirectorBtn" style="margin-top:5px;">💰 Lipa Director</button>
           </div>
         </div>
       </div>
@@ -249,6 +307,7 @@
             <select id="expenseCategory">
               <option value="">Chagua Matumizi</option>
             </select>
+            <div id="categoriesDebug" style="font-size:0.8rem; color:#666; margin-top:4px;"></div>
           </div>
           <div>
             <label>Kiasi (TZS)</label>
@@ -493,12 +552,30 @@
 
     function fillCategories() {
       const sel = document.getElementById('expenseCategory');
+      const debug = document.getElementById('categoriesDebug');
+      
       sel.innerHTML = '<option value="">Chagua Matumizi</option>';
-      categories.forEach(c => {
-        const o = document.createElement('option');
-        o.value = c; o.textContent = c;
-        sel.appendChild(o);
-      });
+      
+      console.log('Categories to fill:', categories);
+      
+      if (!categories || categories.length === 0) {
+        debug.textContent = '⚠️ Hakuna categories zilizopatikana';
+        // Add default categories as fallback
+        const defaultCats = ['Internet', 'Umeme', 'Maji', 'Chakula', 'Usafiri', 'Vifaa', 'Mengineyo'];
+        defaultCats.forEach(c => {
+          const o = document.createElement('option');
+          o.value = c; o.textContent = c;
+          sel.appendChild(o);
+        });
+        debug.textContent = '✓ Tumetumia default categories';
+      } else {
+        categories.forEach(c => {
+          const o = document.createElement('option');
+          o.value = c; o.textContent = c;
+          sel.appendChild(o);
+        });
+        debug.textContent = `✓ Categories ${categories.length} zimepakia`;
+      }
     }
 
     function renderDashboard(d) {
@@ -518,11 +595,20 @@
 
     async function loadInit(date) {
       try {
-        const data = await apiCall('getInit', { date }, true, 'Loading…', 'Fetching categories and dashboard');
+        setOverlay(true, 'Loading…', 'Fetching categories and dashboard');
+        const data = await apiCall('getInit', { date }, false);
+        console.log('Init data received:', data);
+        
         categories = data.categories || [];
+        console.log('Categories set to:', categories);
+        
         fillCategories();
         renderDashboard(data.dashboard || {});
+        setOverlay(false);
+        showAlert('Data imepakiwa', 'success');
       } catch(e) {
+        setOverlay(false);
+        console.error('Error loading:', e);
         showAlert('Error loading: ' + e.message, 'error');
       }
     }
