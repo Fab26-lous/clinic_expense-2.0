@@ -537,7 +537,38 @@
 
       return out;
     }
-
+// Add this to your existing JavaScript
+async function saveCashCountBatch(date, systemSales, cashCount, reasons, note) {
+  const transactions = [];
+  
+  // Add system sales
+  transactions.push({
+    date, type: 'SYSTEM_SALES', category: 'System Sales',
+    amount: systemSales, source: 'SYSTEM', note,
+    cashier: currentUser?.username || 'Unknown',
+    ref: makeRef()
+  });
+  
+  // Add cash count
+  transactions.push({
+    date, type: 'CASH_COUNT', category: 'Cash Count',
+    amount: cashCount, source: 'OFFICE', note,
+    cashier: currentUser?.username || 'Unknown',
+    ref: makeRef()
+  });
+  
+  // Add reasons
+  for (const r of reasons) {
+    transactions.push({
+      date, type: 'CASH_REASON', category: r.reason,
+      amount: r.amount, source: 'REASON', note: 'Reason for shortage',
+      cashier: currentUser?.username || 'Unknown',
+      ref: makeRef()
+    });
+  }
+  
+  return await apiCall('addBulkTx', { transactions: JSON.stringify(transactions) }, true, 'Saving…', 'Processing all entries');
+}
     // ================== EVENTS ==================
     document.addEventListener('DOMContentLoaded', () => {
       setTodayDefaults();
@@ -604,66 +635,45 @@
         } catch(e) { showAlert(e.message, 'error'); }
         finally { btn.disabled = false; }
       });
+// Replace the separate save handlers with this combined one
+document.getElementById('saveCashCountBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('saveCashCountBtn');
+  btn.disabled = true;
+  try {
+    const date = document.getElementById('workDate').value;
+    const sys = parseMoney(document.getElementById('systemSalesAmount').value);
+    const cash = parseMoney(document.getElementById('cashCountAmount').value);
+    const note = document.getElementById('cashCountNote').value.trim();
 
-      // ✅ Fixed: disable button while saving + keep UI consistent
-      document.getElementById('saveCashAndSalesBtn').addEventListener('click', async () => {
-        const btn = document.getElementById('saveCashAndSalesBtn');
-        btn.disabled = true;
-        try {
-          const date = document.getElementById('workDate').value;
-          const sys = parseMoney(document.getElementById('systemSalesAmount').value);
-          const cash = parseMoney(document.getElementById('cashCountAmount').value);
-          const note = document.getElementById('cashCountNote').value.trim();
+    if (!sys || sys <= 0) return showAlert('Weka mauzo ya mfumo (system sales).', 'error');
+    if (!cash || cash <= 0) return showAlert('Weka cash iliyohesabiwa.', 'error');
 
-          if (!sys || sys <= 0) return showAlert('Weka mauzo ya mfumo (system sales).', 'error');
-          if (!cash || cash <= 0) return showAlert('Weka cash iliyohesabiwa.', 'error');
+    const diff = cash - sys;
+    const reasons = (diff < 0) ? collectReasons() : [];
+    
+    if (diff < 0 && reasons.length === 0) {
+      return showAlert('Ongeza sababu za upungufu.', 'error');
+    }
 
-          await addTx({ date, type:'SYSTEM_SALES', category:'System Sales', amount: sys, source:'SYSTEM', note });
-          await addTx({ date, type:'CASH_COUNT', category:'Cash Count', amount: cash, source:'OFFICE', note });
-
-          showAlert('Mauzo + Cash vimehifadhiwa', 'success');
-          await refreshDashboardOnly();
-          calcDiffUI();
-        } catch(e) { showAlert(e.message, 'error'); }
-        finally { btn.disabled = false; }
-      });
-
-      document.getElementById('saveReasonsBtn').addEventListener('click', async () => {
-        const btn = document.getElementById('saveReasonsBtn');
-        btn.disabled = true;
-        try {
-          const date = document.getElementById('workDate').value;
-          const sys = parseMoney(document.getElementById('systemSalesAmount').value);
-          const cash = parseMoney(document.getElementById('cashCountAmount').value);
-          const diff = cash - sys;
-
-          if (!(diff < 0)) return showAlert('Hakuna upungufu wa kueleza.', 'info');
-
-          const reasons = collectReasons();
-          if (reasons.length === 0) return showAlert('Ongeza sababu angalau moja.', 'error');
-
-          const explained = reasons.reduce((s,r)=>s+(r.amount||0),0);
-          const remaining = Math.max(0, Math.abs(diff) - explained);
-          if (remaining !== 0) return showAlert('Bado upungufu haujaelezwa wote.', 'warning');
-
-          for (const r of reasons){
-            await addTx({
-              date,
-              type:'CASH_REASON',
-              category: r.reason,
-              amount: r.amount,
-              source:'REASON',
-              note:'Reason for shortage'
-            });
-          }
-
-          showAlert('Sababu zimehifadhiwa', 'success');
-          document.getElementById('reasonsList').innerHTML = '';
-          calcDiffUI();
-          await refreshDashboardOnly();
-        } catch(e) { showAlert(e.message, 'error'); }
-        finally { btn.disabled = false; }
-      });
+    // Save everything in one batch
+    await saveCashCountBatch(date, sys, cash, reasons, note);
+    
+    // Clear form
+    document.getElementById('systemSalesAmount').value = '';
+    document.getElementById('cashCountAmount').value = '';
+    document.getElementById('cashCountNote').value = '';
+    document.getElementById('reasonsList').innerHTML = '';
+    
+    showAlert('Mauzo + Cash + Sababu zimehifadhiwa', 'success');
+    await refreshDashboardOnly();
+    calcDiffUI();
+  } catch(e) { 
+    showAlert(e.message, 'error'); 
+  } finally { 
+    btn.disabled = false; 
+  }
+});
+    
 
       document.getElementById('saveDepositBtn').addEventListener('click', async () => {
         const btn = document.getElementById('saveDepositBtn');
