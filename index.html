@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Clinic Cash Management (Thin)</title>
+  <title>Matumizi Clinic</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -98,60 +98,60 @@
 
       <!-- Dashboard Display -->
       <div class="card">
-        <h3>📌 Dashboard (from Google Sheet calculations)</h3>
+        <h3>Dashboard</h3>
         <div class="row">
           <div class="stat-box">
-            <div class="stat-label">Pocket Closing</div>
+            <div class="stat-label">Pocket Money</div>
             <div class="stat-value" id="dashPocket">TZS 0</div>
           </div>
           <div class="stat-box">
-            <div class="stat-label">Office Expected</div>
+            <div class="stat-label">Hela Iliyobaki Ofisini</div>
             <div class="stat-value" id="dashOffice">TZS 0</div>
           </div>
         </div>
         <div class="row" style="margin-top:14px;">
           <div class="stat-box">
-            <div class="stat-label">Cash Counted</div>
+            <div class="stat-label">Cash Mauzo yaliyopo</div>
             <div class="stat-value" id="dashCounted">TZS 0</div>
           </div>
           <div class="stat-box">
-            <div class="stat-label">Difference</div>
+            <div class="stat-label">Tofauti</div>
             <div class="stat-value" id="dashDiff">TZS 0</div>
           </div>
         </div>
         <div class="stat-box" style="margin-top:14px;">
-          <div class="stat-label">Pending Deposit (suggested)</div>
+          <div class="stat-label">Cash ya Kwenda Bank</div>
           <div class="stat-value" id="dashPending">TZS 0</div>
         </div>
       </div>
 
       <!-- Tabs -->
       <div class="tabs">
-        <button id="tabExpense" class="tab active">1. Expenses</button>
-        <button id="tabPocket" class="tab">2. Pocket Top-up</button>
+        <button id="tabExpense" class="tab active">1. Matumizi</button>
+        <button id="tabPocket" class="tab">2. Pocket Money</button>
         <button id="tabCashCount" class="tab">3. Cash Count</button>
         <button id="tabDeposit" class="tab">4. Bank Deposit</button>
       </div>
 
       <!-- Expenses -->
       <div id="expenseTab" class="card">
-        <h3>💰 Record Expense (raw entry)</h3>
+        <h3>💰 Record Matumizi</h3>
 
         <label>Expense Category</label>
         <select id="expenseCategory">
-          <option value="">-- Select Category --</option>
+          <option value="">Chagua Matumizi</option>
         </select>
 
         <div class="row">
           <div>
-            <label>Amount (TZS)</label>
-            <input type="text" id="expenseAmount" placeholder="Enter amount">
+            <label>Kiasi (TZS)</label>
+            <input type="text" id="expenseAmount" placeholder="Andika Kiasi">
           </div>
           <div>
-            <label>Payment Source</label>
+            <label>Malipo Kutoka</label>
             <select id="expenseSource">
-              <option value="POCKET">From Pocket</option>
-              <option value="SALES">From Sales</option>
+              <option value="POCKET MONEY">From Pocket</option>
+              <option value="MAUZO">From Sales</option>
             </select>
           </div>
         </div>
@@ -159,28 +159,28 @@
         <label>Note</label>
         <input type="text" id="expenseNote" placeholder="e.g., Ambulance, Eye, Physiotherapy">
 
-        <button class="primary-btn" id="saveExpenseBtn">Save Expense</button>
+        <button class="primary-btn" id="saveExpenseBtn">Save Matumizi</button>
       </div>
 
       <!-- Pocket -->
       <div id="pocketTab" class="card hidden">
-        <h3>👝 Pocket Top-up (raw entry)</h3>
+        <h3>👝 Pocket Top-up</h3>
 
         <div class="row">
           <div>
-            <label>Source</label>
+            <label>Kutoka</label>
             <select id="pocketSource">
-              <option value="SALES">💰 From Sales</option>
+              <option value="SALES">💰 Kutoka Mauzo</option>
               <option value="DIRECTOR">👤 Director Cash</option>
             </select>
           </div>
           <div>
             <label>Amount (TZS)</label>
-            <input type="text" id="pocketAmount" placeholder="Enter amount">
+            <input type="text" id="pocketAmount" placeholder="Weka Kiwango">
           </div>
         </div>
 
-        <label>Note</label>
+        <label>Comment</label>
         <input type="text" id="pocketNote" placeholder="e.g., Top-up for small expenses">
 
         <button class="primary-btn" id="savePocketBtn">Save Pocket Top-up</button>
@@ -188,12 +188,12 @@
 
       <!-- Cash Count -->
       <div id="cashCountTab" class="card hidden">
-        <h3>📊 Cash Count (raw entry)</h3>
+        <h3>📊 Cash Mauzo Iliyopo</h3>
 
-        <label>Actual cash counted today (TZS)</label>
-        <input type="text" id="cashCountAmount" placeholder="Enter cash counted">
+        <label>Mauzo yaliyohesabiwa leo (TZS)</label>
+        <input type="text" id="cashCountAmount" placeholder="Weka mauzo">
 
-        <label>Note</label>
+        <label>Comment</label>
         <input type="text" id="cashCountNote" placeholder="Optional note">
 
         <button class="primary-btn" id="saveCashCountBtn">Save Cash Count</button>
@@ -201,7 +201,7 @@
 
       <!-- Deposit -->
       <div id="depositTab" class="card hidden">
-        <h3>🏦 Bank Deposit (raw entry)</h3>
+        <h3>🏦 Bank Deposit</h3>
 
         <div class="row">
           <div>
@@ -223,7 +223,7 @@
         <div class="stat-box">
           <div class="stat-label">Tip</div>
           <div style="font-weight:800; color:#1e3a5f;">
-            Director cash should be recorded as a separate DEPOSIT row (Source=DIRECTOR) so it doesn’t reduce office expected.
+           Jaza Deposists zote na kama hela amepewa Director mkononi weka kwenye maelezo
           </div>
         </div>
       </div>
