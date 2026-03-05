@@ -550,33 +550,47 @@
       }
     }
 
-    function fillCategories() {
-      const sel = document.getElementById('expenseCategory');
-      const debug = document.getElementById('categoriesDebug');
-      
-      sel.innerHTML = '<option value="">Chagua Matumizi</option>';
-      
-      console.log('Categories to fill:', categories);
-      
-      if (!categories || categories.length === 0) {
-        debug.textContent = '⚠️ Hakuna categories zilizopatikana';
-        // Add default categories as fallback
-        const defaultCats = ['Internet', 'Umeme', 'Maji', 'Chakula', 'Usafiri', 'Vifaa', 'Mengineyo'];
-        defaultCats.forEach(c => {
-          const o = document.createElement('option');
-          o.value = c; o.textContent = c;
-          sel.appendChild(o);
-        });
-        debug.textContent = '✓ Tumetumia default categories';
-      } else {
-        categories.forEach(c => {
-          const o = document.createElement('option');
-          o.value = c; o.textContent = c;
-          sel.appendChild(o);
-        });
-        debug.textContent = `✓ Categories ${categories.length} zimepakia`;
-      }
-    }
+  function fillCategories() {
+  const sel = document.getElementById('expenseCategory');
+  const debug = document.getElementById('categoriesDebug');
+  
+  if (!sel) {
+    console.error('Category select element not found');
+    return;
+  }
+  
+  sel.innerHTML = '<option value="">Chagua Matumizi</option>';
+  
+  console.log('Filling categories. Length:', categories ? categories.length : 0);
+  console.log('Categories array:', categories);
+  
+  if (!categories || categories.length === 0) {
+    debug.textContent = '⚠️ Hakuna categories, tumia default';
+    // Add default categories
+    const defaultCats = [
+      "Ambulance", "Bahasha", "Chakula", "Internet", "Mengineyo", 
+      "Nauli", "Umeme", "Vifaa vya Usafi", "Stationeries", "Ufundi"
+    ];
+    defaultCats.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c; 
+      o.textContent = c;
+      sel.appendChild(o);
+    });
+    debug.textContent = '✓ Tumetumia default categories (10)';
+  } else {
+    categories.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c; 
+      o.textContent = c;
+      sel.appendChild(o);
+    });
+    debug.textContent = `✓ Categories ${categories.length} zimepakia`;
+  }
+  
+  // Count options
+  console.log('Options after fill:', sel.options.length);
+}
 
     function renderDashboard(d) {
       document.getElementById('dashboardDate').textContent = d.date || document.getElementById('workDate').value;
@@ -593,26 +607,51 @@
       document.getElementById('dashDirectorDebt').textContent = 'TZS ' + formatNumber(directorDebt);
     }
 
-    async function loadInit(date) {
-      try {
-        setOverlay(true, 'Loading…', 'Fetching categories and dashboard');
-        const data = await apiCall('getInit', { date }, false);
-        console.log('Init data received:', data);
-        
-        categories = data.categories || [];
-        console.log('Categories set to:', categories);
-        
-        fillCategories();
-        renderDashboard(data.dashboard || {});
-        setOverlay(false);
-        showAlert('Data imepakiwa', 'success');
-      } catch(e) {
-        setOverlay(false);
-        console.error('Error loading:', e);
-        showAlert('Error loading: ' + e.message, 'error');
-      }
+   async function loadInit(date) {
+  try {
+    setOverlay(true, 'Loading…', 'Fetching categories and dashboard');
+    console.log('Loading init for date:', date);
+    
+    const data = await apiCall('getInit', { date }, false);
+    console.log('Init data received:', data);
+    
+    // Handle categories - use default if none provided
+    if (data.categories && Array.isArray(data.categories) && data.categories.length > 0) {
+      categories = data.categories;
+      console.log('Categories loaded from server:', categories.length);
+    } else {
+      // Default categories in case server returns none
+      categories = [
+        "Ambulance", "Bahasha", "Chakula", "EFD Machine Service", "ENT", "Eye", 
+        "Generator", "Internet", "Kuchoma Takataka", "Laboratory", "Mafuta ya Gari Director", 
+        "Matangazo Redio", "Mengineyo", "Mobile Bundle", "Nauli", "Nauli ya OT", "OBGY", 
+        "OT", "Peditrician", "Physiotherapy", "Purchases", "Replacement of Items", 
+        "Stationeries", "Ufundi", "Umeme", "USS", "Vifaa vya Usafi", "Waybill"
+      ];
+      console.log('Using default categories:', categories.length);
     }
-
+    
+    fillCategories();
+    renderDashboard(data.dashboard || {});
+    setOverlay(false);
+    showAlert('Data imepakiwa', 'success');
+  } catch(e) {
+    setOverlay(false);
+    console.error('Error loading:', e);
+    
+    // Still show default categories even if API fails
+    categories = [
+      "Ambulance", "Bahasha", "Chakula", "EFD Machine Service", "ENT", "Eye", 
+      "Generator", "Internet", "Kuchoma Takataka", "Laboratory", "Mafuta ya Gari Director", 
+      "Matangazo Redio", "Mengineyo", "Mobile Bundle", "Nauli", "Nauli ya OT", "OBGY", 
+      "OT", "Peditrician", "Physiotherapy", "Purchases", "Replacement of Items", 
+      "Stationeries", "Ufundi", "Umeme", "USS", "Vifaa vya Usafi", "Waybill"
+    ];
+    fillCategories();
+    
+    showAlert('Error loading: ' + e.message + ' - Using default categories', 'warning');
+  }
+}
     async function refreshDashboardOnly() {
       try {
         const date = document.getElementById('workDate').value;
