@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0">
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }f
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: "Segoe UI", Roboto, sans-serif; background: #f4f6f9; padding: 24px; color: #2c3e50; }
     .container { max-width: 1200px; margin: auto; }
     .app-title { font-size: 1.6rem; font-weight: 700; color: #1e3a5f; margin-bottom: 18px; }
@@ -593,7 +593,8 @@
 }
 
     function renderDashboard(d) {
-      document.getElementById('dashboardDate').textContent = d.date || document.getElementById('workDate').value;
+      const dateEl = document.getElementById('dashboardDate');
+      if (dateEl) dateEl.textContent = d.date || document.getElementById('workDate').value;
       document.getElementById('dashPocket').textContent = 'TZS ' + formatNumber(d.pocketClosing || 0);
       document.getElementById('dashOffice').textContent = 'TZS ' + formatNumber(d.officeExpected || 0);
       document.getElementById('dashCounted').textContent = 'TZS ' + formatNumber(d.cashCounted || 0);
