@@ -592,21 +592,19 @@
   console.log('Options after fill:', sel.options.length);
 }
 
-    function renderDashboard(d) {
-      const dateEl = document.getElementById('dashboardDate');
-      if (dateEl) dateEl.textContent = d.date || document.getElementById('workDate').value;
-      document.getElementById('dashPocket').textContent = 'TZS ' + formatNumber(d.pocketClosing || 0);
-      document.getElementById('dashOffice').textContent = 'TZS ' + formatNumber(d.officeExpected || 0);
-      document.getElementById('dashCounted').textContent = 'TZS ' + formatNumber(d.cashCounted || 0);
-      document.getElementById('dashDiff').textContent = 'TZS ' + formatNumber(d.difference || 0);
-      document.getElementById('dashPending').textContent = 'TZS ' + formatNumber(d.pendingDeposit || 0);
-      document.getElementById('dashSystemSales').textContent = 'TZS ' + formatNumber(d.systemSales || 0);
-      document.getElementById('dashReasons').textContent = 'TZS ' + formatNumber(d.cashReasonsTotal || 0);
-      document.getElementById('dashTotalExpenses').textContent = 'TZS ' + formatNumber(d.totalExpenses || 0);
-      
-      directorDebt = d.directorDebt || 0;
-      document.getElementById('dashDirectorDebt').textContent = 'TZS ' + formatNumber(directorDebt);
-    }
+   function renderDashboard(d) {
+  document.getElementById('dashPocket').textContent = 'TZS ' + formatNumber(d.pocketClosing || 0);
+  document.getElementById('dashOffice').textContent = 'TZS ' + formatNumber(d.officeExpected || 0);
+  document.getElementById('dashCounted').textContent = 'TZS ' + formatNumber(d.cashCounted || 0);
+  document.getElementById('dashDiff').textContent = 'TZS ' + formatNumber(d.difference || 0);
+  document.getElementById('dashPending').textContent = 'TZS ' + formatNumber(d.pendingDeposit || 0);
+  document.getElementById('dashSystemSales').textContent = 'TZS ' + formatNumber(d.systemSales || 0);
+  document.getElementById('dashReasons').textContent = 'TZS ' + formatNumber(d.cashReasonsTotal || 0);
+  document.getElementById('dashTotalExpenses').textContent = 'TZS ' + formatNumber(d.totalExpenses || 0);
+  
+  directorDebt = d.directorDebt || 0;
+  document.getElementById('dashDirectorDebt').textContent = 'TZS ' + formatNumber(directorDebt);
+}
 
    async function loadInit(date) {
   try {
