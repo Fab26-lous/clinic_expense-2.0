@@ -458,12 +458,18 @@
   <script>
     // ================== CONFIG ==================
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzS65VR2IOqbcYwNUjtQnrwutJsPaV3Z1mskYYyuC87IAX1IZeM0mssYRiFwLGaTOOx/exec";
-
-    // TEMP ONLY (client-side). Later we move login to Apps Script.
-    const USERS = {
-      cashier: { password: 'clinic123', role: 'Cashier' },
-      admin: { password: 'admin123', role: 'Admin' }
-    };
+    
+const USERS = {
+  // Cashiers
+  Brigita: { password: 'clinic1234', role: 'Cashier', name: 'Brigita' },
+ Angel: { password: 'stgeorge1234', role: 'Cashier', name: 'Angel' },
+  mercy: { password: 'mercy2026', role: 'Cashier', name: 'Mercy' },
+  david: { password: 'david2026', role: 'Cashier', name: 'David' },
+  sarah: { password: 'sarah2026', role: 'Cashier', name: 'Sarah' },
+  
+  // Admin (can also be a cashier)
+  admin: { password: 'admin123', role: 'Admin', name: 'Administrator' }
+};
 
     // ================== STATE ==================
     let currentUser = null;
@@ -974,7 +980,7 @@
         } else {
           sourceClass = 'source-director';
           amountClass = 'amount-director';
-          sourceText = 'Director (Anadaiwa)';
+          sourceText = 'Director (Anadai)';
         }
         
         html += `
@@ -1216,7 +1222,7 @@
         if (!amount || amount <= 0) continue;
 
         if (type === 'Other' && !other) {
-          throw new Error('Umechagua Other — lazima uandike sababu halisi.');
+          throw new Error('Umechagua Other — lazima uandike sababu.');
         }
 
         out.push({
