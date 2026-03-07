@@ -1687,121 +1687,123 @@
         }
       });
 
-    document.getElementById('saveCashAndSalesBtn').addEventListener('click', async () => {
+  document.getElementById('saveCashAndSalesBtn').addEventListener('click', async () => {
   const btn = document.getElementById('saveCashAndSalesBtn');
   btn.disabled = true;
+
   try {
     const date = document.getElementById('workDate').value;
-    
+
     if (!date) {
-      btn.disabled = false;
-      return showAlert('Tafadhali chagua tarehe', 'error');
+      showAlert('Tafadhali chagua tarehe', 'error');
+      return;
     }
-    
-    // Get values and parse them properly
-    const sysInput = document.getElementById('systemSalesAmount').value;
-    const cashInput = document.getElementById('cashCountAmount').value;
-    
-    const sys = parseMoney(sysInput);
-    const cash = parseMoney(cashInput);
+
+    const sys = parseMoney(document.getElementById('systemSalesAmount').value);
+    const cash = parseMoney(document.getElementById('cashCountAmount').value);
     const note = document.getElementById('cashCountNote').value.trim();
 
     if (!sys || sys <= 0) {
-      btn.disabled = false;
-      return showAlert('Weka mauzo ya mfumo (system sales).', 'error');
+      showAlert('Weka mauzo ya mfumo (system sales).', 'error');
+      return;
     }
-    
+
     if (!cash || cash <= 0) {
-      btn.disabled = false;
-      return showAlert('Weka cash iliyohesabiwa.', 'error');
+      showAlert('Weka cash iliyohesabiwa.', 'error');
+      return;
     }
 
     const diff = cash - sys;
     const absDiff = Math.abs(diff);
-    
     const transactions = [];
-    
-    // Add system sales
+
+    // 1. Save system sales
     transactions.push({
-      date: date,
-      type: 'SYSTEM_SALES', 
+      date,
+      type: 'SYSTEM_SALES',
       category: 'System Sales',
-      amount: sys, 
-      source: 'SYSTEM', 
+      amount: sys,
+      source: 'SYSTEM',
       note: note || 'System sales',
       cashier: currentUser?.username || 'Unknown',
       ref: makeRef()
     });
-    
-    // Add cash count
+
+    // 2. Save counted cash
     transactions.push({
-      date: date,
-      type: 'CASH_COUNT', 
+      date,
+      type: 'CASH_COUNT',
       category: 'Cash Count',
-      amount: cash, 
-      source: 'OFFICE', 
+      amount: cash,
+      source: 'OFFICE',
       note: note || 'Cash counted',
       cashier: currentUser?.username || 'Unknown',
       ref: makeRef()
     });
-    
-    // Handle shortage reasons if applicable (only if diff is negative AND greater than or equal to -1000)
+
+    // 3. If shortage, require reasons only when shortage is 1000 or more
     if (diff < 0 && absDiff >= 1000) {
       const reasons = collectReasons();
       const explained = reasons.reduce((sum, r) => sum + (r.amount || 0), 0);
       const remaining = absDiff - explained;
-      
-      if (Math.abs(remaining) > 0.01) { // Small tolerance for floating point
-        btn.disabled = false;
-        return showAlert(`Bado upungufu haujaelezwa wote. Limebaki: TZS ${formatNumber(remaining)}`, 'warning');
+
+      if (Math.abs(remaining) > 0.01) {
+        showAlert(`Bado upungufu haujaelezwa wote. Limebaki: TZS ${formatNumber(remaining)}`, 'warning');
+        return;
       }
-      
+
       for (const r of reasons) {
         transactions.push({
-          date: date,
-          type: 'CASH_REASON', 
+          date,
+          type: 'CASH_REASON',
           category: r.reason,
-          amount: r.amount, 
-          source: 'REASON', 
+          amount: r.amount,
+          source: 'REASON',
           note: 'Reason for shortage',
           cashier: currentUser?.username || 'Unknown',
           ref: makeRef()
         });
       }
-    } else if (diff < 0 && absDiff < 1000) {
-      // Small negative difference - ignore (no reasons needed)
-      console.log(`Small negative difference ${absDiff} ignored (less than 1000 TZS)`);
     }
-    
-    // For positive differences (cash > system sales), always allow without reasons
-    // No validation needed for positive differences
-    
-    // Save all transactions
+
+    // 4. If positive difference, ALSO submit it explicitly
+    // so it is not lost on the backend side
+    if (diff > 0) {
+      transactions.push({
+        date,
+        type: 'CASH_SURPLUS',
+        category: 'Positive Difference',
+        amount: diff,
+        source: 'OFFICE',
+        note: note || 'Cash counted greater than system sales',
+        cashier: currentUser?.username || 'Unknown',
+        ref: makeRef()
+      });
+    }
+
     await addBulkTx(transactions);
-    
-    // Clear form
+
     document.getElementById('systemSalesAmount').value = '';
     document.getElementById('cashCountAmount').value = '';
     document.getElementById('cashCountNote').value = '';
     document.getElementById('reasonsList').innerHTML = '';
-    
-    // Show appropriate message based on difference
-    if (diff > 0 && diff >= 1000) {
-      showAlert(`Mauzo + Cash zimehifadhiwa. Tofauti chanya: TZS ${formatNumber(diff)}`, 'success');
+
+    if (diff > 0) {
+      showAlert(`Mauzo + Cash zimehifadhiwa. Positive difference: TZS ${formatNumber(diff)}`, 'success');
     } else if (diff < 0 && absDiff < 1000) {
       showAlert(`Mauzo + Cash zimehifadhiwa. Tofauti ndogo ya TZS ${formatNumber(absDiff)} imepuuzwa`, 'success');
     } else {
       showAlert(`Mauzo + Cash zimehifadhiwa kwa tarehe ${date}`, 'success');
     }
-    
+
     await refreshDashboardOnly();
     calcDiffUI();
-    
-  } catch(e) { 
+
+  } catch (e) {
     console.error('Error saving cash report:', e);
-    showAlert(e.message, 'error'); 
-  } finally { 
-    btn.disabled = false; 
+    showAlert(e.message, 'error');
+  } finally {
+    btn.disabled = false;
   }
 });
       document.getElementById('saveDepositBtn').addEventListener('click', async () => {
