@@ -529,33 +529,39 @@ const USERS = {
 
     // ================== API ==================
     async function apiCall(action, payload={}, overlay=false, title='', msg='') {
-      if (overlay) setOverlay(true, title || 'Please wait…', msg || 'Processing…');
-      try {
-        const body = new URLSearchParams({ action, ...payload });
-        const res = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-          body,
-          cache: 'no-store'
-        });
-
-        const txt = await res.text();
-        console.log('API Response:', txt);
-        
-        let data;
-        try { 
-          data = JSON.parse(txt); 
-        } catch(e) {
-          throw new Error("Invalid JSON response: " + txt.slice(0,120));
-        }
-
-        if (!data.success) throw new Error(data.error || 'Request failed');
-        return data;
-      } finally {
-        if (overlay) setOverlay(false);
-      }
+  if (overlay) setOverlay(true, title || 'Please wait…', msg || 'Processing…');
+  try {
+    // Add session token if available
+    if (sessionToken) {
+      payload.token = sessionToken;
     }
+    
+    const body = new URLSearchParams({ action, ...payload });
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+      body,
+      cache: 'no-store'
+    });
 
+    const txt = await res.text();
+    let data = JSON.parse(txt);
+    
+    // Check if session expired
+    if (data.needLogin) {
+      showAlert('Session expired. Please login again.', 'warning');
+      logout();
+      return;
+    }
+    
+    if (!data.success) throw new Error(data.error || 'Request failed');
+    return data;
+  } catch(e) {
+    throw e;
+  } finally {
+    if (overlay) setOverlay(false);
+  }
+}
   function fillCategories() {
   const sel = document.getElementById('expenseCategory');
   const debug = document.getElementById('categoriesDebug');
@@ -921,25 +927,28 @@ const USERS = {
     }
 
     // ================== LOGIN ==================
-    async function login() {
-      const u = document.getElementById('username').value.trim();
-      const p = document.getElementById('password').value;
+   let sessionToken = null;
 
-      const rec = USERS[u];
-      if (!rec || rec.password !== p) {
-        showAlert('Invalid username or password', 'error', 'login');
-        return;
-      }
+async function login() {
+  const u = document.getElementById('username').value.trim().toLowerCase();
+  const p = document.getElementById('password').value;
 
-      currentUser = { username: u, role: rec.role };
-      document.getElementById('userDisplay').textContent = `${u} (${rec.role})`;
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('mainScreen').classList.remove('hidden');
+  try {
+    const data = await apiCall('login', { username: u, password: p }, true);
+    sessionToken = data.token;
+    currentUser = data.user;
+    
+    document.getElementById('userDisplay').textContent = `${data.user.name} (${data.user.role})`;
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('mainScreen').classList.remove('hidden');
 
-      const date = document.getElementById('workDate').value;
-      await loadInit(date);
-      showAlert('Login successful!', 'success');
-    }
+    const date = document.getElementById('workDate').value;
+    await loadInit(date);
+    showAlert(`Welcome ${data.user.name}!`, 'success');
+  } catch(e) {
+    showAlert('Invalid username or password', 'error', 'login');
+  }
+}
 
     function logout() { location.reload(); }
 
