@@ -1492,37 +1492,42 @@
     }
 
     function calcDiffUI(){
-      const sys = parseMoney(document.getElementById('systemSalesAmount').value);
-      const cash = parseMoney(document.getElementById('cashCountAmount').value);
-      const diff = cash - sys;
+  const sys = parseMoney(document.getElementById('systemSalesAmount').value);
+  const cash = parseMoney(document.getElementById('cashCountAmount').value);
+  const diff = cash - sys;
+  const absDiff = Math.abs(diff);
 
-      setText('cashVsSalesDiff', 'TZS ' + formatNumber(diff));
+  setText('cashVsSalesDiff', 'TZS ' + formatNumber(diff));
 
-      const reasonsBox = document.getElementById('reasonsBox');
+  const reasonsBox = document.getElementById('reasonsBox');
+  const shortageText = document.getElementById('shortageRemainingText');
 
-      if (sys > 0 && cash > 0 && diff < 0) {
-        reasonsBox.classList.remove('hidden');
-        if (document.querySelectorAll('#reasonsList .reason-row').length === 0) {
-          addReasonRow();
-        }
-      } else {
-        reasonsBox.classList.add('hidden');
-      }
-
-      const explained = reasonsTotal();
-      const remaining = (diff < 0) ? Math.max(0, Math.abs(diff) - explained) : 0;
-
-      const remEl = document.getElementById('shortageRemainingText');
-      if (diff < 0) {
-        remEl.textContent = remaining === 0
-          ? `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`
-          : `⚠️ Upungufu BADO: TZS ${formatNumber(remaining)} (ongeza sababu)`;
-        remEl.style.color = remaining === 0 ? '#10b981' : '#b45309';
-      } else {
-        remEl.textContent = '';
-      }
+  // Only show reasons box if:
+  // 1. Both values are entered
+  // 2. Difference is negative
+  // 3. Absolute difference is 1000 or more
+  if (sys > 0 && cash > 0 && diff < 0 && absDiff >= 1000) {
+    reasonsBox.classList.remove('hidden');
+    if (document.querySelectorAll('#reasonsList .reason-row').length === 0) {
+      addReasonRow();
     }
+    shortageText.style.display = 'block';
+  } else {
+    reasonsBox.classList.add('hidden');
+    shortageText.style.display = 'none';
+  }
 
+  const explained = reasonsTotal();
+  const remaining = (diff < 0 && absDiff >= 1000) ? Math.max(0, absDiff - explained) : 0;
+
+  const remEl = document.getElementById('shortageRemainingText');
+  if (diff < 0 && absDiff >= 1000) {
+    remEl.textContent = remaining === 0
+      ? `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`
+      : `⚠️ Upungufu BADO: TZS ${formatNumber(remaining)} (ongeza sababu)`;
+    remEl.style.color = remaining === 0 ? '#10b981' : '#b45309';
+  }
+}
     function addReasonRow(){
       const tpl = document.getElementById('reasonTemplate');
       const clone = document.importNode(tpl.content, true);
@@ -1682,7 +1687,7 @@
         }
       });
 
-     document.getElementById('saveCashAndSalesBtn').addEventListener('click', async () => {
+    document.getElementById('saveCashAndSalesBtn').addEventListener('click', async () => {
   const btn = document.getElementById('saveCashAndSalesBtn');
   btn.disabled = true;
   try {
@@ -1712,6 +1717,7 @@
     }
 
     const diff = cash - sys;
+    const absDiff = Math.abs(diff);
     
     const transactions = [];
     
@@ -1739,11 +1745,11 @@
       ref: makeRef()
     });
     
-    // Handle shortage reasons if applicable
-    if (diff < 0) {
+    // Handle shortage reasons if applicable (only if diff is negative AND greater than or equal to -1000)
+    if (diff < 0 && absDiff >= 1000) {
       const reasons = collectReasons();
       const explained = reasons.reduce((sum, r) => sum + (r.amount || 0), 0);
-      const remaining = Math.abs(diff) - explained;
+      const remaining = absDiff - explained;
       
       if (Math.abs(remaining) > 0.01) { // Small tolerance for floating point
         btn.disabled = false;
@@ -1762,7 +1768,13 @@
           ref: makeRef()
         });
       }
+    } else if (diff < 0 && absDiff < 1000) {
+      // Small negative difference - ignore (no reasons needed)
+      console.log(`Small negative difference ${absDiff} ignored (less than 1000 TZS)`);
     }
+    
+    // For positive differences (cash > system sales), always allow without reasons
+    // No validation needed for positive differences
     
     // Save all transactions
     await addBulkTx(transactions);
@@ -1773,7 +1785,15 @@
     document.getElementById('cashCountNote').value = '';
     document.getElementById('reasonsList').innerHTML = '';
     
-    showAlert(`Mauzo + Cash zimehifadhiwa kwa tarehe ${date}`, 'success');
+    // Show appropriate message based on difference
+    if (diff > 0 && diff >= 1000) {
+      showAlert(`Mauzo + Cash zimehifadhiwa. Tofauti chanya: TZS ${formatNumber(diff)}`, 'success');
+    } else if (diff < 0 && absDiff < 1000) {
+      showAlert(`Mauzo + Cash zimehifadhiwa. Tofauti ndogo ya TZS ${formatNumber(absDiff)} imepuuzwa`, 'success');
+    } else {
+      showAlert(`Mauzo + Cash zimehifadhiwa kwa tarehe ${date}`, 'success');
+    }
+    
     await refreshDashboardOnly();
     calcDiffUI();
     
