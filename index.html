@@ -1563,37 +1563,38 @@
       calcDiffUI();
     }
 
-    function collectReasons(){
-      const items = [...document.querySelectorAll('#reasonsList .reason-row')];
-      const out = [];
+   function collectReasons() {
+  const items = [...document.querySelectorAll('#reasonsList .reason-row')];
+  const out = [];
 
-      for (const it of items){
-        const typeSel = it.querySelector('.reasonType');
-        const otherInput = it.querySelector('.reasonOther');
-        const amtInput = it.querySelector('.reasonAmount');
-        
-        if (!typeSel || !amtInput) continue;
-        
-        const type = (typeSel.value || '').trim();
-        const other = otherInput ? (otherInput.value || '').trim() : '';
-        const amount = parseMoney(amtInput.value);
+  for (const it of items) {
+    const typeSel = it.querySelector('.reasonType');
+    const otherInput = it.querySelector('.reasonOther');
+    const amtInput = it.querySelector('.reasonAmount');
+    
+    if (!typeSel || !amtInput) continue;
+    
+    const type = (typeSel.value || '').trim();
+    const other = otherInput ? (otherInput.value || '').trim() : '';
+    const amount = parseMoney(amtInput.value);
 
-        if (!type) continue;
-        if (!amount || amount <= 0) continue;
+    // Skip empty reason rows
+    if (!type) continue;
+    if (!amount || amount <= 0) continue;
 
-        if (type === 'Other' && !other) {
-          throw new Error('Umechagua Other — lazima uandike sababu.');
-        }
-
-        out.push({
-          reason: (type === 'Other') ? other : type,
-          amount: amount
-        });
-      }
-
-      return out;
+    // Validate "Other" reason has description
+    if (type === 'Other' && !other) {
+      throw new Error('Umechagua Other — lazima uandike sababu.');
     }
 
+    out.push({
+      reason: (type === 'Other') ? other : type,
+      amount: amount
+    });
+  }
+
+  return out;
+}
     // ================== EVENT HANDLERS ==================
     document.addEventListener('DOMContentLoaded', () => {
       setTodayDefaults();
@@ -1681,90 +1682,108 @@
         }
       });
 
-      document.getElementById('saveCashAndSalesBtn').addEventListener('click', async () => {
-        const btn = document.getElementById('saveCashAndSalesBtn');
-        btn.disabled = true;
-        try {
-          const date = document.getElementById('workDate').value;
-          
-          if (!date) {
-            return showAlert('Tafadhali chagua tarehe', 'error');
-          }
-          
-          const sys = parseMoney(document.getElementById('systemSalesAmount').value);
-          const cash = parseMoney(document.getElementById('cashCountAmount').value);
-          const note = document.getElementById('cashCountNote').value.trim();
+     document.getElementById('saveCashAndSalesBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('saveCashAndSalesBtn');
+  btn.disabled = true;
+  try {
+    const date = document.getElementById('workDate').value;
+    
+    if (!date) {
+      btn.disabled = false;
+      return showAlert('Tafadhali chagua tarehe', 'error');
+    }
+    
+    // Get values and parse them properly
+    const sysInput = document.getElementById('systemSalesAmount').value;
+    const cashInput = document.getElementById('cashCountAmount').value;
+    
+    const sys = parseMoney(sysInput);
+    const cash = parseMoney(cashInput);
+    const note = document.getElementById('cashCountNote').value.trim();
 
-          if (!sys || sys <= 0) return showAlert('Weka mauzo ya mfumo (system sales).', 'error');
-          if (!cash || cash <= 0) return showAlert('Weka cash iliyohesabiwa.', 'error');
+    if (!sys || sys <= 0) {
+      btn.disabled = false;
+      return showAlert('Weka mauzo ya mfumo (system sales).', 'error');
+    }
+    
+    if (!cash || cash <= 0) {
+      btn.disabled = false;
+      return showAlert('Weka cash iliyohesabiwa.', 'error');
+    }
 
-          const diff = cash - sys;
-          
-          const transactions = [];
-          
-          transactions.push({
-            date: date,
-            type: 'SYSTEM_SALES', 
-            category: 'System Sales',
-            amount: sys, 
-            source: 'SYSTEM', 
-            note,
-            cashier: currentUser?.username || 'Unknown',
-            ref: makeRef()
-          });
-          
-          transactions.push({
-            date: date,
-            type: 'CASH_COUNT', 
-            category: 'Cash Count',
-            amount: cash, 
-            source: 'OFFICE', 
-            note,
-            cashier: currentUser?.username || 'Unknown',
-            ref: makeRef()
-          });
-          
-          if (diff < 0) {
-            const reasons = collectReasons();
-            const explained = reasons.reduce((sum, r) => sum + (r.amount || 0), 0);
-            const remaining = Math.abs(diff) - explained;
-            
-            if (remaining !== 0) {
-              return showAlert('Bado upungufu haujaelezwa wote.', 'warning');
-            }
-            
-            for (const r of reasons) {
-              transactions.push({
-                date: date,
-                type: 'CASH_REASON', 
-                category: r.reason,
-                amount: r.amount, 
-                source: 'REASON', 
-                note: 'Reason for shortage',
-                cashier: currentUser?.username || 'Unknown',
-                ref: makeRef()
-              });
-            }
-          }
-          
-          await addBulkTx(transactions);
-          
-          document.getElementById('systemSalesAmount').value = '';
-          document.getElementById('cashCountAmount').value = '';
-          document.getElementById('cashCountNote').value = '';
-          document.getElementById('reasonsList').innerHTML = '';
-          
-          showAlert('Mauzo + Cash + Sababu zimehifadhiwa kwa tarehe ' + date, 'success');
-          await refreshDashboardOnly();
-          calcDiffUI();
-        } catch(e) { 
-          console.error('Error saving cash report:', e);
-          showAlert(e.message, 'error'); 
-        } finally { 
-          btn.disabled = false; 
-        }
-      });
-
+    const diff = cash - sys;
+    
+    const transactions = [];
+    
+    // Add system sales
+    transactions.push({
+      date: date,
+      type: 'SYSTEM_SALES', 
+      category: 'System Sales',
+      amount: sys, 
+      source: 'SYSTEM', 
+      note: note || 'System sales',
+      cashier: currentUser?.username || 'Unknown',
+      ref: makeRef()
+    });
+    
+    // Add cash count
+    transactions.push({
+      date: date,
+      type: 'CASH_COUNT', 
+      category: 'Cash Count',
+      amount: cash, 
+      source: 'OFFICE', 
+      note: note || 'Cash counted',
+      cashier: currentUser?.username || 'Unknown',
+      ref: makeRef()
+    });
+    
+    // Handle shortage reasons if applicable
+    if (diff < 0) {
+      const reasons = collectReasons();
+      const explained = reasons.reduce((sum, r) => sum + (r.amount || 0), 0);
+      const remaining = Math.abs(diff) - explained;
+      
+      if (Math.abs(remaining) > 0.01) { // Small tolerance for floating point
+        btn.disabled = false;
+        return showAlert(`Bado upungufu haujaelezwa wote. Limebaki: TZS ${formatNumber(remaining)}`, 'warning');
+      }
+      
+      for (const r of reasons) {
+        transactions.push({
+          date: date,
+          type: 'CASH_REASON', 
+          category: r.reason,
+          amount: r.amount, 
+          source: 'REASON', 
+          note: 'Reason for shortage',
+          cashier: currentUser?.username || 'Unknown',
+          ref: makeRef()
+        });
+      }
+    }
+    
+    // Save all transactions
+    await addBulkTx(transactions);
+    
+    // Clear form
+    document.getElementById('systemSalesAmount').value = '';
+    document.getElementById('cashCountAmount').value = '';
+    document.getElementById('cashCountNote').value = '';
+    document.getElementById('reasonsList').innerHTML = '';
+    
+    showAlert(`Mauzo + Cash zimehifadhiwa kwa tarehe ${date}`, 'success');
+    await refreshDashboardOnly();
+    calcDiffUI();
+    
+  } catch(e) { 
+    console.error('Error saving cash report:', e);
+    showAlert(e.message, 'error'); 
+  } finally { 
+    btn.disabled = false; 
+  }
+});
       document.getElementById('saveDepositBtn').addEventListener('click', async () => {
         const btn = document.getElementById('saveDepositBtn');
         btn.disabled = true;
