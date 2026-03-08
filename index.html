@@ -1527,12 +1527,13 @@ function calcDiffUI(){
       remEl.textContent = `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`;
       remEl.style.color = '#10b981';
     } else if (remaining > 0) {
-      if (remaining < 1000) {
-        remEl.textContent = `✅ Upungufu mdogo wa TZS ${formatNumber(remaining)} umepuuzwa (unaweza submit)`;
-        remEl.style.color = '#10b981';
-      } else {
+      if (remaining >= 1000) {
         remEl.textContent = `⚠️ Upungufu BADO: TZS ${formatNumber(remaining)} (ongeza sababu)`;
         remEl.style.color = '#b45309';
+      } else {
+        // Small remaining shortage (< 1000) - show as fully explained with no message about the small amount
+        remEl.textContent = `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`;
+        remEl.style.color = '#10b981';
       }
     } else {
       remEl.textContent = `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`;
