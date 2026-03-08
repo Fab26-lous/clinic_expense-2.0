@@ -1527,15 +1527,19 @@ function calcDiffUI(){
       remEl.textContent = `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`;
       remEl.style.color = '#10b981';
     } else if (remaining > 0) {
-      remEl.textContent = `⚠️ Upungufu BADO: TZS ${formatNumber(remaining)} (ongeza sababu)`;
-      remEl.style.color = '#b45309';
+      if (remaining < 1000) {
+        remEl.textContent = `✅ Upungufu mdogo wa TZS ${formatNumber(remaining)} umepuuzwa (unaweza submit)`;
+        remEl.style.color = '#10b981';
+      } else {
+        remEl.textContent = `⚠️ Upungufu BADO: TZS ${formatNumber(remaining)} (ongeza sababu)`;
+        remEl.style.color = '#b45309';
+      }
     } else {
       remEl.textContent = `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`;
       remEl.style.color = '#10b981';
     }
   }
 }
-    
     function addReasonRow(){
       const tpl = document.getElementById('reasonTemplate');
       const clone = document.importNode(tpl.content, true);
@@ -1754,14 +1758,15 @@ if (diff < 0 && absDiff >= 1000) {
   const reasons = collectReasons();
   const explained = reasons.reduce((sum, r) => sum + (r.amount || 0), 0);
   
-  // Only validate if reasons are LESS than shortage
-  // If reasons exceed shortage, we still allow submission
-  if (explained < absDiff) {
-    const remaining = absDiff - explained;
-    if (Math.abs(remaining) > 0.01) {
-      showAlert(`Bado upungufu haujaelezwa wote. Limebaki: TZS ${formatNumber(remaining)}`, 'warning');
-      return;
-    }
+  // Calculate remaining shortage
+  const remaining = absDiff - explained;
+  
+  // Allow submission if:
+  // 1. Reasons are sufficient (remaining <= 0) OR
+  // 2. Remaining shortage is less than 1000 TZS (small difference)
+  if (remaining > 0 && remaining >= 1000) {
+    showAlert(`Bado upungufu haujaelezwa wote. Limebaki: TZS ${formatNumber(remaining)}`, 'warning');
+    return;
   }
   
   // Save all reasons (even if they exceed the shortage)
@@ -1778,7 +1783,6 @@ if (diff < 0 && absDiff >= 1000) {
     });
   }
 }
-
     // 4. If positive difference, ALSO submit it explicitly
     // so it is not lost on the backend side
     if (diff > 0) {
