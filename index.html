@@ -1490,8 +1490,7 @@
       }
       return sum;
     }
-
-    function calcDiffUI(){
+function calcDiffUI(){
   const sys = parseMoney(document.getElementById('systemSalesAmount').value);
   const cash = parseMoney(document.getElementById('cashCountAmount').value);
   const diff = cash - sys;
@@ -1519,15 +1518,24 @@
 
   const explained = reasonsTotal();
   const remaining = (diff < 0 && absDiff >= 1000) ? Math.max(0, absDiff - explained) : 0;
+  const excess = (diff < 0 && absDiff >= 1000) ? Math.max(0, explained - absDiff) : 0;
 
   const remEl = document.getElementById('shortageRemainingText');
   if (diff < 0 && absDiff >= 1000) {
-    remEl.textContent = remaining === 0
-      ? `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`
-      : `⚠️ Upungufu BADO: TZS ${formatNumber(remaining)} (ongeza sababu)`;
-    remEl.style.color = remaining === 0 ? '#10b981' : '#b45309';
+    if (excess > 0) {
+      // Don't show excess message - just show as fully explained
+      remEl.textContent = `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`;
+      remEl.style.color = '#10b981';
+    } else if (remaining > 0) {
+      remEl.textContent = `⚠️ Upungufu BADO: TZS ${formatNumber(remaining)} (ongeza sababu)`;
+      remEl.style.color = '#b45309';
+    } else {
+      remEl.textContent = `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`;
+      remEl.style.color = '#10b981';
+    }
   }
 }
+    
     function addReasonRow(){
       const tpl = document.getElementById('reasonTemplate');
       const clone = document.importNode(tpl.content, true);
@@ -1741,30 +1749,35 @@
       ref: makeRef()
     });
 
-    // 3. If shortage, require reasons only when shortage is 1000 or more
-    if (diff < 0 && absDiff >= 1000) {
-      const reasons = collectReasons();
-      const explained = reasons.reduce((sum, r) => sum + (r.amount || 0), 0);
-      const remaining = absDiff - explained;
-
-      if (Math.abs(remaining) > 0.01) {
-        showAlert(`Bado upungufu haujaelezwa wote. Limebaki: TZS ${formatNumber(remaining)}`, 'warning');
-        return;
-      }
-
-      for (const r of reasons) {
-        transactions.push({
-          date,
-          type: 'CASH_REASON',
-          category: r.reason,
-          amount: r.amount,
-          source: 'REASON',
-          note: 'Reason for shortage',
-          cashier: currentUser?.username || 'Unknown',
-          ref: makeRef()
-        });
-      }
+    // 3. If shortage, handle reasons (allow even if reasons exceed shortage)
+if (diff < 0 && absDiff >= 1000) {
+  const reasons = collectReasons();
+  const explained = reasons.reduce((sum, r) => sum + (r.amount || 0), 0);
+  
+  // Only validate if reasons are LESS than shortage
+  // If reasons exceed shortage, we still allow submission
+  if (explained < absDiff) {
+    const remaining = absDiff - explained;
+    if (Math.abs(remaining) > 0.01) {
+      showAlert(`Bado upungufu haujaelezwa wote. Limebaki: TZS ${formatNumber(remaining)}`, 'warning');
+      return;
     }
+  }
+  
+  // Save all reasons (even if they exceed the shortage)
+  for (const r of reasons) {
+    transactions.push({
+      date,
+      type: 'CASH_REASON',
+      category: r.reason,
+      amount: r.amount,
+      source: 'REASON',
+      note: 'Reason for shortage',
+      cashier: currentUser?.username || 'Unknown',
+      ref: makeRef()
+    });
+  }
+}
 
     // 4. If positive difference, ALSO submit it explicitly
     // so it is not lost on the backend side
