@@ -1292,44 +1292,44 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
       document.getElementById('depositTab').classList.toggle('hidden', tab !== 'Deposit');
       document.getElementById('searchTab').classList.toggle('hidden', tab !== 'Search');
     }
-
     // ================== LOGIN ==================
-    async function login() {
-      const u = document.getElementById('username').value.trim().toLowerCase();
-      const p = document.getElementById('password').value;
+async function login() {
+  const u = document.getElementById('username').value.trim().toLowerCase();
+  const p = document.getElementById('password').value;
 
-      try {
-        const data = await apiCall('login', { username: u, password: p }, true);
-        sessionToken = data.token;
-        currentUser = data.user;
-        
-        // Store login time
-        lastLoginTime = new Date();
-        
-        // Get last login from localStorage
-        const lastLoginKey = `lastLogin_${currentUser.username}`;
-        const previousLogin = localStorage.getItem(lastLoginKey);
-        
-        if (previousLogin) {
-          const lastDate = new Date(previousLogin);
-          const now = new Date();
-          const hoursAgo = Math.round((now - lastDate) / (1000 * 60 * 60));
-          
-          const badge = document.getElementById('lastLoginBadge');
-          if (hoursAgo < 24) {
-            badge.textContent = `Last login: ${hoursAgo} hour${hoursAgo > 1 ? 's' : ''} ago`;
-          } else {
-            const daysAgo = Math.round(hoursAgo / 24);
-            badge.textContent = `Last login: ${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`;
-          }
-          badge.style.display = 'block';
-        }
-        
-        // Save this login
-        localStorage.setItem(lastLoginKey, new Date().toISOString());
-        
-        document.getElementById('userDisplay').textContent = `${data.user.name} (${data.user.role})`;
-           // 👇 NEW: Check if this is first login
+  try {
+    const data = await apiCall('login', { username: u, password: p }, true);
+    sessionToken = data.token;
+    currentUser = data.user;
+    
+    // Store login time
+    lastLoginTime = new Date();
+    
+    // Get last login from localStorage
+    const lastLoginKey = `lastLogin_${currentUser.username}`;
+    const previousLogin = localStorage.getItem(lastLoginKey);
+    
+    if (previousLogin) {
+      const lastDate = new Date(previousLogin);
+      const now = new Date();
+      const hoursAgo = Math.round((now - lastDate) / (1000 * 60 * 60));
+      
+      const badge = document.getElementById('lastLoginBadge');
+      if (hoursAgo < 24) {
+        badge.textContent = `Last login: ${hoursAgo} hour${hoursAgo > 1 ? 's' : ''} ago`;
+      } else {
+        const daysAgo = Math.round(hoursAgo / 24);
+        badge.textContent = `Last login: ${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`;
+      }
+      badge.style.display = 'block';
+    }
+    
+    // Save this login
+    localStorage.setItem(lastLoginKey, new Date().toISOString());
+    
+    document.getElementById('userDisplay').textContent = `${data.user.name} (${data.user.role})`;
+    
+    // Check if this is first login
     if (data.user.firstLogin) {
       // Show password change modal before showing main screen
       openPasswordModal();
@@ -1337,17 +1337,16 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
       document.getElementById('loginScreen').classList.add('hidden');
       // Main screen will be shown after password change
     } else {
-        document.getElementById('loginScreen').classList.add('hidden');
-        document.getElementById('mainScreen').classList.remove('hidden');
-
-        const date = document.getElementById('workDate').value;
-        await loadInit(date);
-        showAlert(`Welcome ${data.user.name}!`, 'success');
-      } catch(e) {
-        showAlert('Invalid username or password', 'error', 'login');
-      }
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('mainScreen').classList.remove('hidden');
+      const date = document.getElementById('workDate').value;
+      await loadInit(date);
+      showAlert(`Welcome ${data.user.name}!`, 'success');
     }
-
+  } catch(e) {
+    showAlert('Invalid username or password', 'error', 'login');
+  }
+}
     function logout() { location.reload(); }
 
     // ================== MULTIPLE EXPENSES LOGIC ==================
