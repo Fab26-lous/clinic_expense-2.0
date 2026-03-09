@@ -1795,24 +1795,9 @@ if (diff < 0 && absDiff >= 1000) {
     });
   }
 }
-    // 4. If positive difference, ALSO submit it explicitly
-    // so it is not lost on the backend side
-    if (diff > 0) {
-      transactions.push({
-        date,
-        type: 'CASH_SURPLUS',
-        category: 'Positive Difference',
-        amount: diff,
-        source: 'OFFICE',
-        note: note || 'Cash counted greater than system sales',
-        cashier: currentUser?.username || 'Unknown',
-        ref: makeRef()
-      });
-    }
 
     await addBulkTx(transactions);
 // Send email alert if significant difference (1000 or more)
-const diff = cash - sys; // Make sure you have this variable from earlier
 if (Math.abs(diff) >= 1000) {
   await sendDifferenceEmail(date, sys, cash, diff, currentUser?.username);
 }
