@@ -771,7 +771,23 @@
         if (overlay) setOverlay(false);
       }
     }
-
+// Add this new function near your other API functions (like apiCall, addTx, etc.)
+async function sendDifferenceEmail(date, systemSales, cashCounted, difference, cashier) {
+  try {
+    // Call the backend silently - no overlay, no user notification
+    await apiCall('sendDifferenceAlert', {
+      date,
+      systemSales,
+      cashCounted,
+      difference,
+      cashier
+    }, false); // false means no loading overlay
+    console.log('Email alert triggered successfully');
+  } catch(e) {
+    // Log error but don't show to user - keep it silent
+    console.error('Failed to send email alert:', e);
+  }
+}
     function fillCategories() {
       const sel = document.getElementById('expenseCategory');
       const debug = document.getElementById('categoriesDebug');
@@ -1795,7 +1811,11 @@ if (diff < 0 && absDiff >= 1000) {
     }
 
     await addBulkTx(transactions);
-
+// Send email alert if significant difference (1000 or more)
+const diff = cash - sys; // Make sure you have this variable from earlier
+if (Math.abs(diff) >= 1000) {
+  await sendDifferenceEmail(date, sys, cash, diff, currentUser?.username);
+}
     document.getElementById('systemSalesAmount').value = '';
     document.getElementById('cashCountAmount').value = '';
     document.getElementById('cashCountNote').value = '';
