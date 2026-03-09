@@ -285,7 +285,26 @@
       </div>
     </div>
   </div>
-
+<div id="passwordChangeModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>🔐 Change Your Password</h3>
+        <span class="close-modal" onclick="closePasswordModal()">&times;</span>
+      </div>
+      <p style="margin-bottom:15px; color:#6c757d;">This is your first login. Please set a new password.</p>
+      
+      <label>New Password</label>
+      <input type="password" id="newPassword" placeholder="Enter new password">
+      
+      <label>Confirm New Password</label>
+      <input type="password" id="confirmPassword" placeholder="Confirm new password">
+      
+      <div class="row" style="margin-top:15px;">
+        <button class="secondary-btn" onclick="closePasswordModal()">Cancel</button>
+        <button class="primary-btn" id="saveNewPasswordBtn">Save Password</button>
+      </div>
+    </div>
+  </div>
   <div class="container">
     <!-- LOGIN -->
     <div id="loginScreen" class="card">
@@ -735,7 +754,16 @@
     window.closeDirectorModal = function() {
       document.getElementById('directorPaymentModal').classList.remove('show');
     };
+// Password change modal functions
+window.openPasswordModal = function() {
+  document.getElementById('passwordChangeModal').classList.add('show');
+  document.getElementById('newPassword').value = '';
+  document.getElementById('confirmPassword').value = '';
+};
 
+window.closePasswordModal = function() {
+  document.getElementById('passwordChangeModal').classList.remove('show');
+};
     // ================== API ==================
     async function apiCall(action, payload={}, overlay=false, title='', msg='') {
       if (overlay) setOverlay(true, title || 'Please wait…', msg || 'Processing…');
@@ -1301,6 +1329,14 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
         localStorage.setItem(lastLoginKey, new Date().toISOString());
         
         document.getElementById('userDisplay').textContent = `${data.user.name} (${data.user.role})`;
+           // 👇 NEW: Check if this is first login
+    if (data.user.firstLogin) {
+      // Show password change modal before showing main screen
+      openPasswordModal();
+      // Don't show main screen yet
+      document.getElementById('loginScreen').classList.add('hidden');
+      // Main screen will be shown after password change
+    } else {
         document.getElementById('loginScreen').classList.add('hidden');
         document.getElementById('mainScreen').classList.remove('hidden');
 
@@ -1889,6 +1925,37 @@ if (Math.abs(diff) >= 1000) {
           btn.disabled = false; 
         }
       });
+document.getElementById('saveNewPasswordBtn').addEventListener('click', async () => {
+    const newPass = document.getElementById('newPassword').value;
+    const confirmPass = document.getElementById('confirmPassword').value;
+    
+    if (!newPass || !confirmPass) {
+      showAlert('Please enter and confirm your new password', 'error');
+      return;
+    }
+    
+    if (newPass !== confirmPass) {
+      showAlert('Passwords do not match', 'error');
+      return;
+    }
+    
+    if (newPass.length < 6) {
+      showAlert('Password must be at least 6 characters', 'error');
+      return;
+    }
+   try {
+      await apiCall('changePassword', { newPassword: newPass }, true, 'Changing password...');
+      closePasswordModal();
+      
+      // Now show main screen
+      document.getElementById('mainScreen').classList.remove('hidden');
+      const date = document.getElementById('workDate').value;
+      await loadInit(date);
+      showAlert('Password changed successfully!', 'success');
+    } catch(e) {
+      showAlert(e.message, 'error');
+    }
+  });
 
       setActiveTab('Expense');
     });
