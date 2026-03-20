@@ -417,13 +417,14 @@
       </div>
 
       <!-- Tabs -->
-      <div class="tabs no-print">
-        <button id="tabExpense" class="tab active">1. Matumizi</button>
-        <button id="tabPocket" class="tab">2. Pocket Money</button>
-        <button id="tabCashCount" class="tab">3. Mauzo vs Cash</button>
-        <button id="tabDeposit" class="tab">4. Bank Deposit</button>
-        <button id="tabSearch" class="tab">5. 🔍 Tafuta</button>
-      </div>
+  <div class="tabs no-print">
+  <button id="tabExpense" class="tab active">1. Matumizi</button>
+  <button id="tabPocket" class="tab">2. Pocket Money</button>
+  <button id="tabCashCount" class="tab">3. Mauzo vs Cash</button>
+  <button id="tabDeposit" class="tab">4. Bank Deposit</button>
+  <button id="tabLoan" class="tab">5. Loan Request</button>
+  <button id="tabSearch" class="tab">6. 🔍 Tafuta</button>
+  </div>
 
       <!-- Expenses Tab -->
       <div id="expenseTab" class="card no-print">
@@ -579,7 +580,29 @@
           </div>
         </div>
       </div>
+      
+<!-- Loan Request Tab -->
+<div id="loanTab" class="card hidden no-print">
+  <h3>💵 Employee Loan Request</h3>
 
+  <div class="row">
+    <div>
+      <label for="loanEmployee">Employee</label>
+      <select id="loanEmployee">
+        <option value="">Chagua Employee</option>
+      </select>
+    </div>
+    <div>
+      <label for="loanAmount">Kiasi cha Loan (TZS)</label>
+      <input type="text" id="loanAmount" placeholder="Weka kiasi cha loan">
+    </div>
+  </div>
+
+  <label for="loanReason">Sababu / Maelezo</label>
+  <input type="text" id="loanReason" placeholder="Mfano: School fees, emergency, advance request">
+
+  <button class="primary-btn" id="saveLoanBtn">Save Loan Request</button>
+</div>
       <!-- Search Tab -->
       <div id="searchTab" class="card hidden no-print">
         <h3>🔍 Tafuta Transactions</h3>
@@ -602,6 +625,7 @@
               <option value="DEPOSIT">Deposit</option>
               <option value="CASH_REASON">Sababu za Upungufu</option>
               <option value="DIRECTOR_PAYMENT">Malipo ya Director</option>
+              <option value="EMPLOYEE_LOAN_REQUEST">Loan Request</option>
             </select>
           </div>
         </div>
@@ -869,7 +893,20 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
         sel.appendChild(o);
       });
     }
+    function populateEmployees() {
+  const sel = document.getElementById('loanEmployee');
+  if (!sel) return;
 
+  sel.innerHTML = '<option value="">Chagua Employee</option>';
+
+  EMPLOYEES.forEach(name => {
+    const o = document.createElement('option');
+    o.value = name;
+    o.textContent = name;
+    sel.appendChild(o);
+  });
+}
+    
     function renderDashboard(d) {
       document.getElementById('dashPocket').textContent = 'TZS ' + formatNumber(d.pocketClosing || 0);
       document.getElementById('dashOffice').textContent = 'TZS ' + formatNumber(d.officeExpected || 0);
@@ -1228,6 +1265,7 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
         else if (t.type === 'DEPOSIT') typeDisplay = 'Deposit';
         else if (t.type === 'CASH_REASON') typeDisplay = 'Sababu';
         else if (t.type === 'DIRECTOR_PAYMENT') typeDisplay = 'Malipo ya Director';
+        else if (t.type === 'EMPLOYEE_LOAN_REQUEST') typeDisplay = 'Loan Request';
         
         html += `
           <tr>
@@ -1280,18 +1318,20 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
     }
 
     // ================== TABS ==================
-    function setActiveTab(tab) {
-      const tabs = ['Expense','Pocket','CashCount','Deposit','Search'];
-      tabs.forEach(t => {
-        const el = document.getElementById(`tab${t}`);
-        if (el) el.classList.toggle('active', t === tab);
-      });
-      document.getElementById('expenseTab').classList.toggle('hidden', tab !== 'Expense');
-      document.getElementById('pocketTab').classList.toggle('hidden', tab !== 'Pocket');
-      document.getElementById('cashCountTab').classList.toggle('hidden', tab !== 'CashCount');
-      document.getElementById('depositTab').classList.toggle('hidden', tab !== 'Deposit');
-      document.getElementById('searchTab').classList.toggle('hidden', tab !== 'Search');
-    }
+   function setActiveTab(tab) {
+  const tabs = ['Expense','Pocket','CashCount','Deposit','Loan','Search'];
+  tabs.forEach(t => {
+    const el = document.getElementById(`tab${t}`);
+    if (el) el.classList.toggle('active', t === tab);
+  });
+
+  document.getElementById('expenseTab').classList.toggle('hidden', tab !== 'Expense');
+  document.getElementById('pocketTab').classList.toggle('hidden', tab !== 'Pocket');
+  document.getElementById('cashCountTab').classList.toggle('hidden', tab !== 'CashCount');
+  document.getElementById('depositTab').classList.toggle('hidden', tab !== 'Deposit');
+  document.getElementById('loanTab').classList.toggle('hidden', tab !== 'Loan');
+  document.getElementById('searchTab').classList.toggle('hidden', tab !== 'Search');
+}
     // ================== LOGIN ==================
 async function login() {
   const u = document.getElementById('username').value.trim().toLowerCase();
@@ -1662,9 +1702,10 @@ function calcDiffUI(){
     // ================== EVENT HANDLERS ==================
     document.addEventListener('DOMContentLoaded', () => {
       setTodayDefaults();
+      populateEmployees();
 
-      ['expenseAmount','pocketAmount','cashCountAmount','systemSalesAmount','depositOffice','depositDirector', 'directorPaymentAmount']
-        .forEach(attachMoney);
+   ['expenseAmount','pocketAmount','cashCountAmount','systemSalesAmount','depositOffice','depositDirector','directorPaymentAmount','loanAmount']
+  .forEach(attachMoney);
 
       // Add tooltips
       addTooltip('expenseCategory', 'Chagua aina ya matumizi kwenye orodha');
@@ -1697,6 +1738,7 @@ function calcDiffUI(){
       document.getElementById('tabCashCount').addEventListener('click', () => setActiveTab('CashCount'));
       document.getElementById('tabDeposit').addEventListener('click', () => setActiveTab('Deposit'));
       document.getElementById('tabSearch').addEventListener('click', () => setActiveTab('Search'));
+      document.getElementById('tabLoan').addEventListener('click', () => setActiveTab('Loan'));
 
       document.getElementById('addExpenseToListBtn').addEventListener('click', addExpenseToList);
       document.getElementById('saveAllExpensesBtn').addEventListener('click', saveAllExpenses);
@@ -1955,7 +1997,51 @@ document.getElementById('saveNewPasswordBtn').addEventListener('click', async ()
       showAlert(e.message, 'error');
     }
   });
+document.getElementById('saveLoanBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('saveLoanBtn');
+  btn.disabled = true;
 
+  try {
+    const date = document.getElementById('workDate').value;
+    const employee = document.getElementById('loanEmployee').value;
+    const amount = parseMoney(document.getElementById('loanAmount').value);
+    const reason = document.getElementById('loanReason').value.trim();
+
+    if (!date) {
+      showAlert('Tafadhali chagua tarehe', 'error');
+      return;
+    }
+
+    if (!employee) {
+      showAlert('Chagua employee', 'error');
+      return;
+    }
+
+    if (!amount || amount <= 0) {
+      showAlert('Weka kiasi sahihi cha loan', 'error');
+      return;
+    }
+
+    await addTx({
+      date,
+      type: 'EMPLOYEE_LOAN_REQUEST',
+      category: employee,
+      amount,
+      source: 'LOAN',
+      note: reason || 'Employee loan request'
+    });
+
+    document.getElementById('loanEmployee').value = '';
+    document.getElementById('loanAmount').value = '';
+    document.getElementById('loanReason').value = '';
+
+    showAlert('Loan request imehifadhiwa', 'success');
+  } catch (e) {
+    showAlert(e.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+});
       setActiveTab('Expense');
     });
   </script>
