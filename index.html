@@ -104,14 +104,7 @@
     .reason-row .reasonOther { flex: 3; display:none; }
     .reason-row .reasonAmount { width: 140px; }
     .reason-row .removeReasonBtn { padding:10px; }
-    
-    /* Tooltip styles */
-    .tooltip {
-      position: relative;
-      display: inline-block;
-      margin-left: 5px;
-      cursor: help;
-    }
+    .tooltip { position: relative; display: inline-block; margin-left: 5px; cursor: help; }
     .tooltip .tooltip-icon {
       display: inline-block;
       width: 18px;
@@ -163,8 +156,6 @@
       align-items: center;
       flex-wrap: wrap;
     }
-    
-    /* Expense list styles */
     .expense-list { margin:15px 0; max-height:300px; overflow-y:auto; border:1px solid #e6e9ef; border-radius:10px; }
     .expense-item { display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid #eef1f5; }
     .expense-item:last-child { border-bottom:none; }
@@ -181,8 +172,6 @@
     .amount-director { color:#b02a37; }
     .remove-expense { color:#b02a37; background:none; border:none; font-size:1.2rem; cursor:pointer; padding:5px 10px; }
     .expense-total { display:flex; justify-content:space-between; align-items:center; padding:15px; background:#f8fafc; border-radius:0 0 10px 10px; font-weight:800; border-top:2px solid #1e3a5f; }
-    
-    /* Director payment modal */
     .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center; }
     .modal.show { display:flex; }
     .modal-content { background:#fff; border-radius:14px; padding:24px; width:min(400px, 90%); max-height:90vh; overflow-y:auto; }
@@ -190,8 +179,6 @@
     .modal-header h3 { margin:0; }
     .close-modal { font-size:1.5rem; cursor:pointer; color:#6c757d; }
     .close-modal:hover { color:#1e3a5f; }
-    
-    /* Print styles */
     @media print {
       body { background: white; padding: 0; }
       .no-print { display: none !important; }
@@ -200,8 +187,6 @@
       .stat-box { border: 1px solid #ddd; }
     }
     .print-only { display: none; }
-    
-    /* Search results table */
     #searchResults {
       margin-top: 20px;
       max-height: 400px;
@@ -232,7 +217,6 @@
       background: #f8fafc;
       border-radius: 10px;
     }
-    
     @media (max-width: 640px) { 
       body{padding:14px;} 
       .row{grid-template-columns:1fr;} 
@@ -260,53 +244,46 @@
     </div>
   </div>
 
-  <!-- DIRECTOR PAYMENT MODAL -->
   <div id="directorPaymentModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h3>💰 Lipa Director</h3>
         <span class="close-modal" onclick="closeDirectorModal()">&times;</span>
       </div>
-      
       <div class="stat-box" style="margin-bottom:15px;">
         <div class="stat-label">Deni la Director</div>
         <div class="stat-value" id="modalDirectorDebt">TZS 0</div>
       </div>
-      
       <label>Kiasi cha Kulipa (TZS)</label>
       <input type="text" id="directorPaymentAmount" placeholder="Weka kiasi">
-      
       <label>Maelezo</label>
       <input type="text" id="directorPaymentNote" placeholder="e.g., Reimbursement for Internet">
-      
       <div class="row" style="margin-top:10px;">
         <button class="secondary-btn" onclick="closeDirectorModal()">Ghairi</button>
         <button class="primary-btn" id="confirmDirectorPaymentBtn">Lipa</button>
       </div>
     </div>
   </div>
-<div id="passwordChangeModal" class="modal">
+
+  <div id="passwordChangeModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h3>🔐 Change Your Password</h3>
         <span class="close-modal" onclick="closePasswordModal()">&times;</span>
       </div>
       <p style="margin-bottom:15px; color:#6c757d;">This is your first login. Please set a new password.</p>
-      
       <label>New Password</label>
       <input type="password" id="newPassword" placeholder="Enter new password">
-      
       <label>Confirm New Password</label>
       <input type="password" id="confirmPassword" placeholder="Confirm new password">
-      
       <div class="row" style="margin-top:15px;">
         <button class="secondary-btn" onclick="closePasswordModal()">Cancel</button>
         <button class="primary-btn" id="saveNewPasswordBtn">Save Password</button>
       </div>
     </div>
   </div>
+
   <div class="container">
-    <!-- LOGIN -->
     <div id="loginScreen" class="card">
       <div class="app-title">Clinic Cash Management</div>
       <div id="loginAlert" class="alert"></div>
@@ -320,7 +297,6 @@
       <button class="primary-btn" id="loginBtn">Login</button>
     </div>
 
-    <!-- MAIN -->
     <div id="mainScreen" class="hidden">
       <div class="topbar">
         <div class="app-title">Cash Management</div>
@@ -346,9 +322,6 @@
         </div>
       </div>
 
-      <!-- DASHBOARD - REORGANIZED INTO CLEAR SECTIONS -->
-      
-      <!-- SECTION 1: POCKET MONEY -->
       <div class="section-card pocket">
         <h3 style="display:flex; align-items:center; margin-bottom:15px;">
           💰 POCKET MONEY
@@ -370,7 +343,6 @@
         </div>
       </div>
 
-      <!-- SECTION 2: CASH & SALES -->
       <div class="section-card cash">
         <h3 style="display:flex; align-items:center; margin-bottom:15px;">
           📊 CASH & SALES
@@ -398,7 +370,6 @@
         </div>
       </div>
 
-      <!-- SECTION 3: DIRECTOR -->
       <div class="section-card director">
         <h3 style="display:flex; align-items:center; margin-bottom:15px;">
           👤 DIRECTOR
@@ -416,17 +387,15 @@
         </div>
       </div>
 
-      <!-- Tabs -->
-  <div class="tabs no-print">
-  <button id="tabExpense" class="tab active">1. Matumizi</button>
-  <button id="tabPocket" class="tab">2. Pocket Money</button>
-  <button id="tabCashCount" class="tab">3. Mauzo vs Cash</button>
-  <button id="tabDeposit" class="tab">4. Bank Deposit</button>
-  <button id="tabLoan" class="tab">5. Loan Request</button>
-  <button id="tabSearch" class="tab">6. 🔍 Tafuta</button>
-  </div>
+      <div class="tabs no-print">
+        <button id="tabExpense" class="tab active">1. Matumizi</button>
+        <button id="tabPocket" class="tab">2. Pocket Money</button>
+        <button id="tabCashCount" class="tab">3. Mauzo vs Cash</button>
+        <button id="tabDeposit" class="tab">4. Bank Deposit</button>
+        <button id="tabLoan" class="tab">5. Loan Request</button>
+        <button id="tabSearch" class="tab">6. 🔍 Tafuta</button>
+      </div>
 
-      <!-- Expenses Tab -->
       <div id="expenseTab" class="card no-print">
         <h3>💰 Record Matumizi</h3>
 
@@ -464,7 +433,6 @@
           <button class="primary-btn" id="saveAllExpensesBtn" disabled>💾 Hifadhi Matumizi Yote</button>
         </div>
 
-        <!-- Expense List -->
         <div id="expenseListContainer" class="hidden">
           <h4>Orodha ya Matumizi</h4>
           <div class="expense-list" id="expenseList"></div>
@@ -475,7 +443,6 @@
         </div>
       </div>
 
-      <!-- Pocket Tab -->
       <div id="pocketTab" class="card hidden no-print">
         <h3>👝 Pocket Top-up</h3>
 
@@ -499,7 +466,6 @@
         <button class="primary-btn" id="savePocketBtn">Save Pocket Top-up</button>
       </div>
 
-      <!-- Mauzo vs Cash Tab -->
       <div id="cashCountTab" class="card hidden no-print">
         <h3>📊 Mauzo ya Mfumo vs Cash Iliyohesabiwa</h3>
 
@@ -552,7 +518,6 @@
         </template>
       </div>
 
-      <!-- Deposit Tab -->
       <div id="depositTab" class="card hidden no-print">
         <h3>🏦 Bank Deposit</h3>
 
@@ -580,30 +545,29 @@
           </div>
         </div>
       </div>
-      
-<!-- Loan Request Tab -->
-<div id="loanTab" class="card hidden no-print">
-  <h3>💵 Employee Loan Request</h3>
 
-  <div class="row">
-    <div>
-      <label for="loanEmployee">Employee</label>
-      <select id="loanEmployee">
-        <option value="">Chagua Employee</option>
-      </select>
-    </div>
-    <div>
-      <label for="loanAmount">Kiasi cha Loan (TZS)</label>
-      <input type="text" id="loanAmount" placeholder="Weka kiasi cha loan">
-    </div>
-  </div>
+      <div id="loanTab" class="card hidden no-print">
+        <h3>💵 Employee Loan Request</h3>
 
-  <label for="loanReason">Sababu / Maelezo</label>
-  <input type="text" id="loanReason" placeholder="Mfano: School fees, emergency, advance request">
+        <div class="row">
+          <div>
+            <label for="loanEmployee">Employee</label>
+            <select id="loanEmployee">
+              <option value="">Chagua Employee</option>
+            </select>
+          </div>
+          <div>
+            <label for="loanAmount">Kiasi cha Loan (TZS)</label>
+            <input type="text" id="loanAmount" placeholder="Weka kiasi cha loan">
+          </div>
+        </div>
 
-  <button class="primary-btn" id="saveLoanBtn">Save Loan Request</button>
-</div>
-      <!-- Search Tab -->
+        <label for="loanReason">Sababu / Maelezo</label>
+        <input type="text" id="loanReason" placeholder="Mfano: School fees, emergency, advance request">
+
+        <button class="primary-btn" id="saveLoanBtn">Save Loan Request</button>
+      </div>
+
       <div id="searchTab" class="card hidden no-print">
         <h3>🔍 Tafuta Transactions</h3>
         
@@ -641,6 +605,7 @@
               <option value="OFFICE">Office</option>
               <option value="SYSTEM">System</option>
               <option value="REASON">Reason</option>
+              <option value="LOAN">Loan</option>
             </select>
           </div>
           <div>
@@ -686,50 +651,25 @@
   </div>
 
   <script>
-    // ================== CONFIG ==================
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzS65VR2IOqbcYwNUjtQnrwutJsPaV3Z1mskYYyuC87IAX1IZeM0mssYRiFwLGaTOOx/exec";
     
     const USERS = {
-      // Cashiers
       Brigita: { password: 'clinic1234', role: 'Cashier', name: 'Brigita' },
       Angel: { password: 'stgeorge1234', role: 'Cashier', name: 'Angel' },
       mercy: { password: 'mercy2026', role: 'Cashier', name: 'Mercy' },
       david: { password: 'david2026', role: 'Cashier', name: 'David' },
       sarah: { password: 'sarah2026', role: 'Cashier', name: 'Sarah' },
-      
-      // Admin (can also be a cashier)
       admin: { password: 'admin123', role: 'Admin', name: 'Administrator' }
     };
-const EMPLOYEES = [
-"BENJAMIN",
-"CHRISTINE",
-"MANUFRED",
-"GLORIA",
-"ALVIN", 
-"DYITEGE",
-"NDASYA",
-"ABUBAKARY",
-"DAUDI", 
-"MAKRINA",
-"ANGEL",
-"BRIGITA",
-"ANTHONY",
-"ANNA",
-"PATRICK",
-"ISAKA",
-"ROSE",
-"SIMON"
-  // add more names here
-];
-    // ================== STATE ==================
+
     let currentUser = null;
     let categories = [];
+    let employees = [];
     let pendingExpenses = [];
     let directorDebt = 0;
     let sessionToken = null;
     let lastLoginTime = null;
 
-    // ================== UI HELPERS ==================
     function setOverlay(show, title='Please wait…', msg='Processing…') {
       document.getElementById('loadingTitle').textContent = title;
       document.getElementById('loadingMsg').textContent = msg;
@@ -767,27 +707,20 @@ const EMPLOYEES = [
       document.getElementById('workDate').value = `${yyyy}-${mm}-${dd}`;
     }
 
-    // Tooltip helper
     function addTooltip(labelId, tooltipText) {
       const label = document.querySelector(`label[for="${labelId}"]`);
       if (!label) return;
-      
-      // Wrap the label content
       const wrapper = document.createElement('div');
       wrapper.className = 'label-with-tooltip';
       wrapper.innerHTML = label.innerHTML;
-      
-      // Add tooltip
       const tooltip = document.createElement('span');
       tooltip.className = 'tooltip';
       tooltip.innerHTML = `<span class="tooltip-icon">?</span><span class="tooltip-text">${tooltipText}</span>`;
-      
       wrapper.appendChild(tooltip);
       label.innerHTML = '';
       label.appendChild(wrapper);
     }
 
-    // Director payment modal functions
     window.openDirectorModal = function() {
       document.getElementById('directorPaymentModal').classList.add('show');
       document.getElementById('directorPaymentAmount').value = '';
@@ -798,25 +731,22 @@ const EMPLOYEES = [
     window.closeDirectorModal = function() {
       document.getElementById('directorPaymentModal').classList.remove('show');
     };
-// Password change modal functions
-window.openPasswordModal = function() {
-  document.getElementById('passwordChangeModal').classList.add('show');
-  document.getElementById('newPassword').value = '';
-  document.getElementById('confirmPassword').value = '';
-};
 
-window.closePasswordModal = function() {
-  document.getElementById('passwordChangeModal').classList.remove('show');
-};
-    // ================== API ==================
+    window.openPasswordModal = function() {
+      document.getElementById('passwordChangeModal').classList.add('show');
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+    };
+
+    window.closePasswordModal = function() {
+      document.getElementById('passwordChangeModal').classList.remove('show');
+    };
+
     async function apiCall(action, payload={}, overlay=false, title='', msg='') {
       if (overlay) setOverlay(true, title || 'Please wait…', msg || 'Processing…');
       try {
-        // Add session token if available
-        if (sessionToken) {
-          payload.token = sessionToken;
-        }
-        
+        if (sessionToken) payload.token = sessionToken;
+
         const body = new URLSearchParams({ action, ...payload });
         const res = await fetch(SCRIPT_URL, {
           method: 'POST',
@@ -827,14 +757,13 @@ window.closePasswordModal = function() {
 
         const txt = await res.text();
         let data = JSON.parse(txt);
-        
-        // Check if session expired
+
         if (data.needLogin) {
           showAlert('Session expired. Please login again.', 'warning');
           logout();
           return;
         }
-        
+
         if (!data.success) throw new Error(data.error || 'Request failed');
         return data;
       } catch(e) {
@@ -843,47 +772,34 @@ window.closePasswordModal = function() {
         if (overlay) setOverlay(false);
       }
     }
-// Add this new function near your other API functions (like apiCall, addTx, etc.)
-async function sendDifferenceEmail(date, systemSales, cashCounted, difference, cashier) {
-  try {
-    // Call the backend silently - no overlay, no user notification
-    await apiCall('sendDifferenceAlert', {
-      date,
-      systemSales,
-      cashCounted,
-      difference,
-      cashier
-    }, false); // false means no loading overlay
-    console.log('Email alert triggered successfully');
-  } catch(e) {
-    // Log error but don't show to user - keep it silent
-    console.error('Failed to send email alert:', e);
-  }
-}
+
+    async function sendDifferenceEmail(date, systemSales, cashCounted, difference, cashier) {
+      try {
+        await apiCall('sendDifferenceAlert', {
+          date,
+          systemSales,
+          cashCounted,
+          difference,
+          cashier
+        }, false);
+        console.log('Email alert triggered successfully');
+      } catch(e) {
+        console.error('Failed to send email alert:', e);
+      }
+    }
+
     function fillCategories() {
       const sel = document.getElementById('expenseCategory');
       const debug = document.getElementById('categoriesDebug');
-      
-      if (!sel) {
-        console.error('Category select element not found');
-        return;
-      }
-      
+      if (!sel) return;
       sel.innerHTML = '<option value="">Chagua Matumizi</option>';
-      
-      console.log('Filling categories. Length:', categories ? categories.length : 0);
-      console.log('Categories array:', categories);
-      
+
       if (!categories || categories.length === 0) {
         debug.textContent = '⚠️ Hakuna categories, tumia default';
-        // Add default categories
-        const defaultCats = [
-          "Ambulance", "Bahasha", "Chakula", "Internet", "Mengineyo", 
-          "Nauli", "Umeme", "Vifaa vya Usafi", "Stationeries", "Ufundi"
-        ];
+        const defaultCats = ["Ambulance", "Bahasha", "Chakula", "Internet", "Mengineyo", "Nauli", "Umeme", "Vifaa vya Usafi", "Stationeries", "Ufundi"];
         defaultCats.forEach(c => {
           const o = document.createElement('option');
-          o.value = c; 
+          o.value = c;
           o.textContent = c;
           sel.appendChild(o);
         });
@@ -891,20 +807,17 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
       } else {
         categories.forEach(c => {
           const o = document.createElement('option');
-          o.value = c; 
+          o.value = c;
           o.textContent = c;
           sel.appendChild(o);
         });
         debug.textContent = `✓ Categories ${categories.length} zimepakia`;
       }
-      
-      console.log('Options after fill:', sel.options.length);
     }
 
     function populateSearchCategories() {
       const sel = document.getElementById('searchCategory');
-      if (!sel || !categories.length) return;
-      
+      if (!sel) return;
       sel.innerHTML = '<option value="">Zote</option>';
       categories.forEach(c => {
         const o = document.createElement('option');
@@ -913,20 +826,29 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
         sel.appendChild(o);
       });
     }
+
     function populateEmployees() {
-  const sel = document.getElementById('loanEmployee');
-  if (!sel) return;
+      const sel = document.getElementById('loanEmployee');
+      if (!sel) return;
 
-  sel.innerHTML = '<option value="">Chagua Employee</option>';
+      sel.innerHTML = '<option value="">Chagua Employee</option>';
 
-  EMPLOYEES.forEach(name => {
-    const o = document.createElement('option');
-    o.value = name;
-    o.textContent = name;
-    sel.appendChild(o);
-  });
-}
-    
+      if (!employees || employees.length === 0) {
+        const o = document.createElement('option');
+        o.value = '';
+        o.textContent = 'Hakuna employees';
+        sel.appendChild(o);
+        return;
+      }
+
+      employees.forEach(name => {
+        const o = document.createElement('option');
+        o.value = name;
+        o.textContent = name;
+        sel.appendChild(o);
+      });
+    }
+
     function renderDashboard(d) {
       document.getElementById('dashPocket').textContent = 'TZS ' + formatNumber(d.pocketClosing || 0);
       document.getElementById('dashOffice').textContent = 'TZS ' + formatNumber(d.officeExpected || 0);
@@ -935,7 +857,6 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
       document.getElementById('dashPending').textContent = 'TZS ' + formatNumber(d.pendingDeposit || 0);
       document.getElementById('dashSystemSales').textContent = 'TZS ' + formatNumber(d.systemSales || 0);
       document.getElementById('dashTotalExpenses').textContent = 'TZS ' + formatNumber(d.totalExpenses || 0);
-      
       directorDebt = d.directorDebt || 0;
       document.getElementById('dashDirectorDebt').textContent = 'TZS ' + formatNumber(directorDebt);
     }
@@ -943,47 +864,44 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
     async function loadInit(date) {
       try {
         setOverlay(true, 'Loading…', 'Fetching categories and dashboard');
-        console.log('Loading init for date:', date);
-        
         const data = await apiCall('getInit', { date }, false);
-        console.log('Init data received:', data);
-        
-        // Handle categories - use default if none provided
+
         if (data.categories && Array.isArray(data.categories) && data.categories.length > 0) {
           categories = data.categories;
-          console.log('Categories loaded from server:', categories.length);
         } else {
-          // Default categories in case server returns none
           categories = [
-            "Ambulance", "Bahasha", "Chakula", "EFD Machine Service", "ENT", "Eye", 
-            "Generator", "Internet", "Kuchoma Takataka", "Laboratory", "Mafuta ya Gari Director", 
-            "Matangazo Redio", "Mengineyo", "Mobile Bundle", "Nauli", "Nauli ya OT", "OBGY", 
-            "OT", "Peditrician", "Physiotherapy", "Purchases", "Replacement of Items", 
+            "Ambulance", "Bahasha", "Chakula", "EFD Machine Service", "ENT", "Eye",
+            "Generator", "Internet", "Kuchoma Takataka", "Laboratory", "Mafuta ya Gari Director",
+            "Matangazo Redio", "Mengineyo", "Mobile Bundle", "Nauli", "Nauli ya OT", "OBGY",
+            "OT", "Peditrician", "Physiotherapy", "Purchases", "Replacement of Items",
             "Stationeries", "Ufundi", "Umeme", "USS", "Vifaa vya Usafi", "Waybill"
           ];
-          console.log('Using default categories:', categories.length);
         }
-        
+
+        if (data.employees && Array.isArray(data.employees)) {
+          employees = data.employees;
+        } else {
+          employees = [];
+        }
+
         fillCategories();
         populateSearchCategories();
+        populateEmployees();
         renderDashboard(data.dashboard || {});
         setOverlay(false);
         showAlert('Data imepakiwa', 'success');
       } catch(e) {
         setOverlay(false);
-        console.error('Error loading:', e);
-        
-        // Still show default categories even if API fails
         categories = [
-          "Ambulance", "Bahasha", "Chakula", "EFD Machine Service", "ENT", "Eye", 
-          "Generator", "Internet", "Kuchoma Takataka", "Laboratory", "Mafuta ya Gari Director", 
-          "Matangazo Redio", "Mengineyo", "Mobile Bundle", "Nauli", "Nauli ya OT", "OBGY", 
-          "OT", "Peditrician", "Physiotherapy", "Purchases", "Replacement of Items", 
+          "Ambulance", "Bahasha", "Chakula", "EFD Machine Service", "ENT", "Eye",
+          "Generator", "Internet", "Kuchoma Takataka", "Laboratory", "Mafuta ya Gari Director",
+          "Matangazo Redio", "Mengineyo", "Mobile Bundle", "Nauli", "Nauli ya OT", "OBGY",
+          "OT", "Peditrician", "Physiotherapy", "Purchases", "Replacement of Items",
           "Stationeries", "Ufundi", "Umeme", "USS", "Vifaa vya Usafi", "Waybill"
         ];
         fillCategories();
         populateSearchCategories();
-        
+        populateEmployees();
         showAlert('Error loading: ' + e.message + ' - Using default categories', 'warning');
       }
     }
@@ -1006,8 +924,8 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
 
     async function addTx({date, type, category, amount, source, note}) {
       const payload = {
-        date, 
-        type, 
+        date,
+        type,
         category: category || '',
         amount: String(amount),
         source: source || '',
@@ -1015,62 +933,38 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
         cashier: currentUser?.username || 'Unknown',
         ref: makeRef()
       };
-      console.log('Saving transaction:', payload);
-      const res = await apiCall('addTx', payload, true, 'Saving…', 'Writing to Transactions');
-      return res;
+      return await apiCall('addTx', payload, true, 'Saving…', 'Writing to Transactions');
     }
 
     async function addBulkTx(transactions) {
-      const payload = {
-        transactions: JSON.stringify(transactions)
-      };
-      console.log('Saving bulk transactions:', transactions);
-      const res = await apiCall('addBulkTx', payload, true, 'Saving…', 'Processing all entries');
-      return res;
+      const payload = { transactions: JSON.stringify(transactions) };
+      return await apiCall('addBulkTx', payload, true, 'Saving…', 'Processing all entries');
     }
 
-    // ================== PRINT POCKET REPORT ==================
     async function printPocketReport() {
       try {
         const date = document.getElementById('workDate').value;
-        
-        if (!date) {
-          showAlert('Tafadhali chagua tarehe', 'error');
-          return;
-        }
-        
+        if (!date) return showAlert('Tafadhali chagua tarehe', 'error');
+
         setOverlay(true, 'Preparing report…', 'Fetching data');
-        
         const printData = await apiCall('getPrintData', { date }, false);
-        
+
         const expenses = printData.expenses || [];
         const pocketOpening = printData.pocketOpening || 0;
         const pocketTopups = printData.pocketTopups || 0;
         const pocketClosing = printData.pocketClosing || 0;
-        
         const totalExpenses = expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
-        
+
         const today = new Date();
-        const formattedDate = today.toLocaleDateString('sw-TZ', { 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric'
-        });
-        
-        const formattedTime = today.toLocaleTimeString('sw-TZ', {
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-        
+        const formattedDate = today.toLocaleDateString('sw-TZ', { year: 'numeric', month: 'long', day: 'numeric' });
+        const formattedTime = today.toLocaleTimeString('sw-TZ', { hour: '2-digit', minute: '2-digit' });
+
         let expensesHtml = '';
-        
         if (expenses.length === 0) {
           expensesHtml = '<tr><td colspan="4" style="text-align:center; padding:20px;">Hakuna matumizi leo</td></tr>';
         } else {
           expenses.forEach(exp => {
-            const sourceDisplay = exp.source === 'POCKET' ? 'Pocket' : 
-                                 exp.source === 'SALES' ? 'Mauzo' : 'Director';
-            
+            const sourceDisplay = exp.source === 'POCKET' ? 'Pocket' : exp.source === 'SALES' ? 'Mauzo' : 'Director';
             expensesHtml += `
               <tr>
                 <td>${exp.category}</td>
@@ -1081,99 +975,29 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
             `;
           });
         }
-        
+
         setOverlay(false);
-        
+
         const printWindow = window.open('', '_blank');
         printWindow.document.write(`
           <html>
             <head>
               <title>Pocket Report - ${date}</title>
               <style>
-                body { 
-                  font-family: "Segoe UI", Roboto, sans-serif; 
-                  padding: 40px; 
-                  margin: 0;
-                  background: white;
-                }
-                .print-header { 
-                  text-align: center; 
-                  margin-bottom: 30px; 
-                  border-bottom: 2px solid #1e3a5f;
-                  padding-bottom: 20px;
-                }
-                .print-header h1 { 
-                  color: #1e3a5f; 
-                  margin-bottom: 5px; 
-                  font-size: 24px;
-                }
-                .print-header p { 
-                  color: #6c757d; 
-                  margin: 5px 0;
-                }
-                .summary-box {
-                  background: #f8fafc;
-                  padding: 20px;
-                  border-radius: 10px;
-                  margin: 20px 0;
-                  border: 1px solid #e6e9ef;
-                }
-                .summary-row {
-                  display: flex;
-                  justify-content: space-between;
-                  margin-bottom: 10px;
-                  font-size: 16px;
-                }
-                .summary-row.total {
-                  border-top: 2px solid #1e3a5f;
-                  padding-top: 10px;
-                  margin-top: 10px;
-                  font-weight: 800;
-                  font-size: 18px;
-                }
-                .print-table { 
-                  width:100%; 
-                  border-collapse: collapse; 
-                  margin:20px 0; 
-                }
-                .print-table th { 
-                  background:#1e3a5f; 
-                  color:white; 
-                  padding:12px; 
-                  text-align:left; 
-                  font-size: 14px;
-                }
-                .print-table td { 
-                  padding:12px; 
-                  border-bottom:1px solid #eef1f5; 
-                  font-size: 14px;
-                }
-                .print-table tr:last-child td { 
-                  border-bottom:none; 
-                }
-                .print-total { 
-                  font-weight:800; 
-                  background:#f8fafc; 
-                }
-                .print-total td {
-                  padding:15px 12px;
-                }
-                .footer {
-                  margin-top: 40px;
-                  text-align: center;
-                  color: #6c757d;
-                  font-size: 12px;
-                  border-top: 1px solid #eef1f5;
-                  padding-top: 20px;
-                }
-                @media print {
-                  body { 
-                    padding: 20px; 
-                  }
-                  .print-header {
-                    margin-bottom: 20px;
-                  }
-                }
+                body { font-family: "Segoe UI", Roboto, sans-serif; padding: 40px; margin: 0; background: white; }
+                .print-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #1e3a5f; padding-bottom: 20px; }
+                .print-header h1 { color: #1e3a5f; margin-bottom: 5px; font-size: 24px; }
+                .print-header p { color: #6c757d; margin: 5px 0; }
+                .summary-box { background: #f8fafc; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #e6e9ef; }
+                .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; }
+                .summary-row.total { border-top: 2px solid #1e3a5f; padding-top: 10px; margin-top: 10px; font-weight: 800; font-size: 18px; }
+                .print-table { width:100%; border-collapse: collapse; margin:20px 0; }
+                .print-table th { background:#1e3a5f; color:white; padding:12px; text-align:left; font-size: 14px; }
+                .print-table td { padding:12px; border-bottom:1px solid #eef1f5; font-size: 14px; }
+                .print-table tr:last-child td { border-bottom:none; }
+                .print-total { font-weight:800; background:#f8fafc; }
+                .print-total td { padding:15px 12px; }
+                .footer { margin-top: 40px; text-align: center; color: #6c757d; font-size: 12px; border-top: 1px solid #eef1f5; padding-top: 20px; }
               </style>
             </head>
             <body>
@@ -1182,7 +1006,6 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
                 <p>Tarehe: ${date}</p>
                 <p>Cashier: ${currentUser?.username || 'Unknown'}</p>
               </div>
-              
               <div class="summary-box">
                 <div class="summary-row">
                   <span>Pocket Money Opening:</span>
@@ -1197,9 +1020,7 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
                   <span><strong>TZS ${formatNumber(pocketClosing)}</strong></span>
                 </div>
               </div>
-              
               <h3 style="margin:20px 0 10px; color:#1e3a5f;">EXPENSES</h3>
-              
               <table class="print-table">
                 <thead>
                   <tr>
@@ -1219,7 +1040,6 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
                   </tr>
                 </tfoot>
               </table>
-              
               <div class="footer">
                 <p>Imechapishwa: ${formattedDate} ${formattedTime}</p>
                 <p>© Clinic Cash Management System</p>
@@ -1227,33 +1047,25 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
             </body>
           </html>
         `);
-        
         printWindow.document.close();
         printWindow.focus();
         printWindow.print();
-        
       } catch(e) {
         setOverlay(false);
-        console.error('Print error:', e);
         showAlert('Error preparing report: ' + e.message, 'error');
       }
     }
 
-    // ================== SEARCH FUNCTIONS ==================
     async function searchTransactions() {
       const fromDate = document.getElementById('searchDateFrom').value;
       const toDate = document.getElementById('searchDateTo').value;
       const type = document.getElementById('searchType').value;
       const source = document.getElementById('searchSource').value;
       const category = document.getElementById('searchCategory').value;
-      
+
       setOverlay(true, 'Searching…', 'Fetching transactions');
-      
       try {
-        const data = await apiCall('searchTransactions', {
-          fromDate, toDate, type, source, category
-        }, false);
-        
+        const data = await apiCall('searchTransactions', { fromDate, toDate, type, source, category }, false);
         displaySearchResults(data.transactions || []);
       } catch(e) {
         showAlert('Error searching: ' + e.message, 'error');
@@ -1265,20 +1077,18 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
     function displaySearchResults(transactions) {
       const tbody = document.getElementById('searchResultsBody');
       const summary = document.getElementById('searchSummary');
-      
+
       if (!transactions || transactions.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">Hakuna matokeo</td></tr>';
         summary.innerHTML = 'Jumla: TZS 0';
         return;
       }
-      
+
       let html = '';
       let total = 0;
-      
+
       transactions.forEach(t => {
         total += t.amount;
-        
-        // Translate type for display
         let typeDisplay = t.type;
         if (t.type === 'EXPENSE') typeDisplay = 'Matumizi';
         else if (t.type === 'POCKET_TOPUP') typeDisplay = 'Pocket Top-up';
@@ -1286,7 +1096,7 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
         else if (t.type === 'CASH_REASON') typeDisplay = 'Sababu';
         else if (t.type === 'DIRECTOR_PAYMENT') typeDisplay = 'Malipo ya Director';
         else if (t.type === 'EMPLOYEE_LOAN_REQUEST') typeDisplay = 'Loan Request';
-        
+
         html += `
           <tr>
             <td style="padding:8px;">${t.date}</td>
@@ -1299,7 +1109,7 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
           </tr>
         `;
       });
-      
+
       tbody.innerHTML = html;
       summary.innerHTML = `Jumla: TZS ${formatNumber(total)}`;
     }
@@ -1310,9 +1120,8 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
         showAlert('Hakuna data ya kuexport', 'warning');
         return;
       }
-      
+
       let csv = 'Tarehe,Aina,Category,Kiasi,Chanzo,Maelezo,Cashier\n';
-      
       rows.forEach(row => {
         const cols = row.querySelectorAll('td');
         if (cols.length >= 7) {
@@ -1328,7 +1137,7 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
           csv += rowData.join(',') + '\n';
         }
       });
-      
+
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1337,104 +1146,92 @@ async function sendDifferenceEmail(date, systemSales, cashCounted, difference, c
       a.click();
     }
 
-    // ================== TABS ==================
-   function setActiveTab(tab) {
-  const tabs = ['Expense','Pocket','CashCount','Deposit','Loan','Search'];
-  tabs.forEach(t => {
-    const el = document.getElementById(`tab${t}`);
-    if (el) el.classList.toggle('active', t === tab);
-  });
+    function setActiveTab(tab) {
+      const tabs = ['Expense','Pocket','CashCount','Deposit','Loan','Search'];
+      tabs.forEach(t => {
+        const el = document.getElementById(`tab${t}`);
+        if (el) el.classList.toggle('active', t === tab);
+      });
+      document.getElementById('expenseTab').classList.toggle('hidden', tab !== 'Expense');
+      document.getElementById('pocketTab').classList.toggle('hidden', tab !== 'Pocket');
+      document.getElementById('cashCountTab').classList.toggle('hidden', tab !== 'CashCount');
+      document.getElementById('depositTab').classList.toggle('hidden', tab !== 'Deposit');
+      document.getElementById('loanTab').classList.toggle('hidden', tab !== 'Loan');
+      document.getElementById('searchTab').classList.toggle('hidden', tab !== 'Search');
+    }
 
-  document.getElementById('expenseTab').classList.toggle('hidden', tab !== 'Expense');
-  document.getElementById('pocketTab').classList.toggle('hidden', tab !== 'Pocket');
-  document.getElementById('cashCountTab').classList.toggle('hidden', tab !== 'CashCount');
-  document.getElementById('depositTab').classList.toggle('hidden', tab !== 'Deposit');
-  document.getElementById('loanTab').classList.toggle('hidden', tab !== 'Loan');
-  document.getElementById('searchTab').classList.toggle('hidden', tab !== 'Search');
-}
-    // ================== LOGIN ==================
-async function login() {
-  const u = document.getElementById('username').value.trim().toLowerCase();
-  const p = document.getElementById('password').value;
+    async function login() {
+      const u = document.getElementById('username').value.trim().toLowerCase();
+      const p = document.getElementById('password').value;
 
-  try {
-    const data = await apiCall('login', { username: u, password: p }, true);
-    sessionToken = data.token;
-    currentUser = data.user;
-    
-    // Store login time
-    lastLoginTime = new Date();
-    
-    // Get last login from localStorage
-    const lastLoginKey = `lastLogin_${currentUser.username}`;
-    const previousLogin = localStorage.getItem(lastLoginKey);
-    
-    if (previousLogin) {
-      const lastDate = new Date(previousLogin);
-      const now = new Date();
-      const hoursAgo = Math.round((now - lastDate) / (1000 * 60 * 60));
-      
-      const badge = document.getElementById('lastLoginBadge');
-      if (hoursAgo < 24) {
-        badge.textContent = `Last login: ${hoursAgo} hour${hoursAgo > 1 ? 's' : ''} ago`;
-      } else {
-        const daysAgo = Math.round(hoursAgo / 24);
-        badge.textContent = `Last login: ${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`;
+      try {
+        const data = await apiCall('login', { username: u, password: p }, true);
+        sessionToken = data.token;
+        currentUser = data.user;
+        lastLoginTime = new Date();
+
+        const lastLoginKey = `lastLogin_${currentUser.username}`;
+        const previousLogin = localStorage.getItem(lastLoginKey);
+
+        if (previousLogin) {
+          const lastDate = new Date(previousLogin);
+          const now = new Date();
+          const hoursAgo = Math.round((now - lastDate) / (1000 * 60 * 60));
+          const badge = document.getElementById('lastLoginBadge');
+          if (hoursAgo < 24) {
+            badge.textContent = `Last login: ${hoursAgo} hour${hoursAgo > 1 ? 's' : ''} ago`;
+          } else {
+            const daysAgo = Math.round(hoursAgo / 24);
+            badge.textContent = `Last login: ${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`;
+          }
+          badge.style.display = 'block';
+        }
+
+        localStorage.setItem(lastLoginKey, new Date().toISOString());
+        document.getElementById('userDisplay').textContent = `${data.user.name} (${data.user.role})`;
+
+        if (data.user.firstLogin) {
+          openPasswordModal();
+          document.getElementById('loginScreen').classList.add('hidden');
+        } else {
+          document.getElementById('loginScreen').classList.add('hidden');
+          document.getElementById('mainScreen').classList.remove('hidden');
+          const date = document.getElementById('workDate').value;
+          await loadInit(date);
+          showAlert(`Welcome ${data.user.name}!`, 'success');
+        }
+      } catch(e) {
+        showAlert('Invalid username or password', 'error', 'login');
       }
-      badge.style.display = 'block';
     }
-    
-    // Save this login
-    localStorage.setItem(lastLoginKey, new Date().toISOString());
-    
-    document.getElementById('userDisplay').textContent = `${data.user.name} (${data.user.role})`;
-    
-    // Check if this is first login
-    if (data.user.firstLogin) {
-      // Show password change modal before showing main screen
-      openPasswordModal();
-      // Don't show main screen yet
-      document.getElementById('loginScreen').classList.add('hidden');
-      // Main screen will be shown after password change
-    } else {
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('mainScreen').classList.remove('hidden');
-      const date = document.getElementById('workDate').value;
-      await loadInit(date);
-      showAlert(`Welcome ${data.user.name}!`, 'success');
-    }
-  } catch(e) {
-    showAlert('Invalid username or password', 'error', 'login');
-  }
-}
+
     function logout() { location.reload(); }
 
-    // ================== MULTIPLE EXPENSES LOGIC ==================
     function updateExpenseList() {
       const container = document.getElementById('expenseListContainer');
       const listEl = document.getElementById('expenseList');
       const totalEl = document.getElementById('expenseListTotal');
       const saveBtn = document.getElementById('saveAllExpensesBtn');
-      
+
       if (pendingExpenses.length === 0) {
         container.classList.add('hidden');
         saveBtn.disabled = true;
         return;
       }
-      
+
       container.classList.remove('hidden');
       saveBtn.disabled = false;
-      
+
       let html = '';
       let total = 0;
-      
+
       pendingExpenses.forEach((exp, index) => {
         total += exp.amount;
-        
+
         let sourceClass = '';
         let amountClass = '';
         let sourceText = '';
-        
+
         if (exp.source === 'POCKET') {
           sourceClass = 'source-pocket';
           amountClass = 'amount-pocket';
@@ -1448,7 +1245,7 @@ async function login() {
           amountClass = 'amount-director';
           sourceText = 'Director (Anadai)';
         }
-        
+
         html += `
           <div class="expense-item">
             <div class="expense-details">
@@ -1463,7 +1260,7 @@ async function login() {
           </div>
         `;
       });
-      
+
       listEl.innerHTML = html;
       totalEl.textContent = 'TZS ' + formatNumber(total);
     }
@@ -1473,28 +1270,14 @@ async function login() {
       const amount = parseMoney(document.getElementById('expenseAmount').value);
       const source = document.getElementById('expenseSource').value;
       const note = document.getElementById('expenseNote').value.trim();
-      
-      if (!category) {
-        showAlert('Chagua aina ya matumizi', 'error');
-        return;
-      }
-      
-      if (!amount || amount <= 0) {
-        showAlert('Weka kiasi sahihi', 'error');
-        return;
-      }
-      
-      pendingExpenses.push({
-        category,
-        amount,
-        source,
-        note
-      });
-      
+
+      if (!category) return showAlert('Chagua aina ya matumizi', 'error');
+      if (!amount || amount <= 0) return showAlert('Weka kiasi sahihi', 'error');
+
+      pendingExpenses.push({ category, amount, source, note });
       document.getElementById('expenseCategory').value = '';
       document.getElementById('expenseAmount').value = '';
       document.getElementById('expenseNote').value = '';
-      
       updateExpenseList();
       showAlert('Imeongezwa kwenye orodha', 'success');
     }
@@ -1506,17 +1289,14 @@ async function login() {
 
     async function saveAllExpenses() {
       if (pendingExpenses.length === 0) return;
-      
+
       const btn = document.getElementById('saveAllExpensesBtn');
       btn.disabled = true;
-      
+
       try {
         const date = document.getElementById('workDate').value;
-        
-        if (!date) {
-          return showAlert('Tafadhali chagua tarehe', 'error');
-        }
-        
+        if (!date) return showAlert('Tafadhali chagua tarehe', 'error');
+
         const transactions = pendingExpenses.map(exp => ({
           date: date,
           type: 'EXPENSE',
@@ -1527,15 +1307,12 @@ async function login() {
           cashier: currentUser?.username || 'Unknown',
           ref: makeRef()
         }));
-        
+
         await addBulkTx(transactions);
-        
         pendingExpenses = [];
         updateExpenseList();
-        
         showAlert(`Matumizi ${transactions.length} yamehifadhiwa`, 'success');
         await refreshDashboardOnly();
-        
       } catch(e) {
         showAlert(e.message, 'error');
       } finally {
@@ -1543,22 +1320,14 @@ async function login() {
       }
     }
 
-    // ================== DIRECTOR PAYMENT ==================
     async function payDirector() {
       const amount = parseMoney(document.getElementById('directorPaymentAmount').value);
       const note = document.getElementById('directorPaymentNote').value.trim();
       const date = document.getElementById('workDate').value;
-      
-      if (!amount || amount <= 0) {
-        showAlert('Weka kiasi sahihi', 'error');
-        return;
-      }
-      
-      if (amount > directorDebt) {
-        showAlert('Kiasi kikubwa kuliko deni', 'error');
-        return;
-      }
-      
+
+      if (!amount || amount <= 0) return showAlert('Weka kiasi sahihi', 'error');
+      if (amount > directorDebt) return showAlert('Kiasi kikubwa kuliko deni', 'error');
+
       try {
         await addTx({
           date,
@@ -1568,17 +1337,15 @@ async function login() {
           source: 'OFFICE',
           note: note || 'Director reimbursement'
         });
-        
+
         closeDirectorModal();
         showAlert('Director amelipwa TZS ' + formatNumber(amount), 'success');
         await refreshDashboardOnly();
-        
       } catch(e) {
         showAlert(e.message, 'error');
       }
     }
 
-    // ================== CASH REASONS LOGIC ==================
     function setText(elId, value){ 
       const el = document.getElementById(elId);
       if (el) el.textContent = value; 
@@ -1589,64 +1356,55 @@ async function login() {
       let sum = 0;
       for (const it of items){
         const amtInput = it.querySelector('.reasonAmount');
-        if (amtInput) {
-          const amt = parseMoney(amtInput.value);
-          sum += (amt || 0);
-        }
+        if (amtInput) sum += parseMoney(amtInput.value) || 0;
       }
       return sum;
     }
-function calcDiffUI(){
-  const sys = parseMoney(document.getElementById('systemSalesAmount').value);
-  const cash = parseMoney(document.getElementById('cashCountAmount').value);
-  const diff = cash - sys;
-  const absDiff = Math.abs(diff);
 
-  setText('cashVsSalesDiff', 'TZS ' + formatNumber(diff));
+    function calcDiffUI(){
+      const sys = parseMoney(document.getElementById('systemSalesAmount').value);
+      const cash = parseMoney(document.getElementById('cashCountAmount').value);
+      const diff = cash - sys;
+      const absDiff = Math.abs(diff);
 
-  const reasonsBox = document.getElementById('reasonsBox');
-  const shortageText = document.getElementById('shortageRemainingText');
+      setText('cashVsSalesDiff', 'TZS ' + formatNumber(diff));
 
-  // Only show reasons box if:
-  // 1. Both values are entered
-  // 2. Difference is negative
-  // 3. Absolute difference is 1000 or more
-  if (sys > 0 && cash > 0 && diff < 0 && absDiff >= 1000) {
-    reasonsBox.classList.remove('hidden');
-    if (document.querySelectorAll('#reasonsList .reason-row').length === 0) {
-      addReasonRow();
-    }
-    shortageText.style.display = 'block';
-  } else {
-    reasonsBox.classList.add('hidden');
-    shortageText.style.display = 'none';
-  }
+      const reasonsBox = document.getElementById('reasonsBox');
+      const shortageText = document.getElementById('shortageRemainingText');
 
-  const explained = reasonsTotal();
-  const remaining = (diff < 0 && absDiff >= 1000) ? Math.max(0, absDiff - explained) : 0;
-  const excess = (diff < 0 && absDiff >= 1000) ? Math.max(0, explained - absDiff) : 0;
-
-  const remEl = document.getElementById('shortageRemainingText');
-  if (diff < 0 && absDiff >= 1000) {
-    if (excess > 0) {
-      // Don't show excess message - just show as fully explained
-      remEl.textContent = `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`;
-      remEl.style.color = '#10b981';
-    } else if (remaining > 0) {
-      if (remaining >= 1000) {
-        remEl.textContent = `⚠️ Upungufu BADO: TZS ${formatNumber(remaining)} (ongeza sababu)`;
-        remEl.style.color = '#b45309';
+      if (sys > 0 && cash > 0 && diff < 0 && absDiff >= 1000) {
+        reasonsBox.classList.remove('hidden');
+        if (document.querySelectorAll('#reasonsList .reason-row').length === 0) addReasonRow();
+        shortageText.style.display = 'block';
       } else {
-        // Small remaining shortage (< 1000) - show as fully explained with no message about the small amount
-        remEl.textContent = `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`;
-        remEl.style.color = '#10b981';
+        reasonsBox.classList.add('hidden');
+        shortageText.style.display = 'none';
       }
-    } else {
-      remEl.textContent = `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`;
-      remEl.style.color = '#10b981';
+
+      const explained = reasonsTotal();
+      const remaining = (diff < 0 && absDiff >= 1000) ? Math.max(0, absDiff - explained) : 0;
+      const excess = (diff < 0 && absDiff >= 1000) ? Math.max(0, explained - absDiff) : 0;
+
+      const remEl = document.getElementById('shortageRemainingText');
+      if (diff < 0 && absDiff >= 1000) {
+        if (excess > 0) {
+          remEl.textContent = `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`;
+          remEl.style.color = '#10b981';
+        } else if (remaining > 0) {
+          if (remaining >= 1000) {
+            remEl.textContent = `⚠️ Upungufu BADO: TZS ${formatNumber(remaining)} (ongeza sababu)`;
+            remEl.style.color = '#b45309';
+          } else {
+            remEl.textContent = `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`;
+            remEl.style.color = '#10b981';
+          }
+        } else {
+          remEl.textContent = `✅ Upungufu umeelezwa (Sababu: TZS ${formatNumber(explained)})`;
+          remEl.style.color = '#10b981';
+        }
+      }
     }
-  }
-}
+
     function addReasonRow(){
       const tpl = document.getElementById('reasonTemplate');
       const clone = document.importNode(tpl.content, true);
@@ -1665,91 +1423,74 @@ function calcDiffUI(){
 
       if (sel) {
         sel.addEventListener('change', () => {
-          if (other) {
-            other.style.display = (sel.value === 'Other') ? 'block' : 'none';
-          }
+          if (other) other.style.display = (sel.value === 'Other') ? 'block' : 'none';
           calcDiffUI();
         });
       }
-      
-      if (other) {
-        other.addEventListener('input', calcDiffUI);
-      }
 
-      if (rm) {
-        rm.addEventListener('click', () => { 
-          row.remove(); 
-          calcDiffUI(); 
-        });
-      }
+      if (other) other.addEventListener('input', calcDiffUI);
+      if (rm) rm.addEventListener('click', () => { row.remove(); calcDiffUI(); });
 
       document.getElementById('reasonsList').appendChild(row);
       calcDiffUI();
     }
 
-   function collectReasons() {
-  const items = [...document.querySelectorAll('#reasonsList .reason-row')];
-  const out = [];
+    function collectReasons() {
+      const items = [...document.querySelectorAll('#reasonsList .reason-row')];
+      const out = [];
 
-  for (const it of items) {
-    const typeSel = it.querySelector('.reasonType');
-    const otherInput = it.querySelector('.reasonOther');
-    const amtInput = it.querySelector('.reasonAmount');
-    
-    if (!typeSel || !amtInput) continue;
-    
-    const type = (typeSel.value || '').trim();
-    const other = otherInput ? (otherInput.value || '').trim() : '';
-    const amount = parseMoney(amtInput.value);
+      for (const it of items) {
+        const typeSel = it.querySelector('.reasonType');
+        const otherInput = it.querySelector('.reasonOther');
+        const amtInput = it.querySelector('.reasonAmount');
+        if (!typeSel || !amtInput) continue;
 
-    // Skip empty reason rows
-    if (!type) continue;
-    if (!amount || amount <= 0) continue;
+        const type = (typeSel.value || '').trim();
+        const other = otherInput ? (otherInput.value || '').trim() : '';
+        const amount = parseMoney(amtInput.value);
 
-    // Validate "Other" reason has description
-    if (type === 'Other' && !other) {
-      throw new Error('Umechagua Other — lazima uandike sababu.');
+        if (!type) continue;
+        if (!amount || amount <= 0) continue;
+        if (type === 'Other' && !other) throw new Error('Umechagua Other — lazima uandike sababu.');
+
+        out.push({
+          reason: (type === 'Other') ? other : type,
+          amount: amount
+        });
+      }
+      return out;
     }
 
-    out.push({
-      reason: (type === 'Other') ? other : type,
-      amount: amount
-    });
-  }
-
-  return out;
-}
-    // ================== EVENT HANDLERS ==================
     document.addEventListener('DOMContentLoaded', () => {
       setTodayDefaults();
-      populateEmployees();
 
-   ['expenseAmount','pocketAmount','cashCountAmount','systemSalesAmount','depositOffice','depositDirector','directorPaymentAmount','loanAmount']
-  .forEach(attachMoney);
+      ['expenseAmount','pocketAmount','cashCountAmount','systemSalesAmount','depositOffice','depositDirector','directorPaymentAmount','loanAmount']
+        .forEach(attachMoney);
 
-      // Add tooltips
       addTooltip('expenseCategory', 'Chagua aina ya matumizi kwenye orodha');
       addTooltip('expenseAmount', 'Weka kiasi cha fedha kinachotumika (TZS)');
-      addTooltip('expenseSource', 'Chagua fedha inatoka wapi: POCKET (mfuko mdogo), SALES (mauzo), au DIRECTOR (Mkurugenzi anadaiwa)');
+      addTooltip('expenseSource', 'Chagua fedha inatoka wapi: POCKET, SALES, au DIRECTOR');
       addTooltip('expenseNote', 'Andika maelezo mafupi kama "Ambulance" au "Dawa"');
       addTooltip('pocketSource', 'Chagua fedha inatoka wapi kuongeza kwenye POCKET');
       addTooltip('pocketAmount', 'Weka kiasi cha fedha cha kuongeza kwenye POCKET');
       addTooltip('pocketNote', 'Maelezo ya nyongeza hii');
-      addTooltip('systemSalesAmount', 'Weka mauzo yote ya mfumo (system sales) kwa sasa');
+      addTooltip('systemSalesAmount', 'Weka mauzo yote ya mfumo');
       addTooltip('cashCountAmount', 'Weka fedha taslimu iliyohesabiwa');
       addTooltip('cashCountNote', 'Maelezo ya hiari kuhusu mauzo au hesabu');
       addTooltip('depositOffice', 'Fedha iliyowekwa benki kutoka ofisini');
       addTooltip('depositDirector', 'Fedha iliyowekwa benki kutoka kwa Mkurugenzi');
       addTooltip('depositNote', 'Namba ya risiti au maelezo ya deposit');
       addTooltip('directorPaymentAmount', 'Weka kiasi cha kumlipa Mkurugenzi');
-      addTooltip('directorPaymentNote', 'Maelezo ya malipo, kama "Marejesho ya Internet"');
+      addTooltip('directorPaymentNote', 'Maelezo ya malipo');
+      addTooltip('loanEmployee', 'Chagua mfanyakazi anayeomba loan');
+      addTooltip('loanAmount', 'Weka kiasi cha mkopo unaoombwa');
+      addTooltip('loanReason', 'Sababu ya maombi ya loan');
 
       document.getElementById('loginBtn').addEventListener('click', login);
       document.getElementById('logoutBtn').addEventListener('click', logout);
       document.getElementById('refreshBtn').addEventListener('click', refreshDashboardOnly);
       document.getElementById('workDate').addEventListener('change', refreshDashboardOnly);
       document.getElementById('printPocketReportBtn').addEventListener('click', printPocketReport);
-      
       document.getElementById('payDirectorBtn').addEventListener('click', openDirectorModal);
       document.getElementById('confirmDirectorPaymentBtn').addEventListener('click', payDirector);
 
@@ -1757,18 +1498,16 @@ function calcDiffUI(){
       document.getElementById('tabPocket').addEventListener('click', () => setActiveTab('Pocket'));
       document.getElementById('tabCashCount').addEventListener('click', () => setActiveTab('CashCount'));
       document.getElementById('tabDeposit').addEventListener('click', () => setActiveTab('Deposit'));
-      document.getElementById('tabSearch').addEventListener('click', () => setActiveTab('Search'));
       document.getElementById('tabLoan').addEventListener('click', () => setActiveTab('Loan'));
+      document.getElementById('tabSearch').addEventListener('click', () => setActiveTab('Search'));
 
       document.getElementById('addExpenseToListBtn').addEventListener('click', addExpenseToList);
       document.getElementById('saveAllExpensesBtn').addEventListener('click', saveAllExpenses);
 
       document.getElementById('systemSalesAmount').addEventListener('input', calcDiffUI);
       document.getElementById('cashCountAmount').addEventListener('input', calcDiffUI);
-
       document.getElementById('addReasonBtn').addEventListener('click', () => addReasonRow());
 
-      // Search functionality
       document.getElementById('searchBtn').addEventListener('click', searchTransactions);
       document.getElementById('exportSearchBtn').addEventListener('click', exportSearchResults);
 
@@ -1777,291 +1516,239 @@ function calcDiffUI(){
         btn.disabled = true;
         try {
           const date = document.getElementById('workDate').value;
-          
-          if (!date) {
-            return showAlert('Tafadhali chagua tarehe', 'error');
-          }
-          
+          if (!date) return showAlert('Tafadhali chagua tarehe', 'error');
+
           const source = document.getElementById('pocketSource').value;
           const amount = parseMoney(document.getElementById('pocketAmount').value);
           const note = document.getElementById('pocketNote').value.trim();
 
           if (!amount || amount <= 0) return showAlert('Weka kiasi sahihi', 'error');
-          
+
           await addTx({
-            date, 
-            type:'POCKET_TOPUP', 
-            category: (source === 'DIRECTOR' ? 'Director' : 'Sales'), 
-            amount, 
-            source, 
+            date,
+            type:'POCKET_TOPUP',
+            category: (source === 'DIRECTOR' ? 'Director' : 'Sales'),
+            amount,
+            source,
             note
           });
-          
+
           document.getElementById('pocketAmount').value = '';
           document.getElementById('pocketNote').value = '';
           showAlert('Pocket top-up imehifadhiwa', 'success');
           await refreshDashboardOnly();
-        } catch(e) { 
-          showAlert(e.message, 'error'); 
-        } finally { 
-          btn.disabled = false; 
+        } catch(e) {
+          showAlert(e.message, 'error');
+        } finally {
+          btn.disabled = false;
         }
       });
 
-  document.getElementById('saveCashAndSalesBtn').addEventListener('click', async () => {
-  const btn = document.getElementById('saveCashAndSalesBtn');
-  btn.disabled = true;
+      document.getElementById('saveCashAndSalesBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('saveCashAndSalesBtn');
+        btn.disabled = true;
 
-  try {
-    const date = document.getElementById('workDate').value;
+        try {
+          const date = document.getElementById('workDate').value;
+          if (!date) return showAlert('Tafadhali chagua tarehe', 'error');
 
-    if (!date) {
-      showAlert('Tafadhali chagua tarehe', 'error');
-      return;
-    }
+          const sys = parseMoney(document.getElementById('systemSalesAmount').value);
+          const cash = parseMoney(document.getElementById('cashCountAmount').value);
+          const note = document.getElementById('cashCountNote').value.trim();
 
-    const sys = parseMoney(document.getElementById('systemSalesAmount').value);
-    const cash = parseMoney(document.getElementById('cashCountAmount').value);
-    const note = document.getElementById('cashCountNote').value.trim();
+          if (!sys || sys <= 0) return showAlert('Weka mauzo ya mfumo (system sales).', 'error');
+          if (!cash || cash <= 0) return showAlert('Weka cash iliyohesabiwa.', 'error');
 
-    if (!sys || sys <= 0) {
-      showAlert('Weka mauzo ya mfumo (system sales).', 'error');
-      return;
-    }
+          const diff = cash - sys;
+          const absDiff = Math.abs(diff);
+          const transactions = [];
 
-    if (!cash || cash <= 0) {
-      showAlert('Weka cash iliyohesabiwa.', 'error');
-      return;
-    }
+          transactions.push({
+            date,
+            type: 'SYSTEM_SALES',
+            category: 'System Sales',
+            amount: sys,
+            source: 'SYSTEM',
+            note: note || 'System sales',
+            cashier: currentUser?.username || 'Unknown',
+            ref: makeRef()
+          });
 
-    const diff = cash - sys;
-    const absDiff = Math.abs(diff);
-    const transactions = [];
+          transactions.push({
+            date,
+            type: 'CASH_COUNT',
+            category: 'Cash Count',
+            amount: cash,
+            source: 'OFFICE',
+            note: note || 'Cash counted',
+            cashier: currentUser?.username || 'Unknown',
+            ref: makeRef()
+          });
 
-    // 1. Save system sales
-    transactions.push({
-      date,
-      type: 'SYSTEM_SALES',
-      category: 'System Sales',
-      amount: sys,
-      source: 'SYSTEM',
-      note: note || 'System sales',
-      cashier: currentUser?.username || 'Unknown',
-      ref: makeRef()
-    });
+          if (diff < 0 && absDiff >= 1000) {
+            const reasons = collectReasons();
+            const explained = reasons.reduce((sum, r) => sum + (r.amount || 0), 0);
+            const remaining = absDiff - explained;
 
-    // 2. Save counted cash
-    transactions.push({
-      date,
-      type: 'CASH_COUNT',
-      category: 'Cash Count',
-      amount: cash,
-      source: 'OFFICE',
-      note: note || 'Cash counted',
-      cashier: currentUser?.username || 'Unknown',
-      ref: makeRef()
-    });
+            if (remaining > 0 && remaining >= 1000) {
+              showAlert(`Bado upungufu haujaelezwa wote. Limebaki: TZS ${formatNumber(remaining)}`, 'warning');
+              return;
+            }
 
-    // 3. If shortage, handle reasons (allow even if reasons exceed shortage)
-if (diff < 0 && absDiff >= 1000) {
-  const reasons = collectReasons();
-  const explained = reasons.reduce((sum, r) => sum + (r.amount || 0), 0);
-  
-  // Calculate remaining shortage
-  const remaining = absDiff - explained;
-  
-  // Allow submission if:
-  // 1. Reasons are sufficient (remaining <= 0) OR
-  // 2. Remaining shortage is less than 1000 TZS (small difference)
-  if (remaining > 0 && remaining >= 1000) {
-    showAlert(`Bado upungufu haujaelezwa wote. Limebaki: TZS ${formatNumber(remaining)}`, 'warning');
-    return;
-  }
-  
-  // Save all reasons (even if they exceed the shortage)
-  for (const r of reasons) {
-    transactions.push({
-      date,
-      type: 'CASH_REASON',
-      category: r.reason,
-      amount: r.amount,
-      source: 'REASON',
-      note: 'Reason for shortage',
-      cashier: currentUser?.username || 'Unknown',
-      ref: makeRef()
-    });
-  }
-}
+            for (const r of reasons) {
+              transactions.push({
+                date,
+                type: 'CASH_REASON',
+                category: r.reason,
+                amount: r.amount,
+                source: 'REASON',
+                note: 'Reason for shortage',
+                cashier: currentUser?.username || 'Unknown',
+                ref: makeRef()
+              });
+            }
+          }
 
-    await addBulkTx(transactions);
-// Send email alert if significant difference (1000 or more)
-if (Math.abs(diff) >= 1000) {
-  await sendDifferenceEmail(date, sys, cash, diff, currentUser?.username);
-}
-    document.getElementById('systemSalesAmount').value = '';
-    document.getElementById('cashCountAmount').value = '';
-    document.getElementById('cashCountNote').value = '';
-    document.getElementById('reasonsList').innerHTML = '';
+          await addBulkTx(transactions);
 
-    if (diff > 0) {
-      showAlert(`Mauzo + Cash zimehifadhiwa. Positive difference: TZS ${formatNumber(diff)}`, 'success');
-    } else if (diff < 0 && absDiff < 1000) {
-      showAlert(`Mauzo + Cash zimehifadhiwa. Tofauti ndogo ya TZS ${formatNumber(absDiff)} imepuuzwa`, 'success');
-    } else {
-      showAlert(`Mauzo + Cash zimehifadhiwa kwa tarehe ${date}`, 'success');
-    }
+          if (Math.abs(diff) >= 1000) {
+            await sendDifferenceEmail(date, sys, cash, diff, currentUser?.username);
+          }
 
-    await refreshDashboardOnly();
-    calcDiffUI();
+          document.getElementById('systemSalesAmount').value = '';
+          document.getElementById('cashCountAmount').value = '';
+          document.getElementById('cashCountNote').value = '';
+          document.getElementById('reasonsList').innerHTML = '';
 
-  } catch (e) {
-    console.error('Error saving cash report:', e);
-    showAlert(e.message, 'error');
-  } finally {
-    btn.disabled = false;
-  }
-});
+          if (diff > 0) {
+            showAlert(`Mauzo + Cash zimehifadhiwa. Positive difference: TZS ${formatNumber(diff)}`, 'success');
+          } else if (diff < 0 && absDiff < 1000) {
+            showAlert(`Mauzo + Cash zimehifadhiwa. Tofauti ndogo ya TZS ${formatNumber(absDiff)} imepuuzwa`, 'success');
+          } else {
+            showAlert(`Mauzo + Cash zimehifadhiwa kwa tarehe ${date}`, 'success');
+          }
+
+          await refreshDashboardOnly();
+          calcDiffUI();
+        } catch (e) {
+          showAlert(e.message, 'error');
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
       document.getElementById('saveDepositBtn').addEventListener('click', async () => {
         const btn = document.getElementById('saveDepositBtn');
         btn.disabled = true;
         try {
           const date = document.getElementById('workDate').value;
-          
-          if (!date) {
-            return showAlert('Tafadhali chagua tarehe', 'error');
-          }
-          
+          if (!date) return showAlert('Tafadhali chagua tarehe', 'error');
+
           const officeAmt = parseMoney(document.getElementById('depositOffice').value);
           const dirAmt = parseMoney(document.getElementById('depositDirector').value);
           const note = document.getElementById('depositNote').value.trim();
 
-          if (!officeAmt && !dirAmt) {
-            return showAlert('Weka kiasi cha deposit', 'error');
-          }
+          if (!officeAmt && !dirAmt) return showAlert('Weka kiasi cha deposit', 'error');
 
           const transactions = [];
 
           if (officeAmt > 0) {
             transactions.push({
               date: date,
-              type:'DEPOSIT', 
-              category:'Bank Deposit', 
-              amount: officeAmt, 
-              source:'OFFICE', 
-              note,
-              cashier: currentUser?.username || 'Unknown',
-              ref: makeRef()
-            });
-          }
-          
-          if (dirAmt > 0) {
-            transactions.push({
-              date: date,
-              type:'DEPOSIT', 
-              category:'Bank Deposit', 
-              amount: dirAmt, 
-              source:'DIRECTOR', 
+              type:'DEPOSIT',
+              category:'Bank Deposit',
+              amount: officeAmt,
+              source:'OFFICE',
               note,
               cashier: currentUser?.username || 'Unknown',
               ref: makeRef()
             });
           }
 
-          if (transactions.length === 1) {
-            await addTx(transactions[0]);
-          } else {
-            await addBulkTx(transactions);
+          if (dirAmt > 0) {
+            transactions.push({
+              date: date,
+              type:'DEPOSIT',
+              category:'Bank Deposit',
+              amount: dirAmt,
+              source:'DIRECTOR',
+              note,
+              cashier: currentUser?.username || 'Unknown',
+              ref: makeRef()
+            });
           }
+
+          if (transactions.length === 1) await addTx(transactions[0]);
+          else await addBulkTx(transactions);
 
           document.getElementById('depositOffice').value = '';
           document.getElementById('depositDirector').value = '';
           document.getElementById('depositNote').value = '';
-          
+
           showAlert('Deposit imehifadhiwa kwa tarehe ' + date, 'success');
           await refreshDashboardOnly();
-        } catch(e) { 
-          console.error('Error saving deposit:', e);
-          showAlert(e.message, 'error'); 
-        } finally { 
-          btn.disabled = false; 
+        } catch(e) {
+          showAlert(e.message, 'error');
+        } finally {
+          btn.disabled = false;
         }
       });
-document.getElementById('saveNewPasswordBtn').addEventListener('click', async () => {
-    const newPass = document.getElementById('newPassword').value;
-    const confirmPass = document.getElementById('confirmPassword').value;
-    
-    if (!newPass || !confirmPass) {
-      showAlert('Please enter and confirm your new password', 'error');
-      return;
-    }
-    
-    if (newPass !== confirmPass) {
-      showAlert('Passwords do not match', 'error');
-      return;
-    }
-    
-    if (newPass.length < 6) {
-      showAlert('Password must be at least 6 characters', 'error');
-      return;
-    }
-   try {
-      await apiCall('changePassword', { newPassword: newPass }, true, 'Changing password...');
-      closePasswordModal();
-      
-      // Now show main screen
-      document.getElementById('mainScreen').classList.remove('hidden');
-      const date = document.getElementById('workDate').value;
-      await loadInit(date);
-      showAlert('Password changed successfully!', 'success');
-    } catch(e) {
-      showAlert(e.message, 'error');
-    }
-  });
-document.getElementById('saveLoanBtn').addEventListener('click', async () => {
-  const btn = document.getElementById('saveLoanBtn');
-  btn.disabled = true;
 
-  try {
-    const date = document.getElementById('workDate').value;
-    const employee = document.getElementById('loanEmployee').value;
-    const amount = parseMoney(document.getElementById('loanAmount').value);
-    const reason = document.getElementById('loanReason').value.trim();
+      document.getElementById('saveLoanBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('saveLoanBtn');
+        btn.disabled = true;
 
-    if (!date) {
-      showAlert('Tafadhali chagua tarehe', 'error');
-      return;
-    }
+        try {
+          const date = document.getElementById('workDate').value;
+          const employee = document.getElementById('loanEmployee').value;
+          const amount = parseMoney(document.getElementById('loanAmount').value);
+          const reason = document.getElementById('loanReason').value.trim();
 
-    if (!employee) {
-      showAlert('Chagua employee', 'error');
-      return;
-    }
+          if (!date) return showAlert('Tafadhali chagua tarehe', 'error');
+          if (!employee) return showAlert('Chagua employee', 'error');
+          if (!amount || amount <= 0) return showAlert('Weka kiasi sahihi cha loan', 'error');
 
-    if (!amount || amount <= 0) {
-      showAlert('Weka kiasi sahihi cha loan', 'error');
-      return;
-    }
+          await addTx({
+            date,
+            type: 'EMPLOYEE_LOAN_REQUEST',
+            category: employee,
+            amount,
+            source: 'LOAN',
+            note: reason || 'Employee loan request'
+          });
 
-    await addTx({
-      date,
-      type: 'EMPLOYEE_LOAN_REQUEST',
-      category: employee,
-      amount,
-      source: 'LOAN',
-      note: reason || 'Employee loan request'
-    });
+          document.getElementById('loanEmployee').value = '';
+          document.getElementById('loanAmount').value = '';
+          document.getElementById('loanReason').value = '';
 
-    document.getElementById('loanEmployee').value = '';
-    document.getElementById('loanAmount').value = '';
-    document.getElementById('loanReason').value = '';
+          showAlert('Loan request imehifadhiwa', 'success');
+        } catch (e) {
+          showAlert(e.message, 'error');
+        } finally {
+          btn.disabled = false;
+        }
+      });
 
-    showAlert('Loan request imehifadhiwa', 'success');
-  } catch (e) {
-    showAlert(e.message, 'error');
-  } finally {
-    btn.disabled = false;
-  }
-});
+      document.getElementById('saveNewPasswordBtn').addEventListener('click', async () => {
+        const newPass = document.getElementById('newPassword').value;
+        const confirmPass = document.getElementById('confirmPassword').value;
+
+        if (!newPass || !confirmPass) return showAlert('Please enter and confirm your new password', 'error');
+        if (newPass !== confirmPass) return showAlert('Passwords do not match', 'error');
+        if (newPass.length < 6) return showAlert('Password must be at least 6 characters', 'error');
+
+        try {
+          await apiCall('changePassword', { newPassword: newPass }, true, 'Changing password...');
+          closePasswordModal();
+          document.getElementById('mainScreen').classList.remove('hidden');
+          const date = document.getElementById('workDate').value;
+          await loadInit(date);
+          showAlert('Password changed successfully!', 'success');
+        } catch(e) {
+          showAlert(e.message, 'error');
+        }
+      });
+
       setActiveTab('Expense');
     });
   </script>
