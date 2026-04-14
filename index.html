@@ -948,17 +948,17 @@ async function refreshDoctorPaymentsTable() {
       return;
     }
 
-    let html = '';
-    payments.forEach(p => {
-      const doctor = p.category.replace('Doctor:', '').trim();
-      html += `<tr>
-        <td>${p.date}</td>
-        <td>${doctor}</td>
-        <td style="text-align:right;">${formatNumber(p.amount)}</td>
-        <td>${p.note || ''}</td>
-      </tr>`;
-    });
-    tbody.innerHTML = html;
+ let html = '';
+payments.forEach(p => {
+  const doctor = p.category.replace('Doctor:', '').trim();
+  html += `<tr>
+    <td style="padding:8px 12px;">${p.date}</td>
+    <td style="padding:8px 12px;">${doctor}</td>
+    <td style="text-align:right; padding:8px 12px; white-space:nowrap;">${formatNumber(p.amount)}</td>
+    <td style="padding:8px 20px;">${p.note || ''}</td>
+  </tr>`;
+});
+tbody.innerHTML = html;
   } catch (e) {
     console.error('Doctor payments fetch error:', e);
     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error loading payments</td></tr>';
