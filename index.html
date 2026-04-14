@@ -1070,10 +1070,15 @@ function setDefaultDoctorPaymentDate() {
       showAlert('Debtor added','success');
       await loadInitData();
     });
-    document.getElementById('saveDoctorPaymentBtn')?.addEventListener('click', saveDoctorPayment);
-document.getElementById('refreshDoctorPaymentsBtn')?.addEventListener('click', refreshDoctorPaymentsTable);
-document.getElementById('filterDoctorSelect')?.addEventListener('change', refreshDoctorPaymentsTable);
-attachMoney('doctorPaymentAmount');
+    const saveDoctorBtn = document.getElementById('saveDoctorPaymentBtn');
+  const refreshDoctorBtn = document.getElementById('refreshDoctorPaymentsBtn');
+  const filterDoctorSelect = document.getElementById('filterDoctorSelect');
+  const doctorAmountInput = document.getElementById('doctorPaymentAmount');
+
+  if (saveDoctorBtn) saveDoctorBtn.addEventListener('click', saveDoctorPayment);
+  if (refreshDoctorBtn) refreshDoctorBtn.addEventListener('click', refreshDoctorPaymentsTable);
+  if (filterDoctorSelect) filterDoctorSelect.addEventListener('change', refreshDoctorPaymentsTable);
+  if (doctorAmountInput) attachMoney('doctorPaymentAmount');
     document.getElementById('addCreditorBtn').addEventListener('click', async ()=>{
       const name = document.getElementById('newCreditorName').value.trim();
       const amt = parseMoney(document.getElementById('newCreditorAmount').value);
