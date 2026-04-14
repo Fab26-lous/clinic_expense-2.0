@@ -297,7 +297,7 @@
       <div class="tabs">
         <div class="tab active" data-pocket-tab="expenseTab">💰 Expense</div>
         <div class="tab" data-pocket-tab="topupTab">➕ Top-up</div>
-        <div class="tab" data-pocket-tab="directorPaymentsTab">👤 Director Payments</div>
+       <div class="tab" data-pocket-tab="doctorPaymentsTab">👨‍⚕️Specialist Doctors Payments</div>
         <div class="tab" data-pocket-tab="pocketSearchTab">🔍 Search</div>
       </div>
       <div id="expenseTab" class="card">
@@ -312,16 +312,46 @@
         <div class="row"><div><label>From</label><select id="pocketSource"><option value="SALES">💰 From Sales</option><option value="DIRECTOR">👤 Director</option></select></div><div><label>Amount (TZS)</label><input type="text" id="pocketTopupAmount"></div></div>
         <label>Note</label><input type="text" id="pocketTopupNote"><button class="primary-btn" id="savePocketTopupBtn">Save</button>
       </div>
-      <div id="directorPaymentsTab" class="card hidden">
-        <h3>👤 Director Payments (Expenses Paid by Director)</h3>
-        <p style="margin-bottom:16px; color:#6c757d;">Record expenses that the director paid directly (does NOT reduce pocket balance).</p>
-        <div class="row">
-          <div><label>Category</label><select id="directorExpenseCategory"></select></div>
-          <div><label>Amount (TZS)</label><input type="text" id="directorExpenseAmount"></div>
-        </div>
-        <label>Note</label><input type="text" id="directorExpenseNote">
-        <button class="primary-btn" id="saveDirectorExpenseBtn">Save Director Payment</button>
-      </div>
+      
+    <div id="doctorPaymentsTab" class="card hidden">
+  <h3>👨‍⚕️ Specialist Doctors Bulk Payments(From Director) </h3>
+  <p style="margin-bottom:16px; color:#6c757d;">Record bulk payments to visiting specialists (paid by Director).</p>
+  
+  <!-- Payment Form -->
+  <div class="row">
+    <div>
+      <label>Doctor Name</label>
+      <input type="text" id="doctorNameInput" list="doctorSuggestions" placeholder="Enter doctor name">
+      <datalist id="doctorSuggestions"></datalist>
+    </div>
+    <div><label>Payment Date</label><input type="date" id="doctorPaymentDate"></div>
+  </div>
+  <div class="row">
+    <div><label>Amount (TZS)</label><input type="text" id="doctorPaymentAmount"></div>
+    <div></div> <!-- empty to keep grid alignment -->
+  </div>
+  <label>Note (optional)</label><input type="text" id="doctorPaymentNote" placeholder="e.g., Consultation share">
+  <button class="primary-btn" id="saveDoctorPaymentBtn">💾 Record Payment</button>
+
+  <!-- Recent Payments Table -->
+  <div style="margin-top:30px;">
+    <h4>📋 Recent Doctor Payments</h4>
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+      <select id="filterDoctorSelect" style="width:auto; flex:1;"><option value="">All Doctors</option></select>
+      <button class="secondary-btn" id="refreshDoctorPaymentsBtn">⟳ Refresh</button>
+    </div>
+    <div style="max-height:300px; overflow-y:auto; border:1px solid #e6e9ef; border-radius:10px;">
+      <table style="width:100%; border-collapse:collapse;">
+        <thead style="background:#1e3a5f; color:white; position:sticky; top:0;">
+          <tr><th style="padding:10px;">Date</th><th>Doctor</th><th>Amount</th><th>Note</th></tr>
+        </thead>
+        <tbody id="doctorPaymentsTableBody">
+          <tr><td colspan="4" style="text-align:center; padding:20px;">No payments recorded</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
       <div id="pocketSearchTab" class="card hidden">
         <h3>🔍 Pocket Transactions</h3>
         <div class="row"><div><label>From</label><input type="date" id="pocketSearchFrom"></div><div><label>To</label><input type="date" id="pocketSearchTo"></div></div>
@@ -817,6 +847,125 @@ saveNewBtn.addEventListener('click', async () => {
     showAlert('Top-up saved','success');
     await refreshAllDashboards();
   }
+  // ========== DOCTOR PAYMENTS (FROM DIRECTOR) ==========
+
+// Load doctor name suggestions from past "Doctor:" expenses (source DIRECTOR)
+async function loadDoctorSuggestions() {
+  const datalist = document.getElementById('doctorSuggestions');
+  const filterSelect = document.getElementById('filterDoctorSelect');
+  if (!datalist) return;
+
+  try {
+    const res = await apiCall('searchTransactions', {
+      fromDate: '', toDate: '', type: 'EXPENSE', category: 'Doctor'
+    });
+    const transactions = res?.transactions || [];
+    const doctorNames = new Set();
+    transactions.forEach(t => {
+      if (t.source === 'DIRECTOR' && t.category && t.category.startsWith('Doctor:')) {
+        const name = t.category.replace('Doctor:', '').trim();
+        if (name) doctorNames.add(name);
+      }
+    });
+    const sorted = Array.from(doctorNames).sort();
+    
+    datalist.innerHTML = '';
+    sorted.forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      datalist.appendChild(opt);
+    });
+
+    if (filterSelect) {
+      filterSelect.innerHTML = '<option value="">All Doctors</option>';
+      sorted.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        filterSelect.appendChild(opt);
+      });
+    }
+  } catch (e) {
+    console.warn('Doctor suggestions load error:', e);
+  }
+}
+
+// Save a doctor payment (source = DIRECTOR)
+async function saveDoctorPayment() {
+  const doctorName = document.getElementById('doctorNameInput').value.trim();
+  const date = document.getElementById('doctorPaymentDate').value;
+  const amount = parseMoney(document.getElementById('doctorPaymentAmount').value);
+  const note = document.getElementById('doctorPaymentNote').value.trim();
+
+  if (!doctorName) return showAlert('Enter doctor name', 'error');
+  if (!date) return showAlert('Select payment date', 'error');
+  if (!amount || amount <= 0) return showAlert('Enter valid amount', 'error');
+
+  const category = `Doctor: ${doctorName}`;
+  const fullNote = note || `Payment to ${doctorName}`;
+
+  try {
+    await addTx(date, 'EXPENSE', category, amount, 'DIRECTOR', fullNote);
+    document.getElementById('doctorPaymentAmount').value = '';
+    document.getElementById('doctorPaymentNote').value = '';
+    showAlert('Doctor payment recorded', 'success');
+    await refreshDoctorPaymentsTable();
+    await loadDoctorSuggestions();
+    await refreshAllDashboards();
+  } catch (e) {
+    showAlert('Failed to save: ' + e.message, 'error');
+  }
+}
+
+// Refresh the table of doctor payments (source DIRECTOR only)
+async function refreshDoctorPaymentsTable() {
+  const tbody = document.getElementById('doctorPaymentsTableBody');
+  const filterDoctor = document.getElementById('filterDoctorSelect')?.value || '';
+  if (!tbody) return;
+
+  tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Loading...</td></tr>';
+
+  try {
+    const res = await apiCall('searchTransactions', {
+      fromDate: '', toDate: '', type: 'EXPENSE', category: 'Doctor'
+    });
+    let payments = (res?.transactions || []).filter(t => 
+      t.source === 'DIRECTOR' && t.category && t.category.startsWith('Doctor:')
+    );
+    
+    if (filterDoctor) {
+      payments = payments.filter(p => p.category.includes(filterDoctor));
+    }
+
+    payments.sort((a, b) => (b.date > a.date) ? 1 : -1);
+
+    if (payments.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No payments found</td></tr>';
+      return;
+    }
+
+    let html = '';
+    payments.forEach(p => {
+      const doctor = p.category.replace('Doctor:', '').trim();
+      html += `<tr>
+        <td>${p.date}</td>
+        <td>${doctor}</td>
+        <td style="text-align:right;">${formatNumber(p.amount)}</td>
+        <td>${p.note || ''}</td>
+      </tr>`;
+    });
+    tbody.innerHTML = html;
+  } catch (e) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error loading payments</td></tr>';
+  }
+}
+
+function setDefaultDoctorPaymentDate() {
+  const dateInput = document.getElementById('doctorPaymentDate');
+  if (dateInput && !dateInput.value) {
+    dateInput.value = new Date().toISOString().split('T')[0];
+  }
+}
 
   let currentAccessType = null;
   function setupUIByRole(role) {
@@ -850,11 +999,19 @@ saveNewBtn.addEventListener('click', async () => {
     if(tabId==='debtorsTab') loadInitData();
   }
   function setPocketTab(tabId) {
-    document.querySelectorAll('[data-pocket-tab]').forEach(t=>t.classList.remove('active'));
-    document.querySelector(`[data-pocket-tab="${tabId}"]`)?.classList.add('active');
-    ['expenseTab','topupTab','directorPaymentsTab','pocketSearchTab'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));
-    document.getElementById(tabId)?.classList.remove('hidden');
+  document.querySelectorAll('[data-pocket-tab]').forEach(t => t.classList.remove('active'));
+  document.querySelector(`[data-pocket-tab="${tabId}"]`)?.classList.add('active');
+  ['expenseTab','topupTab','doctorPaymentsTab','pocketSearchTab'].forEach(id => {
+    document.getElementById(id)?.classList.add('hidden');
+  });
+  document.getElementById(tabId)?.classList.remove('hidden');
+
+  if (tabId === 'doctorPaymentsTab') {
+    setDefaultDoctorPaymentDate();
+    loadDoctorSuggestions();
+    refreshDoctorPaymentsTable();
   }
+}
 
   async function login() {
     const u = document.getElementById('username').value.trim().toLowerCase();
@@ -913,6 +1070,10 @@ saveNewBtn.addEventListener('click', async () => {
       showAlert('Debtor added','success');
       await loadInitData();
     });
+    document.getElementById('saveDoctorPaymentBtn')?.addEventListener('click', saveDoctorPayment);
+document.getElementById('refreshDoctorPaymentsBtn')?.addEventListener('click', refreshDoctorPaymentsTable);
+document.getElementById('filterDoctorSelect')?.addEventListener('change', refreshDoctorPaymentsTable);
+attachMoney('doctorPaymentAmount');
     document.getElementById('addCreditorBtn').addEventListener('click', async ()=>{
       const name = document.getElementById('newCreditorName').value.trim();
       const amt = parseMoney(document.getElementById('newCreditorAmount').value);
