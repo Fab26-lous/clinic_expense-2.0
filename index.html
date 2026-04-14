@@ -917,7 +917,6 @@ async function saveDoctorPayment() {
   }
 }
 
-// Refresh the table of doctor payments (source DIRECTOR only)
 async function refreshDoctorPaymentsTable() {
   const tbody = document.getElementById('doctorPaymentsTableBody');
   const filterDoctor = document.getElementById('filterDoctorSelect')?.value || '';
@@ -926,21 +925,26 @@ async function refreshDoctorPaymentsTable() {
   tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Loading...</td></tr>';
 
   try {
+    // Fetch all EXPENSE transactions (no source filter) and filter locally by category
     const res = await apiCall('searchTransactions', {
-      fromDate: '', toDate: '', type: 'EXPENSE', category: 'Doctor'
+      fromDate: '', toDate: '', type: 'EXPENSE'
     });
+    
+    // Only keep those with category starting with "Doctor:"
     let payments = (res?.transactions || []).filter(t => 
-      t.source === 'DIRECTOR' && t.category && t.category.startsWith('Doctor:')
+      t.category && t.category.startsWith('Doctor:')
     );
     
+    // Optional: filter by doctor name
     if (filterDoctor) {
       payments = payments.filter(p => p.category.includes(filterDoctor));
     }
 
+    // Sort by date descending
     payments.sort((a, b) => (b.date > a.date) ? 1 : -1);
 
     if (payments.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No payments found</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No payments recorded yet</td></tr>';
       return;
     }
 
@@ -956,6 +960,7 @@ async function refreshDoctorPaymentsTable() {
     });
     tbody.innerHTML = html;
   } catch (e) {
+    console.error('Doctor payments fetch error:', e);
     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error loading payments</td></tr>';
   }
 }
