@@ -684,55 +684,125 @@ saveNewBtn.addEventListener('click', async () => {
   calcDiffUI();
 }
 
-  async function saveCashAndSales() {
-    const btn = document.getElementById('saveCashSalesBtn'); btn.disabled = true;
-    try {
-      const date = document.getElementById('workDate').value;
-      const sys = parseMoney(document.getElementById('systemSalesAmount').value);
-      const cash = parseMoney(document.getElementById('cashCountAmount').value);
-      const note = document.getElementById('cashCountNote').value.trim();
-      if(!date||!sys||!cash) throw new Error('Fill all fields');
-      const diff = cash - sys;
-      const transactions = [
-        { date, type:'SYSTEM_SALES', category:'System Sales', amount:sys, source:'SYSTEM', note, cashier:currentUser.username, ref:makeRef() },
-        { date, type:'CASH_COUNT', category:'Cash Count', amount:cash, source:'OFFICE', note, cashier:currentUser.username, ref:makeRef() }
-      ];
-      if(diff < 0 && Math.abs(diff) >= 1000) {
-        const reasons = [];
-        document.querySelectorAll('#reasonsList .reason-row').forEach(r => {
-          const type = r.querySelector('.reasonType').value;
-          const amount = parseMoney(r.querySelector('.reasonAmount').value);
-          if(!type||amount<=0) return;
-          let category = '', source = 'REASON', desc = '';
-          if(type==='Lipa Mpesa') { category = 'Lipa Mpesa'; desc = 'Lipa Mpesa'; }
-          else if(type==='Other') { category = r.querySelector('.reasonOther').value.trim(); if(!category) throw new Error('Other requires description'); desc = category; }
-          else if(type==='Debtor') {
-            const val = r.querySelector('.reasonPersonName').value;
-            if(!val) throw new Error('Select debtor');
-            const name = val.split(':')[1];
-            category = `Debtor: ${name}`; source = 'DEBTOR'; desc = `Debtor ${name} took cash`;
-            apiCall('processCashReasonDebtorCreditor', { reasonType:'DEBTOR', name, amount, date });
-          }
-          else if(type==='Creditor') {
-            const val = r.querySelector('.reasonPersonName').value;
-            if(!val) throw new Error('Select creditor');
-            const name = val.split(':')[1];
-            category = `Creditor: ${name}`; source = 'CREDITOR'; desc = `Paid to creditor ${name}`;
-            apiCall('processCashReasonDebtorCreditor', { reasonType:'CREDITOR', name, amount, date });
-          }
-          transactions.push({ date, type:'CASH_REASON', category, amount, source, note:desc, cashier:currentUser.username, ref:makeRef() });
+async function saveCashAndSales() {
+  const btn = document.getElementById('saveCashSalesBtn');
+  btn.disabled = true;
+
+  try {
+    const date = document.getElementById('workDate').value;
+    const sys = parseMoney(document.getElementById('systemSalesAmount').value);
+    const cash = parseMoney(document.getElementById('cashCountAmount').value);
+    const note = document.getElementById('cashCountNote').value.trim();
+
+    if (!date) throw new Error('Chagua tarehe');
+    if (!sys || sys <= 0) throw new Error('Weka mauzo ya mfumo');
+    if (!cash || cash <= 0) throw new Error('Weka kiasi cha cash');
+
+    const diff = cash - sys;
+    const absDiff = Math.abs(diff);
+
+    // --- NEW: Validate that shortage is fully explained ---
+    if (diff < 0 && absDiff >= 1000) {
+      const reasonRows = document.querySelectorAll('#reasonsList .reason-row');
+      let explainedTotal = 0;
+      for (const row of reasonRows) {
+        const type = row.querySelector('.reasonType')?.value;
+        const amount = parseMoney(row.querySelector('.reasonAmount')?.value);
+        if (type && amount > 0) {
+          explainedTotal += amount;
+        }
+      }
+      const remainingShortage = absDiff - explainedTotal;
+      if (remainingShortage >= 1000) {
+        throw new Error(`Upungufu bado haujaelezwa kikamilifu. Imebaki TZS ${formatNumber(remainingShortage)}. Ongeza sababu zaidi.`);
+      }
+      // Also ensure at least one reason is added if difference >= 1000
+      if (reasonRows.length === 0) {
+        throw new Error('Tafadhali ongeza angalau sababu moja ya upungufu.');
+      }
+    }
+    // --- End validation ---
+
+    const transactions = [];
+    transactions.push({
+      date, type: 'SYSTEM_SALES', category: 'System Sales', amount: sys,
+      source: 'SYSTEM', note: note || 'System sales', cashier: currentUser?.username, ref: makeRef()
+    });
+    transactions.push({
+      date, type: 'CASH_COUNT', category: 'Cash Count', amount: cash,
+      source: 'OFFICE', note: note || 'Cash counted', cashier: currentUser?.username, ref: makeRef()
+    });
+
+    // Process cash reasons if shortage exists
+    if (diff < 0 && absDiff >= 1000) {
+      const reasonRows = document.querySelectorAll('#reasonsList .reason-row');
+      for (const row of reasonRows) {
+        const typeSel = row.querySelector('.reasonType');
+        const otherInp = row.querySelector('.reasonOther');
+        const personSel = row.querySelector('.reasonPersonName');
+        const amountInp = row.querySelector('.reasonAmount');
+
+        const type = typeSel?.value.trim();
+        const amount = parseMoney(amountInp?.value);
+        if (!type || amount <= 0) continue;
+
+        let category = '';
+        let source = 'REASON';
+        let desc = '';
+
+        if (type === 'Lipa Mpesa') {
+          category = 'Lipa Mpesa';
+          desc = 'Lipa Mpesa';
+        } else if (type === 'Other') {
+          const txt = otherInp?.value.trim();
+          if (!txt) throw new Error('Other — lazima uandike sababu.');
+          category = txt;
+          desc = txt;
+        } else if (type === 'Debtor') {
+          const val = personSel?.value;
+          if (!val) throw new Error('Debtor — chagua jina.');
+          const name = val.split(':')[1];
+          category = `Debtor: ${name}`;
+          source = 'DEBTOR';
+          desc = `Debtor ${name} took cash TZS ${formatNumber(amount)}`;
+          // Update debtor balance (fire and forget)
+          apiCall('processCashReasonDebtorCreditor', { reasonType: 'DEBTOR', name, amount, date });
+        } else if (type === 'Creditor') {
+          const val = personSel?.value;
+          if (!val) throw new Error('Creditor — chagua jina.');
+          const name = val.split(':')[1];
+          category = `Creditor: ${name}`;
+          source = 'CREDITOR';
+          desc = `Paid to creditor ${name} TZS ${formatNumber(amount)}`;
+          apiCall('processCashReasonDebtorCreditor', { reasonType: 'CREDITOR', name, amount, date });
+        } else {
+          continue;
+        }
+
+        transactions.push({
+          date, type: 'CASH_REASON', category, amount, source,
+          note: desc, cashier: currentUser?.username, ref: makeRef()
         });
       }
-      await addBulkTx(transactions);
-      document.getElementById('systemSalesAmount').value = '';
-      document.getElementById('cashCountAmount').value = '';
-      document.getElementById('cashCountNote').value = '';
-      document.getElementById('reasonsList').innerHTML = '';
-      calcDiffUI();
-      await refreshAllDashboards();
-      showAlert('Saved','success');
-    } catch(e) { showAlert(e.message,'error'); } finally { btn.disabled = false; }
+    }
+
+    await addBulkTx(transactions);
+
+    // Clear form
+    document.getElementById('systemSalesAmount').value = '';
+    document.getElementById('cashCountAmount').value = '';
+    document.getElementById('cashCountNote').value = '';
+    document.getElementById('reasonsList').innerHTML = '';
+    calcDiffUI();
+    await refreshAllDashboards();
+    showAlert('Saved successfully!', 'success');
+
+  } catch (e) {
+    showAlert(e.message, 'error');
+  } finally {
+    btn.disabled = false;
   }
+}
 
   async function saveDeposit() {
     const date = document.getElementById('workDate').value;
