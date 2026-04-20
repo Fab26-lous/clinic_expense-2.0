@@ -240,6 +240,8 @@
           </div>
         </div>
         <label>Maelezo (hiari)</label><input type="text" id="cashCountNote">
+       
+<div id="shortageErrorMsg" class="alert error" style="display:none; margin:12px 0;"></div>
         <button class="primary-btn" id="saveCashSalesBtn">✅ Save</button>
       </div>
 
@@ -683,9 +685,16 @@ saveNewBtn.addEventListener('click', async () => {
   container.appendChild(row);
   calcDiffUI();
 }
-
 async function saveCashAndSales() {
   const btn = document.getElementById('saveCashSalesBtn');
+  const errorDiv = document.getElementById('shortageErrorMsg');
+
+  // Clear previous inline error
+  if (errorDiv) {
+    errorDiv.style.display = 'none';
+    errorDiv.textContent = '';
+  }
+
   btn.disabled = true;
 
   try {
@@ -694,6 +703,7 @@ async function saveCashAndSales() {
     const cash = parseMoney(document.getElementById('cashCountAmount').value);
     const note = document.getElementById('cashCountNote').value.trim();
 
+    // Basic field validation
     if (!date) throw new Error('Chagua tarehe');
     if (!sys || sys <= 0) throw new Error('Weka mauzo ya mfumo');
     if (!cash || cash <= 0) throw new Error('Weka kiasi cha cash');
@@ -701,7 +711,7 @@ async function saveCashAndSales() {
     const diff = cash - sys;
     const absDiff = Math.abs(diff);
 
-    // --- NEW: Validate that shortage is fully explained ---
+    // --- Shortage Validation (must be fully explained) ---
     if (diff < 0 && absDiff >= 1000) {
       const reasonRows = document.querySelectorAll('#reasonsList .reason-row');
       let explainedTotal = 0;
@@ -713,27 +723,55 @@ async function saveCashAndSales() {
         }
       }
       const remainingShortage = absDiff - explainedTotal;
+
       if (remainingShortage >= 1000) {
-        throw new Error(`Upungufu bado haujaelezwa kikamilifu. Imebaki TZS ${formatNumber(remainingShortage)}. Ongeza sababu zaidi.`);
+        if (errorDiv) {
+          errorDiv.textContent = `⚠️ Upungufu bado haujaelezwa kikamilifu. Imebaki TZS ${formatNumber(remainingShortage)}. Ongeza sababu zaidi.`;
+          errorDiv.style.display = 'block';
+        }
+        btn.disabled = false;
+        return; // Stop submission
       }
-      // Also ensure at least one reason is added if difference >= 1000
+
       if (reasonRows.length === 0) {
-        throw new Error('Tafadhali ongeza angalau sababu moja ya upungufu.');
+        if (errorDiv) {
+          errorDiv.textContent = '⚠️ Tafadhali ongeza angalau sababu moja ya upungufu.';
+          errorDiv.style.display = 'block';
+        }
+        btn.disabled = false;
+        return;
       }
     }
-    // --- End validation ---
+    // --- End Shortage Validation ---
 
+    // Build transactions array
     const transactions = [];
+
+    // 1. System Sales
     transactions.push({
-      date, type: 'SYSTEM_SALES', category: 'System Sales', amount: sys,
-      source: 'SYSTEM', note: note || 'System sales', cashier: currentUser?.username, ref: makeRef()
-    });
-    transactions.push({
-      date, type: 'CASH_COUNT', category: 'Cash Count', amount: cash,
-      source: 'OFFICE', note: note || 'Cash counted', cashier: currentUser?.username, ref: makeRef()
+      date,
+      type: 'SYSTEM_SALES',
+      category: 'System Sales',
+      amount: sys,
+      source: 'SYSTEM',
+      note: note || 'System sales',
+      cashier: currentUser?.username,
+      ref: makeRef()
     });
 
-    // Process cash reasons if shortage exists
+    // 2. Cash Count
+    transactions.push({
+      date,
+      type: 'CASH_COUNT',
+      category: 'Cash Count',
+      amount: cash,
+      source: 'OFFICE',
+      note: note || 'Cash counted',
+      cashier: currentUser?.username,
+      ref: makeRef()
+    });
+
+    // 3. Cash Reasons (if shortage exists)
     if (diff < 0 && absDiff >= 1000) {
       const reasonRows = document.querySelectorAll('#reasonsList .reason-row');
       for (const row of reasonRows) {
@@ -765,8 +803,13 @@ async function saveCashAndSales() {
           category = `Debtor: ${name}`;
           source = 'DEBTOR';
           desc = `Debtor ${name} took cash TZS ${formatNumber(amount)}`;
-          // Update debtor balance (fire and forget)
-          apiCall('processCashReasonDebtorCreditor', { reasonType: 'DEBTOR', name, amount, date });
+          // Update debtor balance asynchronously (fire and forget)
+          apiCall('processCashReasonDebtorCreditor', {
+            reasonType: 'DEBTOR',
+            name,
+            amount,
+            date
+          }).catch(e => console.warn('Debtor update failed:', e));
         } else if (type === 'Creditor') {
           const val = personSel?.value;
           if (!val) throw new Error('Creditor — chagua jina.');
@@ -774,30 +817,51 @@ async function saveCashAndSales() {
           category = `Creditor: ${name}`;
           source = 'CREDITOR';
           desc = `Paid to creditor ${name} TZS ${formatNumber(amount)}`;
-          apiCall('processCashReasonDebtorCreditor', { reasonType: 'CREDITOR', name, amount, date });
+          apiCall('processCashReasonDebtorCreditor', {
+            reasonType: 'CREDITOR',
+            name,
+            amount,
+            date
+          }).catch(e => console.warn('Creditor update failed:', e));
         } else {
           continue;
         }
 
         transactions.push({
-          date, type: 'CASH_REASON', category, amount, source,
-          note: desc, cashier: currentUser?.username, ref: makeRef()
+          date,
+          type: 'CASH_REASON',
+          category,
+          amount,
+          source,
+          note: desc,
+          cashier: currentUser?.username,
+          ref: makeRef()
         });
       }
     }
 
+    // Submit all transactions
     await addBulkTx(transactions);
 
-    // Clear form
+    // Clear form fields
     document.getElementById('systemSalesAmount').value = '';
     document.getElementById('cashCountAmount').value = '';
     document.getElementById('cashCountNote').value = '';
     document.getElementById('reasonsList').innerHTML = '';
+
+    // Clear any inline error
+    if (errorDiv) {
+      errorDiv.style.display = 'none';
+      errorDiv.textContent = '';
+    }
+
+    // Refresh UI
     calcDiffUI();
     await refreshAllDashboards();
     showAlert('Saved successfully!', 'success');
 
   } catch (e) {
+    // For other errors (network, missing fields), show popup
     showAlert(e.message, 'error');
   } finally {
     btn.disabled = false;
