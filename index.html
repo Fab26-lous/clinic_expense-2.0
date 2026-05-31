@@ -61,85 +61,28 @@
       .stat-value, .stat-value-green, .stat-value-red, .stat-value-orange { font-size:1.5rem; }
     }
     #debtorsTab table, #creditorsTableBody table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 0.9rem;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
     }
     #debtorsTab th, #creditorsTableBody th {
-      background: #1e3a5f;
-      color: white;
-      font-weight: 700;
-      padding: 14px 10px;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      background: #1e3a5f; color: white; font-weight: 700; padding: 14px 10px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;
     }
     #debtorsTab th:first-child, #creditorsTableBody th:first-child,
-    #debtorsTab td:first-child, #creditorsTableBody td:first-child {
-      text-align: left;
-    }
+    #debtorsTab td:first-child, #creditorsTableBody td:first-child { text-align: left; }
     #debtorsTab th:nth-child(2), #debtorsTab th:nth-child(3), #debtorsTab th:nth-child(4),
     #creditorsTableBody th:nth-child(2), #creditorsTableBody th:nth-child(3), #creditorsTableBody th:nth-child(4),
     #debtorsTab td:nth-child(2), #debtorsTab td:nth-child(3), #debtorsTab td:nth-child(4),
-    #creditorsTableBody td:nth-child(2), #creditorsTableBody td:nth-child(3), #creditorsTableBody td:nth-child(4) {
-      text-align: right;
-      padding-right: 20px;
-    }
+    #creditorsTableBody td:nth-child(2), #creditorsTableBody td:nth-child(3), #creditorsTableBody td:nth-child(4) { text-align: right; padding-right: 20px; }
     #debtorsTab th:last-child, #creditorsTableBody th:last-child,
-    #debtorsTab td:last-child, #creditorsTableBody td:last-child {
-      text-align: center;
-      white-space: nowrap;
-    }
-    #debtorsTab td, #creditorsTableBody td {
-      padding: 14px 10px;
-      border-bottom: 1px solid #edf2f7;
-      vertical-align: middle;
-    }
-    #debtorsTab tbody tr:hover, #creditorsTableBody tbody tr:hover {
-      background-color: #f8fafd;
-    }
-    #debtorsTab .payDebtorBtn, #creditorsTableBody .payCreditorBtn {
-      background: #10b981;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 30px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    #debtorsTab .payCreditorBtn {
-      background: #b02a37;
-    }
-    #debtorsTab .payDebtorBtn:hover {
-      background: #059669;
-    }
-    #debtorsTab .payCreditorBtn:hover {
-      background: #9b1f2c;
-    }
-    #debtorsTab div[style*="max-height"] {
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
-      background: white;
-    }
-    .newPersonForm {
-      display: flex;
-      gap: 5px;
-      align-items: center;
-      background: #f0f4fa;
-      padding: 8px;
-      border-radius: 8px;
-    }
-    .newPersonForm input {
-      margin-bottom: 0 !important;
-      padding: 8px !important;
-    }
+    #debtorsTab td:last-child, #creditorsTableBody td:last-child { text-align: center; white-space: nowrap; }
+    #debtorsTab td, #creditorsTableBody td { padding: 14px 10px; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
+    #debtorsTab tbody tr:hover, #creditorsTableBody tbody tr:hover { background-color: #f8fafd; }
+    .payDebtorBtn, .payCreditorBtn { color: white; padding: 8px 16px; border-radius: 30px; font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer; transition: background 0.2s; }
+    .payDebtorBtn { background: #10b981; }
+    .payCreditorBtn { background: #b02a37; }
+    .payDebtorBtn:hover { background: #059669; }
+    .payCreditorBtn:hover { background: #9b1f2c; }
+    .newPersonForm { display: flex; gap: 5px; align-items: center; background: #f0f4fa; padding: 8px; border-radius: 8px; }
+    .newPersonForm input { margin-bottom: 0 !important; padding: 8px !important; }
   </style>
 </head>
 <body>
@@ -287,7 +230,7 @@
         <div class="tab" data-pocket-tab="pocketSearchTab">🔍 Search</div>
       </div>
 
-      <!-- Expense Tab -->
+      <!-- Expense Tab (NO categories management UI, categories read from sheet) -->
       <div id="expenseTab" class="card">
         <h3>Record Matumizi</h3>
         <div class="row"><div><label>Category</label><select id="pocketExpenseCategory"><option value="">Select</option></select></div><div><label>Amount (TZS)</label><input type="text" id="pocketExpenseAmount"></div></div>
@@ -331,7 +274,7 @@
         </div>
       </div>
 
-      <!-- Monthly Payments Tab (NEW) -->
+      <!-- Monthly Payments Tab -->
       <div id="monthlyPaymentsTab" class="card hidden">
         <h3>📅 Monthly Recurring Payments</h3>
         <p style="margin-bottom:16px; color:#6c757d;">Record fixed monthly bills (rent, electricity, etc.). Usually paid by Director.</p>
@@ -461,6 +404,19 @@
     } catch(e) { console.warn(e); }
   }
 
+  function populateCategoriesDropdown() {
+    const catSel = document.getElementById('pocketExpenseCategory');
+    if(catSel) {
+      catSel.innerHTML = '<option value="">Select</option>';
+      categoriesList.forEach(c=>{ 
+        const o = document.createElement('option'); 
+        o.value = c; 
+        o.textContent = c; 
+        catSel.appendChild(o); 
+      });
+    }
+  }
+
   async function loadInitData() {
     try {
       const date = document.getElementById('workDate').value;
@@ -469,8 +425,9 @@
       employeesList = data.employees || [];
       globalDebtors = data.debtors || [];
       globalCreditors = data.creditors || [];
-      const catSel = document.getElementById('pocketExpenseCategory');
-      if(catSel){ catSel.innerHTML='<option value="">Select</option>'; categoriesList.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; catSel.appendChild(o); }); }
+
+      populateCategoriesDropdown();
+
       const loanSel = document.getElementById('loanEmployee');
       if(loanSel){ loanSel.innerHTML='<option value="">Select</option>'; employeesList.forEach(e=>{ const o=document.createElement('option'); o.value=e; o.textContent=e; loanSel.appendChild(o); }); }
       renderDebtorsCreditors();
@@ -826,9 +783,7 @@
     const filterSelect = document.getElementById('filterDoctorSelect');
     if (!datalist) return;
     try {
-      const res = await apiCall('searchTransactions', {
-        fromDate: '', toDate: '', type: 'EXPENSE', category: 'Doctor'
-      });
+      const res = await apiCall('searchTransactions', { fromDate: '', toDate: '', type: 'EXPENSE', category: 'Doctor' });
       const transactions = res?.transactions || [];
       const doctorNames = new Set();
       transactions.forEach(t => {
@@ -883,15 +838,9 @@
     if (!tbody) return;
     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Loading...</td></tr>';
     try {
-      const res = await apiCall('searchTransactions', {
-        fromDate: '', toDate: '', type: 'EXPENSE'
-      });
-      let payments = (res?.transactions || []).filter(t =>
-        t.category && t.category.startsWith('Doctor:')
-      );
-      if (filterDoctor) {
-        payments = payments.filter(p => p.category.includes(filterDoctor));
-      }
+      const res = await apiCall('searchTransactions', { fromDate: '', toDate: '', type: 'EXPENSE' });
+      let payments = (res?.transactions || []).filter(t => t.category && t.category.startsWith('Doctor:'));
+      if (filterDoctor) payments = payments.filter(p => p.category.includes(filterDoctor));
       payments.sort((a, b) => (b.date > a.date) ? 1 : -1);
       if (payments.length === 0) {
         tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No payments recorded yet</td></tr>';
@@ -908,20 +857,15 @@
         </tr>`;
       });
       tbody.innerHTML = html;
-    } catch(e) {
-      console.error('Doctor payments fetch error:', e);
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error loading payments</td></tr>';
-    }
+    } catch(e) { console.error('Doctor payments fetch error:', e); }
   }
 
   function setDefaultDoctorPaymentDate() {
     const dateInput = document.getElementById('doctorPaymentDate');
-    if (dateInput && !dateInput.value) {
-      dateInput.value = new Date().toISOString().split('T')[0];
-    }
+    if (dateInput && !dateInput.value) dateInput.value = new Date().toISOString().split('T')[0];
   }
 
-  // ========== MONTHLY PAYMENTS (NEW) ==========
+  // ========== MONTHLY PAYMENTS ==========
   async function saveMonthlyPayment() {
     const date = document.getElementById('workDate').value;
     let category = document.getElementById('monthlyPaymentCategory').value;
@@ -935,7 +879,6 @@
     const source = document.getElementById('monthlyPaymentSource').value;
     const note = document.getElementById('monthlyPaymentNote').value.trim();
     if (!date) return showAlert('Select working date', 'error');
-
     const fullCategory = `Monthly: ${category}`;
     try {
       await addTx(date, 'EXPENSE', fullCategory, amt, source, note);
@@ -946,12 +889,9 @@
       document.getElementById('monthlyPaymentOtherInput').value = '';
       showAlert('Monthly payment saved', 'success');
       await refreshAllDashboards();
-    } catch(e) {
-      showAlert('Failed: ' + e.message, 'error');
-    }
+    } catch(e) { showAlert('Failed: ' + e.message, 'error'); }
   }
 
-  // Toggle "Other" input for monthly payments
   function setupMonthlyPaymentCategoryToggle() {
     const catSelect = document.getElementById('monthlyPaymentCategory');
     const otherInput = document.getElementById('monthlyPaymentOtherInput');
@@ -1006,13 +946,11 @@
       document.getElementById(id)?.classList.add('hidden');
     });
     document.getElementById(tabId)?.classList.remove('hidden');
-
     if (tabId === 'doctorPaymentsTab') {
       setDefaultDoctorPaymentDate();
       loadDoctorSuggestions();
       refreshDoctorPaymentsTable();
     }
-    // No special init for monthly payments needed
   }
 
   async function login() {
@@ -1077,11 +1015,8 @@
     if (saveDoctorBtn) saveDoctorBtn.addEventListener('click', saveDoctorPayment);
     if (refreshDoctorBtn) refreshDoctorBtn.addEventListener('click', refreshDoctorPaymentsTable);
     if (filterDoctorSelect) filterDoctorSelect.addEventListener('change', refreshDoctorPaymentsTable);
-
-    // Monthly payments
     document.getElementById('saveMonthlyPaymentBtn').addEventListener('click', saveMonthlyPayment);
     setupMonthlyPaymentCategoryToggle();
-
     document.getElementById('addCreditorBtn').addEventListener('click', async ()=>{
       const name = document.getElementById('newCreditorName').value.trim();
       const amt = parseMoney(document.getElementById('newCreditorAmount').value);
