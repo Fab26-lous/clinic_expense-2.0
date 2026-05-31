@@ -60,101 +60,86 @@
       .tabs { flex-direction:column; }
       .stat-value, .stat-value-green, .stat-value-red, .stat-value-orange { font-size:1.5rem; }
     }
-/* ===== IMPROVED TABLE STYLES FOR DEBTORS/CREDITORS ===== */
-#debtorsTab table, #creditorsTableBody table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  font-size: 0.9rem;
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
-
-#debtorsTab th, #creditorsTableBody th {
-  background: #1e3a5f;
-  color: white;
-  font-weight: 700;
-  padding: 14px 10px;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* Name column (left) */
-#debtorsTab th:first-child, #creditorsTableBody th:first-child,
-#debtorsTab td:first-child, #creditorsTableBody td:first-child {
-  text-align: left;
-}
-
-/* Amount columns (right) */
-#debtorsTab th:nth-child(2), #debtorsTab th:nth-child(3), #debtorsTab th:nth-child(4),
-#creditorsTableBody th:nth-child(2), #creditorsTableBody th:nth-child(3), #creditorsTableBody th:nth-child(4),
-#debtorsTab td:nth-child(2), #debtorsTab td:nth-child(3), #debtorsTab td:nth-child(4),
-#creditorsTableBody td:nth-child(2), #creditorsTableBody td:nth-child(3), #creditorsTableBody td:nth-child(4) {
-  text-align: right;
-  padding-right: 20px;
-}
-
-/* Action column (center) */
-#debtorsTab th:last-child, #creditorsTableBody th:last-child,
-#debtorsTab td:last-child, #creditorsTableBody td:last-child {
-  text-align: center;
-  white-space: nowrap;
-}
-
-#debtorsTab td, #creditorsTableBody td {
-  padding: 14px 10px;
-  border-bottom: 1px solid #edf2f7;
-  vertical-align: middle;
-}
-
-#debtorsTab tbody tr:hover, #creditorsTableBody tbody tr:hover {
-  background-color: #f8fafd;
-}
-
-#debtorsTab .payDebtorBtn, #creditorsTableBody .payCreditorBtn {
-  background: #10b981;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 30px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-#debtorsTab .payCreditorBtn {
-  background: #b02a37;
-}
-
-#debtorsTab .payDebtorBtn:hover {
-  background: #059669;
-}
-
-#debtorsTab .payCreditorBtn:hover {
-  background: #9b1f2c;
-}
-
-#debtorsTab div[style*="max-height"] {
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  background: white;
-}
-  .newPersonForm {
-  display: flex;
-  gap: 5px;
-  align-items: center;
-  background: #f0f4fa;
-  padding: 8px;
-  border-radius: 8px;
-}
-.newPersonForm input {
-  margin-bottom: 0 !important;
-  padding: 8px !important;
-}
+    #debtorsTab table, #creditorsTableBody table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    #debtorsTab th, #creditorsTableBody th {
+      background: #1e3a5f;
+      color: white;
+      font-weight: 700;
+      padding: 14px 10px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    #debtorsTab th:first-child, #creditorsTableBody th:first-child,
+    #debtorsTab td:first-child, #creditorsTableBody td:first-child {
+      text-align: left;
+    }
+    #debtorsTab th:nth-child(2), #debtorsTab th:nth-child(3), #debtorsTab th:nth-child(4),
+    #creditorsTableBody th:nth-child(2), #creditorsTableBody th:nth-child(3), #creditorsTableBody th:nth-child(4),
+    #debtorsTab td:nth-child(2), #debtorsTab td:nth-child(3), #debtorsTab td:nth-child(4),
+    #creditorsTableBody td:nth-child(2), #creditorsTableBody td:nth-child(3), #creditorsTableBody td:nth-child(4) {
+      text-align: right;
+      padding-right: 20px;
+    }
+    #debtorsTab th:last-child, #creditorsTableBody th:last-child,
+    #debtorsTab td:last-child, #creditorsTableBody td:last-child {
+      text-align: center;
+      white-space: nowrap;
+    }
+    #debtorsTab td, #creditorsTableBody td {
+      padding: 14px 10px;
+      border-bottom: 1px solid #edf2f7;
+      vertical-align: middle;
+    }
+    #debtorsTab tbody tr:hover, #creditorsTableBody tbody tr:hover {
+      background-color: #f8fafd;
+    }
+    #debtorsTab .payDebtorBtn, #creditorsTableBody .payCreditorBtn {
+      background: #10b981;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #debtorsTab .payCreditorBtn {
+      background: #b02a37;
+    }
+    #debtorsTab .payDebtorBtn:hover {
+      background: #059669;
+    }
+    #debtorsTab .payCreditorBtn:hover {
+      background: #9b1f2c;
+    }
+    #debtorsTab div[style*="max-height"] {
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      background: white;
+    }
+    .newPersonForm {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      background: #f0f4fa;
+      padding: 8px;
+      border-radius: 8px;
+    }
+    .newPersonForm input {
+      margin-bottom: 0 !important;
+      padding: 8px !important;
+    }
   </style>
 </head>
 <body>
@@ -273,7 +258,7 @@
         <div id="searchResults"><table><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Note</th></tr></thead><tbody id="searchResultsBody"></tbody></table></div>
       </div>
 
-      <!-- Debtors/Creditors Tab (Swahili) -->
+      <!-- Debtors/Creditors Tab -->
       <div id="debtorsTab" class="card hidden">
         <h3>📋 Debtors/Creditors</h3>
         <div class="section-card" style="border-left-color:#10b981;">
@@ -297,9 +282,12 @@
       <div class="tabs">
         <div class="tab active" data-pocket-tab="expenseTab">💰 Expense</div>
         <div class="tab" data-pocket-tab="topupTab">➕ Top-up</div>
-       <div class="tab" data-pocket-tab="doctorPaymentsTab">👨‍⚕️Specialist Doctors Payments</div>
+        <div class="tab" data-pocket-tab="doctorPaymentsTab">👨‍⚕️Specialist Doctors</div>
+        <div class="tab" data-pocket-tab="monthlyPaymentsTab">📅 Monthly Payments</div>
         <div class="tab" data-pocket-tab="pocketSearchTab">🔍 Search</div>
       </div>
+
+      <!-- Expense Tab -->
       <div id="expenseTab" class="card">
         <h3>Record Matumizi</h3>
         <div class="row"><div><label>Category</label><select id="pocketExpenseCategory"><option value="">Select</option></select></div><div><label>Amount (TZS)</label><input type="text" id="pocketExpenseAmount"></div></div>
@@ -307,51 +295,77 @@
         <div class="row"><button class="secondary-btn" id="addExpenseToListBtn">➕ Add to List</button><button class="primary-btn" id="saveAllExpensesBtn" disabled>💾 Save All</button></div>
         <div id="expenseListContainer" class="hidden"><div class="expense-list" id="expenseList"></div><div class="expense-total"><span>Total:</span><span id="expenseListTotal">TZS 0</span></div></div>
       </div>
+
+      <!-- Top-up Tab -->
       <div id="topupTab" class="card hidden">
         <h3>Pocket Top-up</h3>
         <div class="row"><div><label>From</label><select id="pocketSource"><option value="SALES">💰 From Sales</option><option value="DIRECTOR">👤 Director</option></select></div><div><label>Amount (TZS)</label><input type="text" id="pocketTopupAmount"></div></div>
         <label>Note</label><input type="text" id="pocketTopupNote"><button class="primary-btn" id="savePocketTopupBtn">Save</button>
       </div>
-      
-    <div id="doctorPaymentsTab" class="card hidden">
-  <h3>👨‍⚕️ Specialist Doctors Bulk Payments(From Director) </h3>
-  <p style="margin-bottom:16px; color:#6c757d;">Record bulk payments to visiting specialists (paid by Director).</p>
-  
-  <!-- Payment Form -->
-  <div class="row">
-    <div>
-      <label>Doctor Name</label>
-      <input type="text" id="doctorNameInput" list="doctorSuggestions" placeholder="Enter doctor name">
-      <datalist id="doctorSuggestions"></datalist>
-    </div>
-    <div><label>Payment Date</label><input type="date" id="doctorPaymentDate"></div>
-  </div>
-  <div class="row">
-    <div><label>Amount (TZS)</label><input type="text" id="doctorPaymentAmount"></div>
-    <div></div> <!-- empty to keep grid alignment -->
-  </div>
-  <label>Note (optional)</label><input type="text" id="doctorPaymentNote" placeholder="e.g., Consultation share">
-  <button class="primary-btn" id="saveDoctorPaymentBtn">💾 Record Payment</button>
 
-  <!-- Recent Payments Table -->
-  <div style="margin-top:30px;">
-    <h4>📋 Recent Doctor Payments</h4>
-    <div style="display:flex; gap:10px; margin-bottom:15px;">
-      <select id="filterDoctorSelect" style="width:auto; flex:1;"><option value="">All Doctors</option></select>
-      <button class="secondary-btn" id="refreshDoctorPaymentsBtn">⟳ Refresh</button>
-    </div>
-    <div style="max-height:300px; overflow-y:auto; border:1px solid #e6e9ef; border-radius:10px;">
-      <table style="width:100%; border-collapse:collapse;">
-        <thead style="background:#1e3a5f; color:white; position:sticky; top:0;">
-          <tr><th style="padding:10px;">Date</th><th>Doctor</th><th>Amount</th><th>Note</th></tr>
-        </thead>
-        <tbody id="doctorPaymentsTableBody">
-          <tr><td colspan="4" style="text-align:center; padding:20px;">No payments recorded</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+      <!-- Doctor Payments Tab -->
+      <div id="doctorPaymentsTab" class="card hidden">
+        <h3>👨‍⚕️ Specialist Doctors Bulk Payments (From Director)</h3>
+        <p style="margin-bottom:16px; color:#6c757d;">Record bulk payments to visiting specialists (paid by Director).</p>
+        <div class="row">
+          <div><label>Doctor Name</label><input type="text" id="doctorNameInput" list="doctorSuggestions" placeholder="Enter doctor name"><datalist id="doctorSuggestions"></datalist></div>
+          <div><label>Payment Date</label><input type="date" id="doctorPaymentDate"></div>
+        </div>
+        <div class="row"><div><label>Amount (TZS)</label><input type="text" id="doctorPaymentAmount"></div><div></div></div>
+        <label>Note (optional)</label><input type="text" id="doctorPaymentNote" placeholder="e.g., Consultation share">
+        <button class="primary-btn" id="saveDoctorPaymentBtn">💾 Record Payment</button>
+        <div style="margin-top:30px;">
+          <h4>📋 Recent Doctor Payments</h4>
+          <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <select id="filterDoctorSelect" style="width:auto; flex:1;"><option value="">All Doctors</option></select>
+            <button class="secondary-btn" id="refreshDoctorPaymentsBtn">⟳ Refresh</button>
+          </div>
+          <div style="max-height:300px; overflow-y:auto; border:1px solid #e6e9ef; border-radius:10px;">
+            <table style="width:100%; border-collapse:collapse;">
+              <thead style="background:#1e3a5f; color:white; position:sticky; top:0;">
+                <tr><th style="padding:10px;">Date</th><th>Doctor</th><th>Amount</th><th>Note</th></tr>
+              </thead>
+              <tbody id="doctorPaymentsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly Payments Tab (NEW) -->
+      <div id="monthlyPaymentsTab" class="card hidden">
+        <h3>📅 Monthly Recurring Payments</h3>
+        <p style="margin-bottom:16px; color:#6c757d;">Record fixed monthly bills (rent, electricity, etc.). Usually paid by Director.</p>
+        <div class="row">
+          <div>
+            <label>Payment Type</label>
+            <select id="monthlyPaymentCategory">
+              <option value="">-- Select --</option>
+              <option value="Rent">🏠 Rent</option>
+              <option value="Electricity">⚡ Electricity</option>
+              <option value="Water">💧 Water</option>
+              <option value="Internet">🌐 Internet</option>
+              <option value="Salaries">💼 Salaries</option>
+              <option value="Insurance">🛡 Insurance</option>
+              <option value="Other">📝 Other (specify)</option>
+            </select>
+            <input type="text" id="monthlyPaymentOtherInput" class="hidden" placeholder="Enter custom category">
+          </div>
+          <div><label>Amount (TZS)</label><input type="text" id="monthlyPaymentAmount"></div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Paid By</label>
+            <select id="monthlyPaymentSource">
+              <option value="DIRECTOR" selected>👤 Director</option>
+              <option value="POCKET">💰 Pocket</option>
+            </select>
+          </div>
+          <div><label>Note (optional)</label><input type="text" id="monthlyPaymentNote" placeholder="e.g., March rent"></div>
+        </div>
+        <button class="primary-btn" id="saveMonthlyPaymentBtn">💾 Save Monthly Payment</button>
+      </div>
+
+      <!-- Pocket Search Tab -->
       <div id="pocketSearchTab" class="card hidden">
         <h3>🔍 Pocket Transactions</h3>
         <div class="row"><div><label>From</label><input type="date" id="pocketSearchFrom"></div><div><label>To</label><input type="date" id="pocketSearchTo"></div></div>
@@ -377,7 +391,6 @@
       <option value="__ADD_NEW_DEBTOR__">➕ Ongeza Mteja Mpya...</option>
       <option value="__ADD_NEW_CREDITOR__">➕ Ongeza Mdai Mpya...</option>
     </select>
-    <!-- Simplified inline form: only name -->
     <div class="newPersonForm" style="display:none; flex:2; gap:5px; align-items:center;">
       <input type="text" class="newPersonName" placeholder="Jina la mteja/mdai" style="flex:1;">
       <button type="button" class="secondary-btn saveNewPersonBtn" style="padding:8px 12px;">Save</button>
@@ -458,8 +471,6 @@
       globalCreditors = data.creditors || [];
       const catSel = document.getElementById('pocketExpenseCategory');
       if(catSel){ catSel.innerHTML='<option value="">Select</option>'; categoriesList.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; catSel.appendChild(o); }); }
-      const dirCatSel = document.getElementById('directorExpenseCategory');
-      if(dirCatSel){ dirCatSel.innerHTML='<option value="">Select</option>'; categoriesList.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; dirCatSel.appendChild(o); }); }
       const loanSel = document.getElementById('loanEmployee');
       if(loanSel){ loanSel.innerHTML='<option value="">Select</option>'; employeesList.forEach(e=>{ const o=document.createElement('option'); o.value=e; o.textContent=e; loanSel.appendChild(o); }); }
       renderDebtorsCreditors();
@@ -540,149 +551,123 @@
     }
   }
 
-function addReasonRow() {
-  const container = document.getElementById('reasonsList');
-  const clone = document.getElementById('reasonTemplate').content.cloneNode(true);
-  const row = clone.querySelector('.reason-row');
-  const typeSel = row.querySelector('.reasonType');
-  const otherInp = row.querySelector('.reasonOther');
-  const personSel = row.querySelector('.reasonPersonName');
-  const amtInp = row.querySelector('.reasonAmount');
-  const removeBtn = row.querySelector('.removeReasonBtn');
-  const newPersonForm = row.querySelector('.newPersonForm');
-  const newPersonName = row.querySelector('.newPersonName');
-  const saveNewBtn = row.querySelector('.saveNewPersonBtn');
-  const cancelNewBtn = row.querySelector('.cancelNewPersonBtn');
+  function addReasonRow() {
+    const container = document.getElementById('reasonsList');
+    const clone = document.getElementById('reasonTemplate').content.cloneNode(true);
+    const row = clone.querySelector('.reason-row');
+    const typeSel = row.querySelector('.reasonType');
+    const otherInp = row.querySelector('.reasonOther');
+    const personSel = row.querySelector('.reasonPersonName');
+    const amtInp = row.querySelector('.reasonAmount');
+    const removeBtn = row.querySelector('.removeReasonBtn');
+    const newPersonForm = row.querySelector('.newPersonForm');
+    const newPersonName = row.querySelector('.newPersonName');
+    const saveNewBtn = row.querySelector('.saveNewPersonBtn');
+    const cancelNewBtn = row.querySelector('.cancelNewPersonBtn');
 
-  // Populate the person dropdown with existing debtors/creditors
-  function populatePersonOptions() {
-    personSel.innerHTML = '<option value="">Chagua jina...</option>';
-    // Add existing debtors
-    globalDebtors.forEach(d => {
-      const opt = document.createElement('option');
-      opt.value = `DEBTOR:${d.name}`;
-      opt.textContent = `💰 ${d.name} (anadai ${formatNumber(d.remaining)})`;
-      personSel.appendChild(opt);
-    });
-    // Add existing creditors
-    globalCreditors.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = `CREDITOR:${c.name}`;
-      opt.textContent = `💳 ${c.name} (tunadaiwa ${formatNumber(c.remaining)})`;
-      personSel.appendChild(opt);
-    });
-    // Add "Add New" options
-    const addDebtorOpt = document.createElement('option');
-    addDebtorOpt.value = '__ADD_NEW_DEBTOR__';
-    addDebtorOpt.textContent = '➕ Ongeza Mteja Mpya...';
-    personSel.appendChild(addDebtorOpt);
-    const addCreditorOpt = document.createElement('option');
-    addCreditorOpt.value = '__ADD_NEW_CREDITOR__';
-    addCreditorOpt.textContent = '➕ Ongeza Mdai Mpya...';
-    personSel.appendChild(addCreditorOpt);
-  }
-  populatePersonOptions();
-
-  // Helper to refresh the dropdown after adding a new person
-  async function refreshPersonDropdown() {
-    // Reload global lists
-    try {
-      const data = await apiCall('getInit', { date: document.getElementById('workDate').value });
-      globalDebtors = data.debtors || [];
-      globalCreditors = data.creditors || [];
-    } catch (e) { console.warn(e); }
+    function populatePersonOptions() {
+      personSel.innerHTML = '<option value="">Chagua jina...</option>';
+      globalDebtors.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = `DEBTOR:${d.name}`;
+        opt.textContent = `💰 ${d.name} (anadai ${formatNumber(d.remaining)})`;
+        personSel.appendChild(opt);
+      });
+      globalCreditors.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = `CREDITOR:${c.name}`;
+        opt.textContent = `💳 ${c.name} (tunadaiwa ${formatNumber(c.remaining)})`;
+        personSel.appendChild(opt);
+      });
+      const addDebtorOpt = document.createElement('option');
+      addDebtorOpt.value = '__ADD_NEW_DEBTOR__';
+      addDebtorOpt.textContent = '➕ Ongeza Mteja Mpya...';
+      personSel.appendChild(addDebtorOpt);
+      const addCreditorOpt = document.createElement('option');
+      addCreditorOpt.value = '__ADD_NEW_CREDITOR__';
+      addCreditorOpt.textContent = '➕ Ongeza Mdai Mpya...';
+      personSel.appendChild(addCreditorOpt);
+    }
     populatePersonOptions();
-  }
 
-  // Show/hide elements based on reason type selection
-  typeSel.addEventListener('change', () => {
-    const val = typeSel.value;
-    otherInp.style.display = val === 'Other' ? 'block' : 'none';
-    const showPerson = (val === 'Debtor' || val === 'Creditor');
-    personSel.style.display = showPerson ? 'block' : 'none';
-    newPersonForm.style.display = 'none';
-    calcDiffUI();
-  });
+    async function refreshPersonDropdown() {
+      try {
+        const data = await apiCall('getInit', { date: document.getElementById('workDate').value });
+        globalDebtors = data.debtors || [];
+        globalCreditors = data.creditors || [];
+      } catch(e) { console.warn(e); }
+      populatePersonOptions();
+    }
 
-  // When person selection changes
-  personSel.addEventListener('change', () => {
-    const val = personSel.value;
-    if (val === '__ADD_NEW_DEBTOR__' || val === '__ADD_NEW_CREDITOR__') {
-      // Show inline form
-      newPersonForm.style.display = 'flex';
-      personSel.style.display = 'none';
-      // Pre-fill type hint
-      newPersonName.placeholder = val === '__ADD_NEW_DEBTOR__' ? 'Jina la Mteja' : 'Jina la Mdai';
-    } else {
+    typeSel.addEventListener('change', () => {
+      const val = typeSel.value;
+      otherInp.style.display = val === 'Other' ? 'block' : 'none';
+      const showPerson = (val === 'Debtor' || val === 'Creditor');
+      personSel.style.display = showPerson ? 'block' : 'none';
+      newPersonForm.style.display = 'none';
+      calcDiffUI();
+    });
+
+    personSel.addEventListener('change', () => {
+      const val = personSel.value;
+      if (val === '__ADD_NEW_DEBTOR__' || val === '__ADD_NEW_CREDITOR__') {
+        newPersonForm.style.display = 'flex';
+        personSel.style.display = 'none';
+        newPersonName.placeholder = val === '__ADD_NEW_DEBTOR__' ? 'Jina la Mteja' : 'Jina la Mdai';
+      } else {
+        newPersonForm.style.display = 'none';
+        personSel.style.display = 'block';
+        calcDiffUI();
+      }
+    });
+
+    cancelNewBtn.addEventListener('click', () => {
       newPersonForm.style.display = 'none';
       personSel.style.display = 'block';
-      calcDiffUI();
-    }
-  });
+      personSel.value = '';
+      newPersonName.value = '';
+    });
 
-  // Cancel adding new person
-  cancelNewBtn.addEventListener('click', () => {
-    newPersonForm.style.display = 'none';
-    personSel.style.display = 'block';
-    personSel.value = '';
-    newPersonName.value = '';
-    newPersonAmount.value = '';
-  });
-
- // Save new person (using reason amount as initial balance)
-saveNewBtn.addEventListener('click', async () => {
-  const isDebtor = personSel.value === '__ADD_NEW_DEBTOR__';
-  const isCreditor = personSel.value === '__ADD_NEW_CREDITOR__';
-  const name = newPersonName.value.trim();
-  const amount = parseMoney(amtInp.value);  // Use the reason amount field
-
-  if (!name) {
-    showAlert('Weka jina', 'error');
-    return;
-  }
-  if (amount <= 0) {
-    showAlert('Weka kiasi kwenye "Kiasi (TZS)" kwanza', 'error');
-    return;
-  }
-
-  setOverlay(true);
-  try {
-    if (isDebtor) {
-      await apiCall('addDebtor', { name, amount, note: 'Added from cash reason' });
-    } else if (isCreditor) {
-      await apiCall('addCreditor', { name, amount, note: 'Added from cash reason' });
-    }
-    showAlert(`${isDebtor ? 'Mteja' : 'Mdai'} ameongezwa`, 'success');
-
-    // Refresh dropdown
-    await refreshPersonDropdown();
-
-    // Hide form, show select, and select the new person
-    newPersonForm.style.display = 'none';
-    personSel.style.display = 'block';
-    const prefix = isDebtor ? 'DEBTOR:' : 'CREDITOR:';
-    for (let i = 0; i < personSel.options.length; i++) {
-      if (personSel.options[i].value === prefix + name) {
-        personSel.selectedIndex = i;
-        break;
+    saveNewBtn.addEventListener('click', async () => {
+      const isDebtor = personSel.value === '__ADD_NEW_DEBTOR__';
+      const isCreditor = personSel.value === '__ADD_NEW_CREDITOR__';
+      const name = newPersonName.value.trim();
+      const amount = parseMoney(amtInp.value);
+      if (!name) { showAlert('Weka jina', 'error'); return; }
+      if (amount <= 0) { showAlert('Weka kiasi kwenye "Kiasi (TZS)" kwanza', 'error'); return; }
+      setOverlay(true);
+      try {
+        if (isDebtor) {
+          await apiCall('addDebtor', { name, amount, note: 'Added from cash reason' });
+        } else if (isCreditor) {
+          await apiCall('addCreditor', { name, amount, note: 'Added from cash reason' });
+        }
+        showAlert(`${isDebtor ? 'Mteja' : 'Mdai'} ameongezwa`, 'success');
+        await refreshPersonDropdown();
+        newPersonForm.style.display = 'none';
+        personSel.style.display = 'block';
+        const prefix = isDebtor ? 'DEBTOR:' : 'CREDITOR:';
+        for (let i = 0; i < personSel.options.length; i++) {
+          if (personSel.options[i].value === prefix + name) {
+            personSel.selectedIndex = i;
+            break;
+          }
+        }
+        newPersonName.value = '';
+        calcDiffUI();
+      } catch(e) {
+        showAlert('Imeshindwa kuongeza: ' + e.message, 'error');
+      } finally {
+        setOverlay(false);
       }
-    }
-    newPersonName.value = '';
+    });
+
+    amtInp.addEventListener('input', () => { fmtInput(amtInp); calcDiffUI(); });
+    otherInp.addEventListener('input', calcDiffUI);
+    removeBtn.addEventListener('click', () => { row.remove(); calcDiffUI(); });
+    container.appendChild(row);
     calcDiffUI();
-  } catch (e) {
-    showAlert('Imeshindwa kuongeza: ' + e.message, 'error');
-  } finally {
-    setOverlay(false);
   }
-});
-
-  amtInp.addEventListener('input', () => { fmtInput(amtInp); calcDiffUI(); });
-  otherInp.addEventListener('input', calcDiffUI);
-  removeBtn.addEventListener('click', () => { row.remove(); calcDiffUI(); });
-
-  container.appendChild(row);
-  calcDiffUI();
-}
 
   async function saveCashAndSales() {
     const btn = document.getElementById('saveCashSalesBtn'); btn.disabled = true;
@@ -771,19 +756,6 @@ saveNewBtn.addEventListener('click', async () => {
     await refreshAllDashboards();
   }
 
-  async function saveDirectorExpense() {
-    const date = document.getElementById('workDate').value;
-    const cat = document.getElementById('directorExpenseCategory').value;
-    const amt = parseMoney(document.getElementById('directorExpenseAmount').value);
-    const note = document.getElementById('directorExpenseNote').value.trim();
-    if(!date||!cat||amt<=0) return showAlert('Fill all fields','error');
-    await addTx(date, 'EXPENSE', cat, amt, 'DIRECTOR', note);
-    document.getElementById('directorExpenseAmount').value = '';
-    document.getElementById('directorExpenseNote').value = '';
-    showAlert('Director payment saved','success');
-    await refreshAllDashboards();
-  }
-
   function addExpenseToList() {
     const cat = document.getElementById('pocketExpenseCategory').value;
     const amt = parseMoney(document.getElementById('pocketExpenseAmount').value);
@@ -847,130 +819,154 @@ saveNewBtn.addEventListener('click', async () => {
     showAlert('Top-up saved','success');
     await refreshAllDashboards();
   }
-  // ========== DOCTOR PAYMENTS (FROM DIRECTOR) ==========
 
-// Load doctor name suggestions from past "Doctor:" expenses (source DIRECTOR)
-async function loadDoctorSuggestions() {
-  const datalist = document.getElementById('doctorSuggestions');
-  const filterSelect = document.getElementById('filterDoctorSelect');
-  if (!datalist) return;
-
-  try {
-    const res = await apiCall('searchTransactions', {
-      fromDate: '', toDate: '', type: 'EXPENSE', category: 'Doctor'
-    });
-    const transactions = res?.transactions || [];
-    const doctorNames = new Set();
-    transactions.forEach(t => {
-      if (t.source === 'DIRECTOR' && t.category && t.category.startsWith('Doctor:')) {
-        const name = t.category.replace('Doctor:', '').trim();
-        if (name) doctorNames.add(name);
-      }
-    });
-    const sorted = Array.from(doctorNames).sort();
-    
-    datalist.innerHTML = '';
-    sorted.forEach(name => {
-      const opt = document.createElement('option');
-      opt.value = name;
-      datalist.appendChild(opt);
-    });
-
-    if (filterSelect) {
-      filterSelect.innerHTML = '<option value="">All Doctors</option>';
+  // ========== DOCTOR PAYMENTS ==========
+  async function loadDoctorSuggestions() {
+    const datalist = document.getElementById('doctorSuggestions');
+    const filterSelect = document.getElementById('filterDoctorSelect');
+    if (!datalist) return;
+    try {
+      const res = await apiCall('searchTransactions', {
+        fromDate: '', toDate: '', type: 'EXPENSE', category: 'Doctor'
+      });
+      const transactions = res?.transactions || [];
+      const doctorNames = new Set();
+      transactions.forEach(t => {
+        if (t.source === 'DIRECTOR' && t.category && t.category.startsWith('Doctor:')) {
+          const name = t.category.replace('Doctor:', '').trim();
+          if (name) doctorNames.add(name);
+        }
+      });
+      const sorted = Array.from(doctorNames).sort();
+      datalist.innerHTML = '';
       sorted.forEach(name => {
         const opt = document.createElement('option');
         opt.value = name;
-        opt.textContent = name;
-        filterSelect.appendChild(opt);
+        datalist.appendChild(opt);
+      });
+      if (filterSelect) {
+        filterSelect.innerHTML = '<option value="">All Doctors</option>';
+        sorted.forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          filterSelect.appendChild(opt);
+        });
+      }
+    } catch(e) { console.warn('Doctor suggestions load error:', e); }
+  }
+
+  async function saveDoctorPayment() {
+    const doctorName = document.getElementById('doctorNameInput').value.trim();
+    const date = document.getElementById('doctorPaymentDate').value;
+    const amount = parseMoney(document.getElementById('doctorPaymentAmount').value);
+    const note = document.getElementById('doctorPaymentNote').value.trim();
+    if (!doctorName) return showAlert('Enter doctor name', 'error');
+    if (!date) return showAlert('Select payment date', 'error');
+    if (!amount || amount <= 0) return showAlert('Enter valid amount', 'error');
+    const category = `Doctor: ${doctorName}`;
+    const fullNote = note || `Payment to ${doctorName}`;
+    try {
+      await addTx(date, 'EXPENSE', category, amount, 'DIRECTOR', fullNote);
+      document.getElementById('doctorPaymentAmount').value = '';
+      document.getElementById('doctorPaymentNote').value = '';
+      showAlert('Doctor payment recorded', 'success');
+      await refreshDoctorPaymentsTable();
+      await loadDoctorSuggestions();
+      await refreshAllDashboards();
+    } catch(e) { showAlert('Failed to save: ' + e.message, 'error'); }
+  }
+
+  async function refreshDoctorPaymentsTable() {
+    const tbody = document.getElementById('doctorPaymentsTableBody');
+    const filterDoctor = document.getElementById('filterDoctorSelect')?.value || '';
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Loading...</td></tr>';
+    try {
+      const res = await apiCall('searchTransactions', {
+        fromDate: '', toDate: '', type: 'EXPENSE'
+      });
+      let payments = (res?.transactions || []).filter(t =>
+        t.category && t.category.startsWith('Doctor:')
+      );
+      if (filterDoctor) {
+        payments = payments.filter(p => p.category.includes(filterDoctor));
+      }
+      payments.sort((a, b) => (b.date > a.date) ? 1 : -1);
+      if (payments.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No payments recorded yet</td></tr>';
+        return;
+      }
+      let html = '';
+      payments.forEach(p => {
+        const doctor = p.category.replace('Doctor:', '').trim();
+        html += `<tr>
+          <td style="padding:8px 12px;">${p.date}</td>
+          <td style="padding:8px 12px;">${doctor}</td>
+          <td style="text-align:right; padding:8px 12px; white-space:nowrap;">${formatNumber(p.amount)}</td>
+          <td style="padding:8px 20px;">${p.note || ''}</td>
+        </tr>`;
+      });
+      tbody.innerHTML = html;
+    } catch(e) {
+      console.error('Doctor payments fetch error:', e);
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error loading payments</td></tr>';
+    }
+  }
+
+  function setDefaultDoctorPaymentDate() {
+    const dateInput = document.getElementById('doctorPaymentDate');
+    if (dateInput && !dateInput.value) {
+      dateInput.value = new Date().toISOString().split('T')[0];
+    }
+  }
+
+  // ========== MONTHLY PAYMENTS (NEW) ==========
+  async function saveMonthlyPayment() {
+    const date = document.getElementById('workDate').value;
+    let category = document.getElementById('monthlyPaymentCategory').value;
+    if (category === 'Other') {
+      category = document.getElementById('monthlyPaymentOtherInput').value.trim();
+      if (!category) return showAlert('Enter custom category', 'error');
+    }
+    if (!category) return showAlert('Select payment type', 'error');
+    const amt = parseMoney(document.getElementById('monthlyPaymentAmount').value);
+    if (!amt || amt <= 0) return showAlert('Enter valid amount', 'error');
+    const source = document.getElementById('monthlyPaymentSource').value;
+    const note = document.getElementById('monthlyPaymentNote').value.trim();
+    if (!date) return showAlert('Select working date', 'error');
+
+    const fullCategory = `Monthly: ${category}`;
+    try {
+      await addTx(date, 'EXPENSE', fullCategory, amt, source, note);
+      document.getElementById('monthlyPaymentAmount').value = '';
+      document.getElementById('monthlyPaymentNote').value = '';
+      document.getElementById('monthlyPaymentCategory').value = '';
+      document.getElementById('monthlyPaymentOtherInput').classList.add('hidden');
+      document.getElementById('monthlyPaymentOtherInput').value = '';
+      showAlert('Monthly payment saved', 'success');
+      await refreshAllDashboards();
+    } catch(e) {
+      showAlert('Failed: ' + e.message, 'error');
+    }
+  }
+
+  // Toggle "Other" input for monthly payments
+  function setupMonthlyPaymentCategoryToggle() {
+    const catSelect = document.getElementById('monthlyPaymentCategory');
+    const otherInput = document.getElementById('monthlyPaymentOtherInput');
+    if (catSelect && otherInput) {
+      catSelect.addEventListener('change', () => {
+        if (catSelect.value === 'Other') {
+          otherInput.classList.remove('hidden');
+          otherInput.focus();
+        } else {
+          otherInput.classList.add('hidden');
+          otherInput.value = '';
+        }
       });
     }
-  } catch (e) {
-    console.warn('Doctor suggestions load error:', e);
   }
-}
-
-// Save a doctor payment (source = DIRECTOR)
-async function saveDoctorPayment() {
-  const doctorName = document.getElementById('doctorNameInput').value.trim();
-  const date = document.getElementById('doctorPaymentDate').value;
-  const amount = parseMoney(document.getElementById('doctorPaymentAmount').value);
-  const note = document.getElementById('doctorPaymentNote').value.trim();
-
-  if (!doctorName) return showAlert('Enter doctor name', 'error');
-  if (!date) return showAlert('Select payment date', 'error');
-  if (!amount || amount <= 0) return showAlert('Enter valid amount', 'error');
-
-  const category = `Doctor: ${doctorName}`;
-  const fullNote = note || `Payment to ${doctorName}`;
-
-  try {
-    await addTx(date, 'EXPENSE', category, amount, 'DIRECTOR', fullNote);
-    document.getElementById('doctorPaymentAmount').value = '';
-    document.getElementById('doctorPaymentNote').value = '';
-    showAlert('Doctor payment recorded', 'success');
-    await refreshDoctorPaymentsTable();
-    await loadDoctorSuggestions();
-    await refreshAllDashboards();
-  } catch (e) {
-    showAlert('Failed to save: ' + e.message, 'error');
-  }
-}
-
-async function refreshDoctorPaymentsTable() {
-  const tbody = document.getElementById('doctorPaymentsTableBody');
-  const filterDoctor = document.getElementById('filterDoctorSelect')?.value || '';
-  if (!tbody) return;
-
-  tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Loading...</td></tr>';
-
-  try {
-    // Fetch all EXPENSE transactions (no source filter) and filter locally by category
-    const res = await apiCall('searchTransactions', {
-      fromDate: '', toDate: '', type: 'EXPENSE'
-    });
-    
-    // Only keep those with category starting with "Doctor:"
-    let payments = (res?.transactions || []).filter(t => 
-      t.category && t.category.startsWith('Doctor:')
-    );
-    
-    // Optional: filter by doctor name
-    if (filterDoctor) {
-      payments = payments.filter(p => p.category.includes(filterDoctor));
-    }
-
-    // Sort by date descending
-    payments.sort((a, b) => (b.date > a.date) ? 1 : -1);
-
-    if (payments.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No payments recorded yet</td></tr>';
-      return;
-    }
-
- let html = '';
-payments.forEach(p => {
-  const doctor = p.category.replace('Doctor:', '').trim();
-  html += `<tr>
-    <td style="padding:8px 12px;">${p.date}</td>
-    <td style="padding:8px 12px;">${doctor}</td>
-    <td style="text-align:right; padding:8px 12px; white-space:nowrap;">${formatNumber(p.amount)}</td>
-    <td style="padding:8px 20px;">${p.note || ''}</td>
-  </tr>`;
-});
-tbody.innerHTML = html;
-  } catch (e) {
-    console.error('Doctor payments fetch error:', e);
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error loading payments</td></tr>';
-  }
-}
-
-function setDefaultDoctorPaymentDate() {
-  const dateInput = document.getElementById('doctorPaymentDate');
-  if (dateInput && !dateInput.value) {
-    dateInput.value = new Date().toISOString().split('T')[0];
-  }
-}
 
   let currentAccessType = null;
   function setupUIByRole(role) {
@@ -1004,19 +1000,20 @@ function setDefaultDoctorPaymentDate() {
     if(tabId==='debtorsTab') loadInitData();
   }
   function setPocketTab(tabId) {
-  document.querySelectorAll('[data-pocket-tab]').forEach(t => t.classList.remove('active'));
-  document.querySelector(`[data-pocket-tab="${tabId}"]`)?.classList.add('active');
-  ['expenseTab','topupTab','doctorPaymentsTab','pocketSearchTab'].forEach(id => {
-    document.getElementById(id)?.classList.add('hidden');
-  });
-  document.getElementById(tabId)?.classList.remove('hidden');
+    document.querySelectorAll('[data-pocket-tab]').forEach(t => t.classList.remove('active'));
+    document.querySelector(`[data-pocket-tab="${tabId}"]`)?.classList.add('active');
+    ['expenseTab','topupTab','doctorPaymentsTab','monthlyPaymentsTab','pocketSearchTab'].forEach(id => {
+      document.getElementById(id)?.classList.add('hidden');
+    });
+    document.getElementById(tabId)?.classList.remove('hidden');
 
-  if (tabId === 'doctorPaymentsTab') {
-    setDefaultDoctorPaymentDate();
-    loadDoctorSuggestions();
-    refreshDoctorPaymentsTable();
+    if (tabId === 'doctorPaymentsTab') {
+      setDefaultDoctorPaymentDate();
+      loadDoctorSuggestions();
+      refreshDoctorPaymentsTable();
+    }
+    // No special init for monthly payments needed
   }
-}
 
   async function login() {
     const u = document.getElementById('username').value.trim().toLowerCase();
@@ -1044,7 +1041,7 @@ function setDefaultDoctorPaymentDate() {
   document.addEventListener('DOMContentLoaded', ()=>{
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('workDate').value = today;
-    ['systemSalesAmount','cashCountAmount','depositAmount','loanAmount','cashToDirectorAmount','pocketExpenseAmount','pocketTopupAmount','directorExpenseAmount'].forEach(attachMoney);
+    ['systemSalesAmount','cashCountAmount','depositAmount','loanAmount','cashToDirectorAmount','pocketExpenseAmount','pocketTopupAmount','monthlyPaymentAmount','doctorPaymentAmount'].forEach(attachMoney);
     document.getElementById('systemSalesAmount').addEventListener('input', calcDiffUI);
     document.getElementById('cashCountAmount').addEventListener('input', calcDiffUI);
     document.getElementById('addReasonBtn').addEventListener('click', addReasonRow);
@@ -1075,14 +1072,16 @@ function setDefaultDoctorPaymentDate() {
       await loadInitData();
     });
     const saveDoctorBtn = document.getElementById('saveDoctorPaymentBtn');
-  const refreshDoctorBtn = document.getElementById('refreshDoctorPaymentsBtn');
-  const filterDoctorSelect = document.getElementById('filterDoctorSelect');
-  const doctorAmountInput = document.getElementById('doctorPaymentAmount');
+    const refreshDoctorBtn = document.getElementById('refreshDoctorPaymentsBtn');
+    const filterDoctorSelect = document.getElementById('filterDoctorSelect');
+    if (saveDoctorBtn) saveDoctorBtn.addEventListener('click', saveDoctorPayment);
+    if (refreshDoctorBtn) refreshDoctorBtn.addEventListener('click', refreshDoctorPaymentsTable);
+    if (filterDoctorSelect) filterDoctorSelect.addEventListener('change', refreshDoctorPaymentsTable);
 
-  if (saveDoctorBtn) saveDoctorBtn.addEventListener('click', saveDoctorPayment);
-  if (refreshDoctorBtn) refreshDoctorBtn.addEventListener('click', refreshDoctorPaymentsTable);
-  if (filterDoctorSelect) filterDoctorSelect.addEventListener('change', refreshDoctorPaymentsTable);
-  if (doctorAmountInput) attachMoney('doctorPaymentAmount');
+    // Monthly payments
+    document.getElementById('saveMonthlyPaymentBtn').addEventListener('click', saveMonthlyPayment);
+    setupMonthlyPaymentCategoryToggle();
+
     document.getElementById('addCreditorBtn').addEventListener('click', async ()=>{
       const name = document.getElementById('newCreditorName').value.trim();
       const amt = parseMoney(document.getElementById('newCreditorAmount').value);
